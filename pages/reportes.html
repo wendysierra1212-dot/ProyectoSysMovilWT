@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Reportes | SYSMOVILWT</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- CSS GENERAL -->
+    <link rel="stylesheet"
+          href="../assets/css/styles.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/components.css">
+
+    <!-- CSS DEL MÓDULO -->
+    <link rel="stylesheet"
+          href="../assets/css/reportes.css">
+
+</head>
+
+<body>
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <img
+                src="../assets/img/logo/logowt.png"
+                alt="Logo WT SERVIPHONE"
+                class="logo-sidebar">
+
+            <div class="logo-text">
+
+                <h2>SYSMOVILWT</h2>
+
+                <span>Sistema de Gestión Empresarial</span>
+
+            </div>
+
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <ul>
+
+                <li>
+                    <a href="dashboard.html">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="inventario.html">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Inventario</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="ventas.html">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span>Ventas</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="compras.html">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <span>Compras</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="clientes.html">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Clientes</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="proveedores.html">
+                        <i class="fa-solid fa-truck"></i>
+                        <span>Proveedores</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="usuarios.html">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="serviciotecnico.html">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <span>Servicio Técnico</span>
+                    </a>
+                </li>
+
+                <li class="active">
+                    <a href="reportes.html">
+                        <i class="fa-solid fa-chart-column"></i>
+                        <span>Reportes</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="configuracion.html">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Configuración</span>
+                    </a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+        <button
+            class="logout-button"
+            id="btnLogout">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Cerrar sesión</span>
+
+        </button>
+
+    </aside>
+
+
+    <!-- =====================================================
+         TOPBAR
+    ====================================================== -->
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button class="menu-toggle">
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+            <div class="topbar-title">
+
+                <h1>Reportes</h1>
+
+                <span>Consulta y análisis de información</span>
+
+            </div>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+            <div class="topbar-date">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                <span id="currentDate"></span>
+
+            </div>
+
+            <button class="notification-button">
+
+                <i class="fa-regular fa-bell"></i>
+
+                <span class="notification-dot"></span>
+
+            </button>
+
+            <div class="topbar-profile">
+
+                <div class="profile-avatar">
+                    WT
+                </div>
+
+                <div class="profile-info">
+
+                    <strong>Leonardo</strong>
+
+                    <span>Administrador</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+    ====================================================== -->
+
+    <main class="reports-main">
+
+
+        <!-- =================================================
+             ENCABEZADO
+        ================================================== -->
+
+        <section class="reports-header">
+
+            <div class="reports-title">
+
+                <h2>
+
+                    <i class="fa-solid fa-chart-column"></i>
+
+                    Reportes del Sistema
+
+                </h2>
+
+                <p>
+                    Consulta información general sobre las operaciones
+                    realizadas en SYSMOVILWT.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             FILTROS
+        ================================================== -->
+
+        <section class="reports-filters">
+
+            <div class="filter-header">
+
+                <h3>
+
+                    <i class="fa-solid fa-filter"></i>
+
+                    Filtros de consulta
+
+                </h3>
+
+                <button
+                    type="button"
+                    class="btn-clear-filters"
+                    id="btnLimpiarFiltros">
+
+                    <i class="fa-solid fa-rotate-left"></i>
+
+                    Limpiar
+
+                </button>
+
+            </div>
+
+
+            <div class="filters-grid">
+
+                <div class="form-group">
+
+                    <label for="tipoReporte">
+                        Tipo de reporte
+                    </label>
+
+                    <select id="tipoReporte">
+
+                        <option value="general">
+                            Reporte general
+                        </option>
+
+                        <option value="ventas">
+                            Ventas
+                        </option>
+
+                        <option value="compras">
+                            Compras
+                        </option>
+
+                        <option value="inventario">
+                            Inventario
+                        </option>
+
+                        <option value="clientes">
+                            Clientes
+                        </option>
+
+                        <option value="servicio">
+                            Servicio técnico
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="fechaInicio">
+                        Fecha inicial
+                    </label>
+
+                    <input
+                        type="date"
+                        id="fechaInicio">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="fechaFin">
+                        Fecha final
+                    </label>
+
+                    <input
+                        type="date"
+                        id="fechaFin">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="estadoReporte">
+                        Estado
+                    </label>
+
+                    <select id="estadoReporte">
+
+                        <option value="todos">
+                            Todos los estados
+                        </option>
+
+                        <option value="activo">
+                            Activo
+                        </option>
+
+                        <option value="inactivo">
+                            Inactivo
+                        </option>
+
+                        <option value="pendiente">
+                            Pendiente
+                        </option>
+
+                        <option value="finalizado">
+                            Finalizado
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="filter-actions">
+
+                <button
+                    type="button"
+                    class="btn-generate"
+                    id="btnGenerarReporte">
+
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+
+                    Generar reporte
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-export"
+                    id="btnExportarReporte">
+
+                    <i class="fa-solid fa-file-export"></i>
+
+                    Exportar
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TARJETAS RESUMEN
+        ================================================== -->
+
+        <section class="report-summary">
+
+            <div class="report-card">
+
+                <div class="report-card-icon sales">
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Ventas</span>
+
+                    <strong id="reporteVentas">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="report-card">
+
+                <div class="report-card-icon purchases">
+
+                    <i class="fa-solid fa-bag-shopping"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Compras</span>
+
+                    <strong id="reporteCompras">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="report-card">
+
+                <div class="report-card-icon products">
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Productos</span>
+
+                    <strong id="reporteProductos">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="report-card">
+
+                <div class="report-card-icon services">
+
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Servicios técnicos</span>
+
+                    <strong id="reporteServicios">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PANEL PRINCIPAL
+        ================================================== -->
+
+        <section class="reports-content">
+
+
+            <!-- =============================================
+                 GRÁFICO
+            ============================================== -->
+
+            <div class="report-panel chart-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h3>
+
+                            <i class="fa-solid fa-chart-line"></i>
+
+                            Resumen de operaciones
+
+                        </h3>
+
+                        <span>
+                            Comportamiento de las operaciones registradas
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="chart-container">
+
+                    <div class="chart-placeholder">
+
+                        <i class="fa-solid fa-chart-column"></i>
+
+                        <h4>
+                            No hay información suficiente
+                        </h4>
+
+                        <p>
+                            Los datos del gráfico aparecerán
+                            cuando existan registros en el sistema.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================================
+                 DISTRIBUCIÓN
+            ============================================== -->
+
+            <div class="report-panel distribution-panel">
+
+                <div class="panel-header">
+
+                    <h3>
+
+                        <i class="fa-solid fa-chart-pie"></i>
+
+                        Distribución
+
+                    </h3>
+
+                </div>
+
+                <div class="distribution-content">
+
+                    <div class="distribution-item">
+
+                        <div class="distribution-icon sales">
+
+                            <i class="fa-solid fa-cart-shopping"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>Ventas</strong>
+
+                            <span id="porcentajeVentas">
+                                0%
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="distribution-item">
+
+                        <div class="distribution-icon purchases">
+
+                            <i class="fa-solid fa-bag-shopping"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>Compras</strong>
+
+                            <span id="porcentajeCompras">
+                                0%
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="distribution-item">
+
+                        <div class="distribution-icon services">
+
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>Servicio técnico</strong>
+
+                            <span id="porcentajeServicios">
+                                0%
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             TABLA DE RESULTADOS
+        ================================================== -->
+
+        <section class="report-table-card">
+
+            <div class="table-header">
+
+                <div>
+
+                    <h3>
+
+                        <i class="fa-solid fa-table-list"></i>
+
+                        Detalle del reporte
+
+                    </h3>
+
+                    <span id="reportResultText">
+                        Mostrando información registrada
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-responsive">
+
+                <table class="report-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Fecha</th>
+
+                            <th>Tipo</th>
+
+                            <th>Descripción</th>
+
+                            <th>Responsable</th>
+
+                            <th>Estado</th>
+
+                            <th>Valor</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="reportTableBody">
+
+                        <tr>
+
+                            <td colspan="6">
+
+                                <div class="empty-report">
+
+                                    <i class="fa-solid fa-chart-simple"></i>
+
+                                    <strong>
+                                        No existen datos para mostrar
+                                    </strong>
+
+                                    <span>
+                                        Genera un reporte cuando existan
+                                        registros en el sistema.
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="../assets/js/utils.js"></script>
+
+    <script src="../assets/js/reportes.js"></script>
+
+</body>
+
+</html>

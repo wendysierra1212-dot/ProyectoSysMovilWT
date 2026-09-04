@@ -1,0 +1,405 @@
+/**
+==================================================
+        SYSMOVILWT
+        PROVEEDORES
+==================================================
+*/
+
+/*==================================================
+=            CONTENEDOR
+==================================================*/
+
+.suppliers-container{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:25px;
+
+}
+
+/*==================================================
+=            CABECERA
+==================================================*/
+
+.suppliers-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+}
+
+.suppliers-title h2{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-size:28px;
+
+    color:var(--primary);
+
+}
+
+.suppliers-title p{
+
+    margin-top:8px;
+
+    color:#6b7280;
+
+}
+
+/*==================================================
+=            BOTÓN NUEVO
+==================================================*/
+
+.btn-new{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+/*==================================================
+=            MODAL
+==================================================*/
+
+.supplier-modal{
+
+    max-width:1050px;
+
+    width:95%;
+
+}
+
+/*==================================================
+=            FORMULARIO
+==================================================*/
+
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(250px,1fr));
+
+    gap:20px;
+
+}
+
+.form-section{
+
+    margin-bottom:30px;
+
+}
+
+.form-section h3{
+
+    margin-bottom:20px;
+
+    padding-bottom:10px;
+
+    border-bottom:1px solid #E5E7EB;
+
+    color:var(--primary);
+
+}
+
+.form-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.form-group label{
+
+    font-weight:600;
+
+    color:#374151;
+
+}
+
+.form-group input,
+
+.form-group select,
+
+.form-group textarea{
+
+    padding:12px 15px;
+
+    border:1px solid #D1D5DB;
+
+    border-radius:10px;
+
+    transition:.30s;
+
+    font-size:14px;
+
+}
+
+.form-group input:focus,
+
+.form-group select:focus,
+
+.form-group textarea:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 3px rgba(220,38,38,.15);
+
+}
+
+/*==================================================
+=            BOTONES DEL FORMULARIO
+==================================================*/
+
+.clients-form-actions{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:15px;
+
+    margin-top:35px;
+
+}
+
+/*==================================================
+=            TABLA DE PROVEEDORES
+==================================================*/
+
+.table-client{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+}
+
+.table-avatar{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:14px;
+
+    background:linear-gradient(
+        135deg,
+        #ef4444,
+        #dc2626
+    );
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#ffffff;
+
+    font-size:18px;
+
+    flex-shrink:0;
+
+}
+
+.table-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.table-info strong{
+
+    color:#1e293b;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+.table-info small{
+
+    color:#64748b;
+
+    font-size:12px;
+
+    margin-top:2px;
+
+}
+
+/*==================================================
+=            BADGES
+==================================================*/
+
+.badge-success{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:6px 14px;
+
+    border-radius:30px;
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+    font-size:12px;
+
+    font-weight:600;
+
+}
+
+.badge-danger{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:6px 14px;
+
+    border-radius:30px;
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+    font-size:12px;
+
+    font-weight:600;
+
+}
+
+/*==================================================
+=            BOTONES DE ACCIÓN
+==================================================*/
+
+.table-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+}
+
+.table-action{
+
+    width:38px;
+
+    height:38px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#ffffff;
+
+}
+
+.table-action.view{
+
+    background:#2563eb;
+
+}
+
+.table-action.edit{
+
+    background:#f59e0b;
+
+}
+
+.table-action.power{
+
+    background:#dc2626;
+
+}
+
+.table-action:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 20px rgba(0,0,0,.15);
+
+}
+
+/*==================================================
+=            AJUSTE COLUMNA NIT
+==================================================*/
+
+.clients-table th:nth-child(2),
+
+.clients-table td:nth-child(2){
+
+    min-width:130px;
+
+    white-space:nowrap;
+
+}
+
+/*==================================================
+=            RESPONSIVE
+==================================================*/
+
+@media(max-width:768px){
+
+    .suppliers-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+    .clients-form-actions{
+
+        flex-direction:column;
+
+    }
+
+}

@@ -1,0 +1,628 @@
+
+/* =========================================================
+   USUARIOS - SYSMOVILWT
+   Estilos específicos del módulo de usuarios
+   ========================================================= */
+
+
+/* =========================================================
+   TARJETAS DE ESTADÍSTICAS
+   ========================================================= */
+
+.crud-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+
+/* =========================================================
+   INFORMACIÓN DE ACCESO
+   ========================================================= */
+
+.user-access-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-top: 20px;
+
+    padding: 16px 18px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+}
+
+
+.user-access-icon {
+
+    width: 45px;
+
+    height: 45px;
+
+    min-width: 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #eef2ff;
+
+    color: #3155d9;
+
+    font-size: 20px;
+
+}
+
+
+.user-access-text {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+}
+
+
+.user-access-text strong {
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #1f2937;
+
+}
+
+
+.user-access-text span {
+
+    font-size: 13px;
+
+    color: #6b7280;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   CAMPOS DE INFORMACIÓN AUTOMÁTICA
+   ========================================================= */
+
+#cedulaEmpleado:read-only,
+#cargoEmpleado:read-only,
+#correoEmpleado:read-only,
+#descripcionRol:read-only {
+
+    background-color: #f3f4f6;
+
+    color: #6b7280;
+
+    cursor: not-allowed;
+
+}
+
+
+/* =========================================================
+   ESTADO DE LOS CAMPOS READONLY
+   ========================================================= */
+
+#cedulaEmpleado:read-only:focus,
+#cargoEmpleado:read-only:focus,
+#correoEmpleado:read-only:focus,
+#descripcionRol:read-only:focus {
+
+    border-color: #d1d5db;
+
+    box-shadow: none;
+
+}
+
+
+/* =========================================================
+   TABLA DE USUARIOS
+   ========================================================= */
+
+#usersTableBody td {
+
+    vertical-align: middle;
+
+}
+
+
+/* =========================================================
+   ESTADO DE USUARIO
+   ========================================================= */
+
+.user-status {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+
+.user-status::before {
+
+    content: "";
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+}
+
+
+.user-status.active {
+
+    background: #dcfce7;
+
+    color: #15803d;
+
+}
+
+
+.user-status.active::before {
+
+    background: #22c55e;
+
+}
+
+
+.user-status.inactive {
+
+    background: #fee2e2;
+
+    color: #b91c1c;
+
+}
+
+
+.user-status.inactive::before {
+
+    background: #ef4444;
+
+}
+
+
+/* =========================================================
+   ROL DEL USUARIO
+   ========================================================= */
+
+.user-role {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 5px 9px;
+
+    border-radius: 8px;
+
+    background: #f1f5f9;
+
+    color: #334155;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+
+.user-role i {
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   NOMBRE DE USUARIO
+   ========================================================= */
+
+.user-name {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+
+.user-avatar {
+
+    width: 38px;
+
+    height: 38px;
+
+    min-width: 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e21b23;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    text-transform: uppercase;
+
+}
+
+
+.user-name-info {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+
+}
+
+
+.user-name-info strong {
+
+    color: #1f2937;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+.user-name-info span {
+
+    color: #6b7280;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   EMPLEADO ASOCIADO
+   ========================================================= */
+
+.employee-info {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+
+}
+
+
+.employee-info strong {
+
+    color: #374151;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+}
+
+
+.employee-info span {
+
+    color: #6b7280;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   ÚLTIMO ACCESO
+   ========================================================= */
+
+.last-access {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #64748b;
+
+    font-size: 12px;
+
+}
+
+
+.last-access i {
+
+    font-size: 13px;
+
+}
+
+
+/* =========================================================
+   ACCIONES
+   ========================================================= */
+
+.user-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+}
+
+
+.user-action-btn {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+
+    font-size: 13px;
+
+}
+
+
+.user-action-btn:hover {
+
+    transform: translateY(-1px);
+
+}
+
+
+.user-action-btn.view {
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+}
+
+
+.user-action-btn.view:hover {
+
+    background: #dbeafe;
+
+}
+
+
+.user-action-btn.edit {
+
+    background: #fff7ed;
+
+    color: #ea580c;
+
+}
+
+
+.user-action-btn.edit:hover {
+
+    background: #ffedd5;
+
+}
+
+
+.user-action-btn.status {
+
+    background: #f0fdf4;
+
+    color: #16a34a;
+
+}
+
+
+.user-action-btn.status:hover {
+
+    background: #dcfce7;
+
+}
+
+
+.user-action-btn.delete {
+
+    background: #fef2f2;
+
+    color: #dc2626;
+
+}
+
+
+.user-action-btn.delete:hover {
+
+    background: #fee2e2;
+
+}
+
+
+/* =========================================================
+   MODAL DE USUARIOS
+   ========================================================= */
+
+#userModal .crud-modal-content {
+
+    max-width: 900px;
+
+}
+
+
+/* =========================================================
+   TÍTULO DE SECCIONES DEL FORMULARIO
+   ========================================================= */
+
+#userModal .crud-section h3 {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+/* =========================================================
+   SELECTS DE USUARIOS
+   ========================================================= */
+
+#empleadoUsuario,
+#rolUsuario {
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   MODAL - CONTRASEÑA
+   ========================================================= */
+
+#contrasena,
+#confirmarContrasena {
+
+    letter-spacing: 0.5px;
+
+}
+
+
+/* =========================================================
+   CHECKBOX
+   ========================================================= */
+
+#forzarCambioContrasena {
+
+    accent-color: #e21b23;
+
+}
+
+
+/* =========================================================
+   ESTADO VACÍO
+   ========================================================= */
+
+.users-empty .empty-state {
+
+    padding: 60px 20px;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .crud-stats {
+
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MÓVIL
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .crud-stats {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .user-access-info {
+
+        align-items: flex-start;
+
+    }
+
+    .user-actions {
+
+        flex-wrap: wrap;
+
+    }
+
+}
+
+
+/* =========================================================
+   TABLA RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .crud-table-card {
+
+        overflow-x: auto;
+
+    }
+
+    .crud-table {
+
+        min-width: 850px;
+
+    }
+
+}

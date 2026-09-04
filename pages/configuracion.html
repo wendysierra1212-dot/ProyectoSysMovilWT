@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Configuración | SYSMOVILWT</title>
+
+
+    <!-- =====================================================
+         GOOGLE FONTS
+    ====================================================== -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+
+    <!-- =====================================================
+         CSS GENERAL
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/styles.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/components.css">
+
+
+    <!-- =====================================================
+         CSS DEL MÓDULO
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/configuracion.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         SIDEBAR
+         NO SE MODIFICA LA ESTRUCTURA GENERAL
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+
+            <img
+                src="../assets/img/logo/logowt.png"
+                alt="Logo WT SERVIPHONE"
+                class="logo-sidebar">
+
+            <div class="logo-text">
+
+                <h2>SYSMOVILWT</h2>
+
+                <span>
+                    Sistema de Gestión Empresarial
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-menu">
+
+            <ul>
+
+                <li>
+                    <a href="dashboard.html">
+
+                        <i class="fa-solid fa-house"></i>
+
+                        <span>Dashboard</span>
+
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="inventario.html">
+
+                        <i class="fa-solid fa-boxes-stacked"></i>
+
+                        <span>Inventario</span>
+
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="ventas.html">
+
+                        <i class="fa-solid fa-cart-shopping"></i>
+
+                        <span>Ventas</span>
+
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="compras.html">
+
+                        <i class="fa-solid fa-bag-shopping"></i>
+
+                        <span>Compras</span>
+
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="clientes.html">
+
+                        <i class="fa-solid fa-users"></i>
+
+                        <span>Clientes</span>
+
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="proveedores.html">
+
+                        <i class="fa-solid fa-truck"></i>
+
+                        <span>Proveedores</span>
+
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="usuarios.html">
+
+                        <i class="fa-solid fa-user-shield"></i>
+
+                        <span>Usuarios</span>
+
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="serviciotecnico.html">
+
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+
+                        <span>Servicio Técnico</span>
+
+                    </a>
+                </li>
+
+
+                <li>
+                    <a href="reportes.html">
+
+                        <i class="fa-solid fa-chart-column"></i>
+
+                        <span>Reportes</span>
+
+                    </a>
+                </li>
+
+
+                <li class="active">
+
+                    <a href="configuracion.html">
+
+                        <i class="fa-solid fa-gear"></i>
+
+                        <span>Configuración</span>
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </nav>
+
+
+        <button
+            class="logout-button"
+            id="btnLogout">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Cerrar sesión</span>
+
+        </button>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         TOPBAR
+         SE MANTIENE IGUAL QUE DASHBOARD
+    ====================================================== -->
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button
+                class="menu-toggle"
+                type="button">
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+
+            <div class="topbar-title">
+
+                <h1>Configuración</h1>
+
+                <span>
+                    Configuración general del sistema
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="topbar-right">
+
+            <div class="topbar-date">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                <span id="currentDate"></span>
+
+            </div>
+
+
+            <button
+                class="notification-button"
+                type="button">
+
+                <i class="fa-regular fa-bell"></i>
+
+                <span class="notification-dot"></span>
+
+            </button>
+
+
+            <div class="topbar-profile">
+
+                <div class="profile-avatar">
+                    WT
+                </div>
+
+
+                <div class="profile-info">
+
+                    <strong>Leonardo</strong>
+
+                    <span>Administrador</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTENIDO PRINCIPAL
+    ====================================================== -->
+
+    <main class="configuracion-main">
+
+
+        <section class="configuracion-page">
+
+
+            <!-- =================================================
+                 ENCABEZADO
+            ================================================== -->
+
+            <header class="configuracion-header">
+
+                <div class="configuracion-header-content">
+
+                    <h2 class="configuracion-title">
+
+                        <i class="fa-solid fa-gear"></i>
+
+                        Configuración del Sistema
+
+                    </h2>
+
+
+                    <p class="configuracion-subtitle">
+
+                        Administra la configuración general,
+                        seguridad, permisos y preferencias
+                        de SYSMOVILWT.
+
+                    </p>
+
+                </div>
+
+            </header>
+
+
+
+            <!-- =================================================
+                 TARJETA PRINCIPAL
+            ================================================== -->
+
+            <section class="configuracion-card">
+
+
+                <!-- =================================================
+                     PESTAÑAS
+                ================================================== -->
+
+                <nav
+                    class="config-tabs"
+                    aria-label="Secciones de configuración">
+
+
+                    <button
+                        type="button"
+                        class="config-tab config-tab-active"
+                        data-tab="general">
+
+                        <i class="fa-solid fa-building"></i>
+
+                        <span>
+                            Configuración general
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="config-tab"
+                        data-tab="roles">
+
+                        <i class="fa-solid fa-user-shield"></i>
+
+                        <span>
+                            Roles y permisos
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="config-tab"
+                        data-tab="seguridad">
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        <span>
+                            Seguridad
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="config-tab"
+                        data-tab="preferencias">
+
+                        <i class="fa-solid fa-bell"></i>
+
+                        <span>
+                            Preferencias
+                        </span>
+
+                    </button>
+
+                </nav>
+
+
+
+                <!-- =================================================
+                     CONTENIDO GENERAL
+                ================================================== -->
+
+                <div
+                    id="tab-general"
+                    class="config-tab-content config-tab-content-active">
+
+
+                    <div class="config-section-header">
+
+                        <div>
+
+                            <h3>
+                                <i class="fa-solid fa-building"></i>
+                                Información de la empresa
+                            </h3>
+
+                            <p>
+                                Configura los datos generales
+                                de tu empresa.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="config-divider"></div>
+
+
+                    <div class="config-form-grid">
+
+
+                        <!-- NOMBRE -->
+
+                        <div class="config-form-group">
+
+                            <label for="nombreEmpresa">
+
+                                <i class="fa-solid fa-building"></i>
+
+                                Nombre de la empresa
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="nombreEmpresa"
+                                name="nombreEmpresa"
+                                placeholder="Nombre de la empresa">
+
+                        </div>
+
+
+                        <!-- NIT -->
+
+                        <div class="config-form-group">
+
+                            <label for="nitEmpresa">
+
+                                <i class="fa-solid fa-id-card"></i>
+
+                                NIT / Identificación
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="nitEmpresa"
+                                name="nitEmpresa"
+                                placeholder="Ingrese NIT">
+
+                        </div>
+
+
+                        <!-- TELÉFONO -->
+
+                        <div class="config-form-group">
+
+                            <label for="telefonoEmpresa">
+
+                                <i class="fa-solid fa-phone"></i>
+
+                                Teléfono
+
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="telefonoEmpresa"
+                                name="telefonoEmpresa"
+                                placeholder="Ingrese teléfono">
+
+                        </div>
+
+
+                        <!-- CORREO -->
+
+                        <div class="config-form-group">
+
+                            <label for="correoEmpresa">
+
+                                <i class="fa-solid fa-envelope"></i>
+
+                                Correo electrónico
+
+                            </label>
+
+                            <input
+                                type="email"
+                                id="correoEmpresa"
+                                name="correoEmpresa"
+                                placeholder="correo@empresa.com">
+
+                        </div>
+
+
+                        <!-- DIRECCIÓN -->
+
+                        <div class="config-form-group config-form-full">
+
+                            <label for="direccionEmpresa">
+
+                                <i class="fa-solid fa-location-dot"></i>
+
+                                Dirección de la empresa
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="direccionEmpresa"
+                                name="direccionEmpresa"
+                                placeholder="Ingrese dirección de la empresa">
+
+                        </div>
+
+
+                        <!-- LOGO -->
+
+                        <div class="config-form-group config-form-full">
+
+                            <label for="logoEmpresa">
+
+                                <i class="fa-solid fa-image"></i>
+
+                                Logo de la empresa
+
+                            </label>
+
+                            <input
+                                type="file"
+                                id="logoEmpresa"
+                                name="logoEmpresa"
+                                accept=".png,.jpg,.jpeg,.webp">
+
+                            <small>
+                                Formatos permitidos: PNG, JPG o WEBP.
+                            </small>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="config-form-actions">
+
+                        <button
+                            type="button"
+                            class="config-btn config-btn-primary"
+                            id="btnGuardarConfiguracion">
+
+                            <i class="fa-solid fa-floppy-disk"></i>
+
+                            Guardar cambios
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+<!-- =====================================================
+     ROLES Y PERMISOS
+====================================================== -->
+
+<div
+    id="tab-roles"
+    class="config-tab-content">
+
+    <!-- ENCABEZADO -->
+
+    <div class="config-section-header">
+
+        <div>
+
+            <h3>
+                <i class="fa-solid fa-user-shield"></i>
+                Roles y permisos
+            </h3>
+
+            <p>
+                Administra los permisos de acceso de cada tipo de usuario.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="config-divider"></div>
+
+
+    <!-- SELECTOR DE ROL -->
+
+    <div class="roles-config-header">
+
+        <div class="config-form-group">
+
+            <label for="selectRol">
+
+                <i class="fa-solid fa-users-gear"></i>
+
+                Seleccionar rol
+
+            </label>
+
+            <select id="selectRol">
+
+                <option value="administrador">
+                    Administrador
+                </option>
+
+                <option value="vendedor">
+                    Vendedor
+                </option>
+
+                <option value="tecnico">
+                    Técnico
+                </option>
+
+                <option value="auxiliar">
+                    Auxiliar
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="role-description">
+
+            <strong id="rolNombre">
+                Administrador
+            </strong>
+
+            <span id="rolDescripcion">
+                Acceso completo a todas las funciones del sistema.
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- MATRIZ DE PERMISOS -->
+
+    <div class="permissions-section">
+
+        <div class="permissions-header">
+
+            <div>
+
+                <h4>
+                    <i class="fa-solid fa-list-check"></i>
+                    Permisos del rol
+                </h4>
+
+                <p>
+                    Selecciona las acciones que podrá realizar este rol.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="permissions-table-wrapper">
+
+            <table class="permissions-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Módulo
+                        </th>
+
+                        <th>
+                            <i class="fa-solid fa-eye"></i>
+                            Ver
+                        </th>
+
+                        <th>
+                            <i class="fa-solid fa-plus"></i>
+                            Crear
+                        </th>
+
+                        <th>
+                            <i class="fa-solid fa-pen"></i>
+                            Editar
+                        </th>
+
+                        <th>
+                            <i class="fa-solid fa-trash"></i>
+                            Eliminar
+                        </th>
+
+                        <th>
+                            <i class="fa-solid fa-file-export"></i>
+                            Exportar
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <!-- DASHBOARD -->
+
+                    <tr>
+
+                        <td>
+                            <i class="fa-solid fa-house"></i>
+                            Dashboard
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="dashboard_ver"
+                                checked>
+                        </td>
+
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="dashboard_exportar"
+                                checked>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- INVENTARIO -->
+
+                    <tr>
+
+                        <td>
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                            Inventario
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="inventario_ver"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="inventario_crear"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="inventario_editar"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="inventario_eliminar"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="inventario_exportar"
+                                checked>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- VENTAS -->
+
+                    <tr>
+
+                        <td>
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            Ventas
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="ventas_ver"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="ventas_crear"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="ventas_editar"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="ventas_eliminar">
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="ventas_exportar"
+                                checked>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- COMPRAS -->
+
+                    <tr>
+
+                        <td>
+                            <i class="fa-solid fa-bag-shopping"></i>
+                            Compras
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="compras_ver"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="compras_crear"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="compras_editar"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="compras_eliminar">
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="compras_exportar"
+                                checked>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- CLIENTES -->
+
+                    <tr>
+
+                        <td>
+                            <i class="fa-solid fa-users"></i>
+                            Clientes
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="clientes_ver"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="clientes_crear"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="clientes_editar"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="clientes_eliminar">
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="clientes_exportar"
+                                checked>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- PROVEEDORES -->
+
+                    <tr>
+
+                        <td>
+                            <i class="fa-solid fa-truck"></i>
+                            Proveedores
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="proveedores_ver"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="proveedores_crear"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="proveedores_editar"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="proveedores_eliminar">
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="proveedores_exportar"
+                                checked>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- USUARIOS -->
+
+                    <tr>
+
+                        <td>
+                            <i class="fa-solid fa-user-shield"></i>
+                            Usuarios
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="usuarios_ver"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="usuarios_crear"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="usuarios_editar"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="usuarios_eliminar"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="usuarios_exportar">
+                        </td>
+
+                    </tr>
+
+
+                    <!-- SERVICIO TÉCNICO -->
+
+                    <tr>
+
+                        <td>
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                            Servicio Técnico
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="servicio_ver"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="servicio_crear"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="servicio_editar"
+                                checked>
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="servicio_eliminar">
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="servicio_exportar"
+                                checked>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- REPORTES -->
+
+                    <tr>
+
+                        <td>
+                            <i class="fa-solid fa-chart-column"></i>
+                            Reportes
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="reportes_ver"
+                                checked>
+                        </td>
+
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="reportes_exportar"
+                                checked>
+                        </td>
+
+                    </tr>
+
+
+                    <!-- CONFIGURACIÓN -->
+
+                    <tr>
+
+                        <td>
+                            <i class="fa-solid fa-gear"></i>
+                            Configuración
+                        </td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="configuracion_ver"
+                                checked>
+                        </td>
+
+                        <td>—</td>
+
+                        <td>
+                            <input
+                                type="checkbox"
+                                name="configuracion_editar"
+                                checked>
+                        </td>
+
+                        <td>—</td>
+
+                        <td>—</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ACCIONES -->
+
+    <div class="config-form-actions">
+
+        <button
+            type="button"
+            class="config-btn">
+
+            <i class="fa-solid fa-rotate-left"></i>
+
+            Restaurar permisos
+
+        </button>
+
+
+        <button
+            type="button"
+            class="config-btn config-btn-primary"
+            id="btnGuardarPermisos">
+
+            <i class="fa-solid fa-floppy-disk"></i>
+
+            Guardar cambios
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+                <!-- =================================================
+                     SEGURIDAD
+                ================================================== -->
+
+                <div
+                    id="tab-seguridad"
+                    class="config-tab-content">
+
+                    <div class="config-section-header">
+
+                        <div>
+
+                            <h3>
+
+                                <i class="fa-solid fa-lock"></i>
+
+                                Seguridad
+
+                            </h3>
+
+                            <p>
+                                Configura las opciones de seguridad
+                                y protección del sistema.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="config-placeholder">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                        <h4>
+                            Configuración de seguridad
+                        </h4>
+
+                        <p>
+                            Aquí estarán disponibles las opciones
+                            relacionadas con la seguridad.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     PREFERENCIAS
+                ================================================== -->
+
+                <div
+                    id="tab-preferencias"
+                    class="config-tab-content">
+
+                    <div class="config-section-header">
+
+                        <div>
+
+                            <h3>
+
+                                <i class="fa-solid fa-bell"></i>
+
+                                Preferencias
+
+                            </h3>
+
+                            <p>
+                                Configura las preferencias y
+                                notificaciones del sistema.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="config-placeholder">
+
+                        <i class="fa-solid fa-sliders"></i>
+
+                        <h4>
+                            Preferencias del sistema
+                        </h4>
+
+                        <p>
+                            Aquí estarán disponibles las opciones
+                            de preferencias y notificaciones.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="../assets/js/utils.js"></script>
+
+    <script src="../assets/js/configuracion.js"></script>
+
+
+</body>
+
+</html>

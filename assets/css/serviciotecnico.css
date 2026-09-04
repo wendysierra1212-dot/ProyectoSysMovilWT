@@ -1,0 +1,1155 @@
+/*==================================================
+=              SYSMOVILWT
+=         SERVICIO TÉCNICO V2
+==================================================*/
+
+:root{
+
+    --service-primary:#2563eb;
+    --service-success:#16a34a;
+    --service-warning:#f59e0b;
+    --service-danger:#dc2626;
+    --service-bg:#f5f7fb;
+    --service-card:#ffffff;
+    --service-border:#e5e7eb;
+    --service-text:#1f2937;
+    --service-text-light:#6b7280;
+
+}
+
+/*==================================================
+=              CONTENEDOR
+==================================================*/
+
+.service-container{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:24px;
+
+    width:100%;
+
+}
+
+/*==================================================
+=              ENCABEZADO
+==================================================*/
+
+.service-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+}
+
+.service-header h2{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-size:28px;
+
+    color:var(--service-text);
+
+}
+
+.service-header p{
+
+    margin-top:8px;
+
+    color:var(--service-text-light);
+
+}
+
+/*==================================================
+=              KPIs
+==================================================*/
+
+.service-kpis{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:18px;
+
+}
+
+.kpi-card{
+
+    background:#fff;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:14px;
+
+    padding:22px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    transition:.25s;
+
+}
+
+.kpi-card:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 12px 25px rgba(0,0,0,.08);
+
+}
+
+.kpi-icon{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#fff;
+
+    font-size:24px;
+
+}
+
+.received{
+
+    background:#2563eb;
+
+}
+
+.diagnosis{
+
+    background:#f59e0b;
+
+}
+
+.repair{
+
+    background:#8b5cf6;
+
+}
+
+.ready{
+
+    background:#10b981;
+
+}
+
+.delivered{
+
+    background:#059669;
+
+}
+
+.income{
+
+    background:#0f766e;
+
+}
+
+.kpi-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:5px;
+
+}
+
+.kpi-info span{
+
+    color:#6b7280;
+
+    font-size:14px;
+
+}
+
+.kpi-info h3{
+
+    font-size:28px;
+
+    color:#111827;
+
+}
+/*==================================================
+=              TOOLBAR
+==================================================*/
+
+.service-toolbar{
+
+    background:#fff;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:16px;
+
+    padding:20px;
+
+    display:grid;
+
+    grid-template-columns:2fr repeat(3,1fr) auto auto;
+
+    gap:15px;
+
+    align-items:center;
+
+}
+
+.service-search{
+
+    position:relative;
+
+}
+
+.service-search i{
+
+    position:absolute;
+
+    left:15px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#9ca3af;
+
+}
+
+.service-search input{
+
+    width:100%;
+
+    height:46px;
+
+    border:1px solid #d1d5db;
+
+    border-radius:10px;
+
+    padding-left:45px;
+
+    font-size:15px;
+
+    outline:none;
+
+}
+
+.service-search input:focus{
+
+    border-color:#2563eb;
+
+}
+
+.service-toolbar select{
+
+    height:46px;
+
+    border:1px solid #d1d5db;
+
+    border-radius:10px;
+
+    padding:0 12px;
+
+    background:#fff;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+}
+
+.btn-reset,
+.btn-export{
+
+    height:46px;
+
+    padding:0 18px;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+}
+
+.btn-reset{
+
+    background:#f3f4f6;
+
+}
+
+.btn-export{
+
+    background:#0ea5e9;
+
+    color:white;
+
+}
+/*==================================================
+=              RESUMEN
+==================================================*/
+
+.service-summary{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    background:#fff;
+
+    border-radius:16px;
+
+    padding:25px;
+
+    border:1px solid #e5e7eb;
+
+}
+
+.service-summary h3{
+
+    font-size:24px;
+
+    margin-bottom:8px;
+
+}
+
+.service-summary p{
+
+    color:#6b7280;
+
+}
+
+.service-summary strong{
+
+    font-size:22px;
+
+}
+
+/*==================================================
+=              TABLA
+==================================================*/
+
+.service-table{
+
+    width:100%;
+
+}
+
+.service-table th{
+
+    background:#f8fafc;
+
+}
+
+.service-table td{
+
+    vertical-align:middle;
+
+}
+
+/*==================================================
+=              FOOTER
+==================================================*/
+
+.service-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    background:#fff;
+
+    border-radius:16px;
+
+    padding:18px 25px;
+
+    border:1px solid #e5e7eb;
+
+}
+
+.service-footer-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.btn-pagination{
+
+    width:40px;
+
+    height:40px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#f3f4f6;
+
+    cursor:pointer;
+
+}
+
+/*==================================================
+=              BOTÓN NUEVA ORDEN
+==================================================*/
+
+.btn-new{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    min-width:180px;
+
+    height:54px;
+
+    padding:0 24px;
+
+    background:#ef4444;
+
+    color:#fff;
+
+    border:none;
+
+    border-radius:12px;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    white-space:nowrap;
+
+    transition:.25s;
+
+}
+
+.btn-new:hover{
+
+    background:#dc2626;
+
+}
+
+/*==================================================
+=              TABLA
+==================================================*/
+
+.crud-table-card{
+
+    background:#fff;
+
+    border:1px solid var(--service-border);
+
+    border-radius:16px;
+
+    overflow:hidden;
+
+}
+
+.crud-table-responsive{
+
+    overflow-x:auto;
+
+}
+
+.service-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+.service-table thead{
+
+    background:#f8fafc;
+
+}
+
+.service-table th{
+
+    padding:18px 15px;
+
+    text-align:left;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    color:#475569;
+
+    border-bottom:1px solid #e5e7eb;
+
+    white-space:nowrap;
+
+}
+
+.service-table td{
+
+    padding:16px 15px;
+
+    border-bottom:1px solid #f1f5f9;
+
+    vertical-align:middle;
+
+    font-size:14px;
+
+    color:#334155;
+
+}
+
+.service-table tbody tr{
+
+    transition:.25s;
+
+}
+
+.service-table tbody tr:hover{
+
+    background:#f8fafc;
+
+}
+
+/*==================================================
+=              ESTADO VACÍO
+==================================================*/
+
+.service-empty td{
+
+    padding:60px 20px !important;
+
+    text-align:center;
+
+}
+
+.empty-state{
+
+    width:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.empty-state i{
+
+    font-size:55px;
+
+    color:#cbd5e1;
+
+}
+
+.empty-state h3{
+
+    font-size:24px;
+
+    color:#334155;
+
+    margin:0;
+
+}
+
+.empty-state p{
+
+    max-width:500px;
+
+    color:#64748b;
+
+    line-height:1.7;
+
+    margin:0;
+
+}
+
+/*==================================================
+=              BADGES
+==================================================*/
+
+.badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:6px 14px;
+
+    border-radius:999px;
+
+    font-size:12px;
+
+    font-weight:600;
+
+}
+
+.badge-recibido{
+
+    background:#dbeafe;
+
+    color:#2563eb;
+
+}
+
+.badge-diagnostico{
+
+    background:#fef3c7;
+
+    color:#d97706;
+
+}
+
+.badge-reparacion{
+
+    background:#ede9fe;
+
+    color:#7c3aed;
+
+}
+
+.badge-listo{
+
+    background:#dcfce7;
+
+    color:#16a34a;
+
+}
+
+.badge-entregado{
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+}
+
+.badge-urgente{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+}
+
+.badge-media{
+
+    background:#fef3c7;
+
+    color:#ca8a04;
+
+}
+
+.badge-baja{
+
+    background:#ecfeff;
+
+    color:#0891b2;
+
+}
+
+/*==================================================
+=              BOTONES DE ACCIÓN
+==================================================*/
+
+.service-actions{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:8px;
+
+}
+
+.service-actions button{
+
+    width:36px;
+
+    height:36px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    color:#fff;
+
+}
+
+.btn-view{
+
+    background:#2563eb;
+
+}
+
+.btn-edit{
+
+    background:#f59e0b;
+
+}
+
+.btn-status{
+
+    background:#8b5cf6;
+
+}
+
+.btn-print{
+
+    background:#06b6d4;
+
+}
+
+.btn-delete{
+
+    background:#ef4444;
+
+}
+
+.service-actions button:hover{
+
+    transform:scale(1.08);
+
+}
+
+/*==================================================
+=              FOOTER
+==================================================*/
+
+.service-footer-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    font-size:15px;
+
+}
+
+.service-footer-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.btn-pagination:hover{
+
+    background:#2563eb;
+
+    color:#fff;
+
+}
+
+/* =========================================================
+   MODAL SERVICIO TÉCNICO
+========================================================= */
+
+.service-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.65);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.service-modal.active {
+    display: flex !important;
+}
+
+.service-modal-content {
+    width: min(900px, 95vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.30);
+    position: relative;
+    z-index: 100000;
+}
+
+.service-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 25px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.service-modal-header h2 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 22px;
+}
+
+.service-modal-body {
+    padding: 25px;
+}
+
+.service-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 18px 25px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.service-modal-close {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: #f3f4f6;
+    color: #374151;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.service-modal-close:hover {
+    background: #e5e7eb;
+}
+
+/*==================================================
+=              HEADER MODAL
+==================================================*/
+
+.service-modal-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:24px 30px;
+
+    border-bottom:1px solid #e5e7eb;
+
+}
+
+.service-modal-header h2{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    font-size:24px;
+
+    color:var(--service-text);
+
+}
+
+.service-modal-close{
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#f3f4f6;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.service-modal-close:hover{
+
+    background:#ef4444;
+
+    color:#fff;
+
+}
+
+/*==================================================
+=              FORMULARIO
+==================================================*/
+
+.service-form{
+
+    padding:30px;
+
+}
+
+.form-section{
+
+    margin-bottom:35px;
+
+    background:#fff;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:14px;
+
+    padding:22px;
+
+}
+
+.form-section h3{
+
+    margin-bottom:20px;
+
+    color:#1f2937;
+
+    font-size:18px;
+
+}
+
+.form-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
+    gap:18px;
+
+}
+
+.form-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.form-group label{
+
+    font-size:14px;
+
+    font-weight:600;
+
+    color:#475569;
+
+}
+
+.form-group input,
+
+.form-group select,
+
+.form-group textarea{
+
+    width:100%;
+
+    border:1px solid #d1d5db;
+
+    border-radius:10px;
+
+    padding:12px 14px;
+
+    font-size:14px;
+
+    font-family:inherit;
+
+    transition:.25s;
+
+    resize:vertical;
+
+}
+
+.form-group input:focus,
+
+.form-group select:focus,
+
+.form-group textarea:focus{
+
+    outline:none;
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+
+}
+
+/*==================================================
+=              BOTONES FORMULARIO
+==================================================*/
+
+.service-form-actions{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:15px;
+
+    margin-top:35px;
+
+}
+
+.btn-cancel,
+
+.btn-save{
+
+    padding:14px 28px;
+
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+.btn-cancel{
+
+    background:#e5e7eb;
+
+    color:#374151;
+
+}
+
+.btn-save{
+
+    background:#2563eb;
+
+    color:#fff;
+
+}
+
+.btn-save:hover{
+
+    background:#1d4ed8;
+
+}
+
+/*==================================================
+=              RESPONSIVE
+==================================================*/
+
+@media(max-width:992px){
+
+    .service-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+    .service-toolbar{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .service-summary{
+
+        flex-direction:column;
+
+        gap:15px;
+
+        align-items:flex-start;
+
+    }
+
+    .service-footer{
+
+        flex-direction:column;
+
+        gap:15px;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .dashboard-main{
+
+        margin-left:0;
+
+        padding:20px;
+
+    }
+
+    .service-modal{
+
+        padding:15px;
+
+    }
+
+    .service-modal-content{
+
+        max-height:95vh;
+
+    }
+
+    .form-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}

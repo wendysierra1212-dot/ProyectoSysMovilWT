@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Ventas | SYSMOVILWT</title>
+
+    <!--=========================================
+    =              GOOGLE FONTS
+    ==========================================-->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!--=========================================
+    =              FONT AWESOME
+    ==========================================-->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!--=========================================
+    =              ESTILOS
+    ==========================================-->
+
+    <link rel="stylesheet"
+          href="../assets/css/styles.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/components.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/dashboard.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/ventas.css">
+
+</head>
+
+<body>
+
+    <!--=========================================
+    =              SIDEBAR
+    ==========================================-->
+<aside class="sidebar">
+
+    <div class="sidebar-logo">
+
+    <img
+        src="../assets/img/logo/logowt.png"
+        alt="Logo WT SERVIPHONE"
+        class="logo-sidebar">
+
+    <div class="logo-text">
+
+        <h2>SYSMOVILWT</h2>
+
+        <span>Sistema de Gestión Empresarial</span>
+
+    </div>
+
+    </div>
+
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <ul>
+
+                <li>
+                <a href="dashboard.html">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+                </a>
+                </li>
+
+                <li><a href="inventario.html"><i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></a></li>
+
+                <li class="active"><a href="ventas.html"><i class="fa-solid fa-cart-shopping"></i><span>Ventas</span></a></li>
+                
+                <li>
+                    <a href="compras.html">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Compras</span>
+                    </a>
+                </li>
+                <li><a href="clientes.html"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
+
+                <li><a href="proveedores.html"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a></li>
+
+                <li><a href="usuarios.html"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></a></li>
+
+                <li><a href="serviciotecnico.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Servicio Técnico</span></a></li>
+
+                <li><a href="reportes.html"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
+                <li>
+                  <a href="configuracion.html">
+                  <i class="fa-solid fa-gear"></i>
+                  <span>Configuración</span>
+                   </a>
+                  </li>
+            </ul>
+
+        </nav>
+
+        <button
+            class="logout-button"
+            id="btnLogout">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Cerrar sesión</span>
+
+        </button>
+
+    </aside>
+
+
+    <!--=========================================
+    =              TOPBAR
+    ==========================================-->
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button class="menu-toggle">
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+            <div class="topbar-title">
+
+                <h1>
+
+                    Punto de Venta
+
+                </h1>
+
+                <span>
+
+                    Gestión de ventas de WT SERVIPHONE
+
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="topbar-right">
+
+            <div class="topbar-date">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                <span id="currentDate"></span>
+
+            </div>
+
+            <button class="notification-button">
+
+                <i class="fa-regular fa-bell"></i>
+
+                <span class="notification-dot"></span>
+
+            </button>
+
+            <div class="topbar-profile">
+
+                <div class="profile-avatar">
+
+                    WT
+
+                </div>
+
+                <div class="profile-info">
+
+                    <strong id="topbarUser">
+
+                        Usuario
+
+                    </strong>
+
+                    <span id="topbarRole">
+
+                        Rol
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!--=========================================
+    =              CONTENIDO PRINCIPAL
+    ==========================================-->
+
+    <main class="dashboard-main">
+
+        <section class="sales-container">
+
+            <!--=========================================
+            =              CABECERA POS
+            ==========================================-->
+
+            <section class="sales-header">
+
+                <div class="sales-title">
+
+                    <h2>
+
+                        <i class="fa-solid fa-cash-register"></i>
+
+                        Punto de Venta (POS)
+
+                    </h2>
+
+                    <p>
+
+                        Registro y gestión de ventas de WT SERVIPHONE.
+
+                    </p>
+
+                </div>
+
+                <div class="sales-info">
+
+                    <div class="sales-info-card">
+
+                        <span>
+
+                            Factura
+
+                        </span>
+
+                        <strong id="invoiceNumber">
+
+                            V-000001
+
+                        </strong>
+
+                    </div>
+
+                    <div class="sales-info-card">
+
+                        <span>
+
+                            Fecha
+
+                        </span>
+
+                        <strong id="saleDate">
+
+                        </strong>
+
+                    </div>
+
+                    <div class="sales-info-card">
+
+                        <span>
+
+                            Vendedor
+
+                        </span>
+
+                        <strong id="saleUser">
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!--=========================================
+            =              BUSCADOR
+            ==========================================-->
+
+            <section class="sales-toolbar">
+
+                <div class="sales-search">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        id="searchSaleProduct"
+                        placeholder="Buscar producto por código, nombre o marca...">
+
+                </div>
+
+            </section>
+
+            <!--=========================================
+            =              CONTENIDO POS
+            ==========================================-->
+
+            <section class="sales-content">
+
+            <!--=========================================
+            =              CATÁLOGO DE PRODUCTOS
+            ==========================================-->
+
+            <div class="sales-products">
+
+                <div class="sales-panel-header">
+
+                    <h3>
+
+                        <i class="fa-solid fa-mobile-screen-button"></i>
+
+                        Productos disponibles
+
+                    </h3>
+
+                </div>
+
+                <div
+
+                    class="sales-products-list"
+
+                    id="productsList">
+
+                    <!--
+                        Los productos serán cargados
+                        dinámicamente desde ventas.js
+                    -->
+
+                </div>
+
+            </div>
+
+            <!--=========================================
+            =              CARRITO
+            ==========================================-->
+
+            <div class="sales-cart">
+
+                <div class="sales-panel-header">
+
+                    <h3>
+
+                        <i class="fa-solid fa-cart-shopping"></i>
+
+                        Carrito de Venta
+
+                    </h3>
+
+                </div>
+
+                <div
+
+                    class="sales-cart-body"
+
+                    id="cartItems">
+
+                    <div class="empty-cart">
+
+                        <i class="fa-solid fa-cart-shopping"></i>
+
+                        <h4>
+
+                            El carrito está vacío
+
+                        </h4>
+
+                        <p>
+
+                            Agrega productos para comenzar la venta.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <!--=========================================
+                =              RESUMEN
+                ==========================================-->
+
+                <div class="sales-summary">
+
+                    <div class="summary-row">
+
+                        <span>
+
+                            Subtotal
+
+                        </span>
+
+                        <strong id="subtotalSale">
+
+                            $0
+
+                        </strong>
+
+                    </div>
+
+                    <div class="summary-row">
+
+                        <span>
+
+                            IVA (19%)
+
+                        </span>
+
+                        <strong id="ivaSale">
+
+                            $0
+
+                        </strong>
+
+                    </div>
+
+                    <div class="summary-row">
+
+                        <span>
+
+                            Descuento
+
+                        </span>
+
+                        <strong id="discountSale">
+
+                            $0
+
+                        </strong>
+
+                    </div>
+
+                    <div class="summary-total">
+
+                        <span>
+
+                            TOTAL
+
+                        </span>
+
+                        <strong id="totalSale">
+
+                            $0
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+                <!--=========================================
+                =              MÉTODO DE PAGO
+                ==========================================-->
+
+                <div class="payment-method">
+
+                    <h4>
+
+                        Método de pago
+
+                    </h4>
+
+                    <label class="payment-option">
+
+                        <input
+
+                            type="radio"
+
+                            name="paymentMethod"
+
+                            value="Efectivo"
+
+                            checked>
+
+                        <i class="fa-solid fa-money-bill-wave"></i>
+
+                        Efectivo
+
+                    </label>
+
+                    <label class="payment-option">
+
+                        <input
+
+                            type="radio"
+
+                            name="paymentMethod"
+
+                            value="Tarjeta">
+
+                        <i class="fa-solid fa-credit-card"></i>
+
+                        Tarjeta
+
+                    </label>
+
+                    <label class="payment-option">
+
+                        <input
+
+                            type="radio"
+
+                            name="paymentMethod"
+
+                            value="Transferencia">
+
+                        <i class="fa-solid fa-building-columns"></i>
+
+                        Transferencia
+
+                    </label>
+
+                </div>
+
+                <!--=========================================
+                =              ACCIONES
+                ==========================================-->
+
+                <div class="sales-actions">
+
+                    <button
+
+                        id="btnCancelSale"
+
+                        class="btn-cancel-sale">
+
+                        <i class="fa-solid fa-trash"></i>
+
+                        Cancelar Venta
+
+                    </button>
+
+                    <button
+
+                        id="btnFinishSale"
+
+                        class="btn-finish-sale">
+
+                        <i class="fa-solid fa-check"></i>
+
+                        Finalizar Venta
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+<!--=========================================
+=              MODAL VENTA EXITOSA
+==========================================-->
+
+<div
+
+    id="saleSuccessModal"
+
+    class="sale-success-modal">
+
+    <div class="sale-success-content">
+
+        <div class="sale-success-icon">
+
+            <i class="fa-solid fa-circle-check"></i>
+
+        </div>
+
+        <h3>
+
+            Venta realizada correctamente
+
+        </h3>
+
+        <p>
+
+            La venta fue registrada exitosamente en el sistema.
+
+        </p>
+
+        <div class="sale-success-data">
+
+            <div>
+
+                <span>
+
+                    Factura
+
+                </span>
+
+                <strong id="modalInvoice">
+
+                    V-000001
+
+                </strong>
+
+            </div>
+
+            <div>
+
+                <span>
+
+                    Total
+
+                </span>
+
+                <strong id="modalTotal">
+
+                    $0
+
+                </strong>
+
+            </div>
+
+        </div>
+
+        <div class="sale-success-buttons">
+
+            <button
+
+                id="btnPrintInvoice"
+
+                class="btn-print">
+
+                <i class="fa-solid fa-print"></i>
+
+                Imprimir Factura
+
+            </button>
+
+            <button
+
+                id="btnNewSale"
+
+                class="btn-new-sale">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Nueva Venta
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=========================================
+=              JAVASCRIPT
+==========================================-->
+
+<script src="../assets/js/utils.js"></script>
+
+<!-- MODELOS -->
+
+<script src="../assets/js/models/Producto.js"></script>
+
+<script src="../assets/js/models/DetalleVenta.js"></script>
+
+<script src="../assets/js/models/Venta.js"></script>
+
+<!-- CONTROLADORES -->
+
+<script src="../assets/js/controllers/inventarioController.js"></script>
+
+<script src="../assets/js/controllers/ventasController.js"></script>
+
+<!-- MÓDULO -->
+
+<script src="../assets/js/ventas.js"></script>
+
+</body>
+
+</html>

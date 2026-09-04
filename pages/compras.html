@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title> Compras | SYSMOVILWT</title>
+
+    <!-- Google Fonts -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="../assets/css/styles.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/components.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/dashboard.css">
+
+    <link rel="stylesheet"
+      href="../assets/css/compras.css">
+
+</head>
+
+<body>
+
+    <!--=========================================
+    =              SIDEBAR
+    ==========================================-->
+
+    <aside class="sidebar">
+
+    <div class="sidebar-logo">
+
+    <img
+        src="../assets/img/logo/logowt.png"
+        alt="Logo WT SERVIPHONE"
+        class="logo-sidebar">
+
+    <div class="logo-text">
+
+        <h2>SYSMOVILWT</h2>
+
+        <span>Sistema de Gestión Empresarial</span>
+
+    </div>
+
+    </div>
+
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <ul>
+
+                <li>
+                <a href="dashboard.html">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+                </a>
+                </li>
+
+                <li><a href="inventario.html"><i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></a></li>
+
+                <li><a href="ventas.html"><i class="fa-solid fa-cart-shopping"></i><span>Ventas</span></a></li>
+                
+                <li class="active">
+                    <a href="compras.html">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Compras</span>
+                    </a>
+                </li>
+                <li><a href="clientes.html"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
+
+                <li><a href="proveedores.html"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a></li>
+
+                <li><a href="usuarios.html"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></a></li>
+
+                <li><a href="serviciotecnico.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Servicio Técnico</span></a></li>
+
+                <li><a href="reportes.html"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
+                <li>
+                  <a href="configuracion.html">
+                  <i class="fa-solid fa-gear"></i>
+                  <span>Configuración</span>
+                   </a>
+                  </li>
+            </ul>
+
+        </nav>
+
+        <button
+            class="logout-button"
+            id="btnLogout">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Cerrar sesión</span>
+
+        </button>
+
+    </aside>
+
+    <!--=========================================
+    =              TOPBAR
+    ==========================================-->
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button class="menu-toggle">
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+            <div class="topbar-title">
+
+                <h1>Compras</h1>
+
+                <span>Administra las compras de WT SERVIPHONE</span>
+
+            </div>
+
+        </div>
+
+        <div class="topbar-right">
+
+            <div class="topbar-date">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                <span id="currentDate"></span>
+
+            </div>
+
+            <button class="notification-button">
+
+                <i class="fa-regular fa-bell"></i>
+
+                <span class="notification-dot"></span>
+
+            </button>
+
+            <div class="topbar-profile">
+
+                <div class="profile-avatar">
+
+                    WT
+
+                </div>
+
+                <div class="profile-info">
+
+                    <strong>Leonardo</strong>
+
+                    <span>Administrador</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+<!--=========================================
+    =              CONTENIDO
+    ==========================================-->
+
+   <main class="dashboard-main">
+
+   <section class="purchase-container">
+
+    <!--=========================================
+    =              ENCABEZADO
+    ==========================================-->
+
+    <div class="purchase-header">
+
+        <div>
+
+            <h2>
+
+                <i class="fa-solid fa-bag-shopping"></i>
+
+                Gestión de Compras
+
+            </h2>
+
+            <p>
+
+                Administra las compras realizadas a los proveedores de WT SERVIPHONE.
+
+            </p>
+
+        </div>
+
+        <button
+            id="btnNuevaCompra"
+            class="btn-new">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Nueva Compra
+
+        </button>
+
+    </div>
+
+    <!--=========================================
+    =              BARRA DE HERRAMIENTAS
+    ==========================================-->
+
+    <div class="purchase-toolbar">
+
+        <div class="purchase-search">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="searchCompra"
+                placeholder="Buscar compra...">
+
+        </div>
+
+        <select id="filterProveedor">
+
+            <option value="">
+
+                Todos los proveedores
+
+            </option>
+
+        </select>
+
+        <select id="filterEstado">
+
+            <option value="">
+
+                Todos los estados
+
+            </option>
+
+            <option value="Recibida">
+
+                Recibida
+
+            </option>
+
+            <option value="Pendiente">
+
+                Pendiente
+
+            </option>
+
+            <option value="Cancelada">
+
+                Cancelada
+
+            </option>
+
+        </select>
+
+        <button
+            id="btnResetFiltros"
+            class="btn-reset">
+
+            <i class="fa-solid fa-rotate-right"></i>
+
+        </button>
+
+    </div>
+
+    <!--=========================================
+    =              TABLA
+    ==========================================-->
+
+    <div class="purchase-table-card">
+
+        <table class="purchase-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Código</th>
+
+                    <th>Fecha</th>
+
+                    <th>Proveedor</th>
+
+                    <th>Productos</th>
+
+                    <th>Total</th>
+
+                    <th>Estado</th>
+
+                    <th>Acciones</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="purchaseTableBody">
+
+                <tr class="purchase-empty">
+
+                    <td colspan="7">
+
+                        <div class="empty-state">
+
+                            <i class="fa-solid fa-bag-shopping"></i>
+
+                            <h3>
+
+                                No hay compras registradas
+
+                            </h3>
+
+                            <p>
+
+                                Haz clic en
+
+                                <strong>Nueva Compra</strong>
+
+                                para registrar la primera compra.
+
+                            </p>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+</main>
+
+<!--=========================================
+=              MODAL NUEVA COMPRA
+==========================================-->
+
+<div
+    class="purchase-modal"
+    id="purchaseModal">
+
+    <div class="purchase-modal-content">
+
+        <div class="purchase-modal-header">
+
+            <h2>
+
+                <i class="fa-solid fa-bag-shopping"></i>
+
+                Nueva Compra
+
+            </h2>
+
+            <button
+                id="btnClosePurchaseModal"
+                class="purchase-modal-close">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <form
+            id="purchaseForm"
+            class="purchase-form">
+
+            <!--=========================================
+            =              INFORMACIÓN GENERAL
+            ==========================================-->
+
+            <div class="purchase-section">
+
+                <h3>Información de la Compra</h3>
+
+                <div class="purchase-grid">
+
+                    <div class="form-group">
+
+                        <label>Fecha *</label>
+
+                        <input
+                            type="date"
+                            id="fechaCompra"
+                            required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Proveedor *</label>
+
+                        <select
+                            id="proveedorCompra"
+                            required>
+
+                            <option value="">
+
+                                Seleccione...
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Número Factura</label>
+
+                        <input
+                            type="text"
+                            id="numeroFactura">
+                    </div>
+                </div>
+            </div>
+    <!--=========================================
+=              DETALLE DE LA COMPRA
+==========================================-->
+
+<div class="purchase-section">
+
+    <h3>Detalle de Productos</h3>
+
+    <div class="purchase-products">
+
+        <table class="purchase-detail-table">
+
+            <thead>
+
+                <tr>
+
+                    <th style="width:35%;">Producto</th>
+
+                    <th style="width:15%;">Cantidad</th>
+
+                    <th style="width:20%;">Costo Unitario</th>
+
+                    <th style="width:20%;">Subtotal</th>
+
+                    <th style="width:10%;">Acción</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="detalleCompraBody">
+
+            </tbody>
+
+        </table>
+
+        <button
+            type="button"
+            id="btnAgregarProductoCompra"
+            class="btn-new">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Agregar Producto
+
+        </button>
+
+    </div>
+
+</div>
+
+<!--=========================================
+=              OBSERVACIONES
+==========================================-->
+
+<div class="purchase-section">
+
+    <h3>Observaciones</h3>
+
+    <div class="form-group">
+
+        <textarea
+            id="observacionesCompra"
+            rows="4"
+            placeholder="Observaciones de la compra..."></textarea>
+
+    </div>
+
+</div>
+<!--=========================================
+=              TOTALES
+==========================================-->
+
+<div class="purchase-total">
+
+    <div>
+
+        <strong>Total Compra:</strong>
+
+    </div>
+
+    <div>
+
+        <span id="totalCompra">
+
+            $0
+
+        </span>
+
+    </div>
+
+</div>
+
+<div class="purchase-actions">
+
+    <button
+        type="button"
+        id="btnCancelarCompra"
+        class="btn-cancel">
+
+        Cancelar
+
+    </button>
+
+    <button
+        type="submit"
+        class="btn-save">
+
+        Guardar Compra
+
+    </button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+    
+
+    <!--=========================================
+    =              JAVASCRIPT
+    ==========================================-->
+<script src="../assets/js/utils.js"></script>
+
+<script src="../assets/js/models/Producto.js"></script>
+
+<script src="../assets/js/models/Proveedor.js"></script>
+
+<script src="../assets/js/models/Compra.js"></script>
+
+<script src="../assets/js/controllers/inventarioController.js"></script>
+
+<script src="../assets/js/controllers/proveedoresController.js"></script>
+
+<script src="../assets/js/controllers/comprasController.js"></script>
+
+<script src="../assets/js/compras.js"></script>
+    
+</body>
+
+</html>

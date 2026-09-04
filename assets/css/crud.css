@@ -1,0 +1,1348 @@
+/**
+==================================================
+                SYSMOVILWT
+                CRUD GLOBAL
+                Versión 2.0
+==================================================
+
+Este archivo contiene toda la arquitectura visual
+compartida por los módulos CRUD del sistema.
+
+Módulos compatibles:
+
+• Clientes
+• Proveedores
+• Usuarios
+• Inventario
+• Servicio Técnico
+• Ventas
+• Reportes
+
+==================================================
+*/
+
+/*==================================================
+=            CONTENEDOR GENERAL
+==================================================*/
+
+.crud-container{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:28px;
+
+    width:100%;
+
+}
+
+/*==================================================
+=            CABECERA
+==================================================*/
+
+.crud-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+}
+
+.crud-title{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.crud-title h2{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin:0;
+
+    font-size:30px;
+
+    font-weight:700;
+
+    color:#1F2937;
+
+}
+
+.crud-title h2 i{
+
+    color:var(--primary);
+
+}
+
+.crud-title p{
+
+    margin-top:8px;
+
+    color:#64748B;
+
+    font-size:15px;
+
+    line-height:1.6;
+
+}
+
+/*==================================================
+=            BOTÓN NUEVO
+==================================================*/
+
+.btn-new{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    padding:14px 24px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:var(--primary);
+
+    color:#FFFFFF;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:all .30s ease;
+
+}
+
+.btn-new i{
+
+    font-size:15px;
+
+}
+
+.btn-new:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 15px 30px rgba(0,0,0,.15);
+
+}
+
+/*==================================================
+=            TARJETAS KPI
+==================================================*/
+
+.crud-stats{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(240px,1fr));
+
+    gap:20px;
+
+}
+
+.crud-card{
+
+    background:#FFFFFF;
+
+    border-radius:22px;
+
+    padding:24px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    border:1px solid #EEF2F7;
+
+    box-shadow:
+        0 8px 28px rgba(15,23,42,.06);
+
+    transition:.30s;
+
+}
+
+.crud-card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 18px 36px rgba(15,23,42,.12);
+
+}
+
+.crud-card-icon{
+
+    width:68px;
+
+    height:68px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#FFFFFF;
+
+    font-size:28px;
+
+    flex-shrink:0;
+
+}
+
+.bg-red{
+
+    background:#EF4444;
+
+}
+
+.bg-green{
+
+    background:#22C55E;
+
+}
+
+.bg-blue{
+
+    background:#3B82F6;
+
+}
+
+.bg-orange{
+
+    background:#F59E0B;
+
+}
+
+.crud-card-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    gap:5px;
+
+    flex:1;
+
+}
+
+.crud-card-info span{
+
+    color:#64748B;
+
+    font-size:14px;
+
+}
+
+.crud-card-info strong{
+
+    color:#0F172A;
+
+    font-size:30px;
+
+    font-weight:700;
+
+    line-height:1;
+
+}
+
+/*==================================================
+=            BARRA DE HERRAMIENTAS
+==================================================*/
+
+.crud-toolbar{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    flex-wrap:wrap;
+
+}
+
+.crud-search{
+
+    position:relative;
+
+    flex:1;
+
+    min-width:320px;
+
+}
+
+.crud-search i{
+
+    position:absolute;
+
+    top:50%;
+
+    left:18px;
+
+    transform:translateY(-50%);
+
+    color:#94A3B8;
+
+    font-size:17px;
+
+    pointer-events:none;
+
+}
+
+.crud-search input{
+
+    width:100%;
+
+    height:55px;
+
+    padding:0 20px 0 52px;
+
+    border:1px solid #E2E8F0;
+
+    border-radius:16px;
+
+    background:#FFFFFF;
+
+    font-size:15px;
+
+    transition:.30s;
+
+}
+
+.crud-search input:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 4px rgba(220,38,38,.10);
+
+}
+
+.crud-toolbar select{
+
+    min-width:190px;
+
+    height:55px;
+
+    padding:0 18px;
+
+    border:1px solid #E2E8F0;
+
+    border-radius:16px;
+
+    background:#FFFFFF;
+
+    color:#334155;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+}
+
+.crud-toolbar select:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 4px rgba(220,38,38,.08);
+
+}
+
+.btn-reset{
+
+    width:55px;
+
+    height:55px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:#F8FAFC;
+
+    color:#475569;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+    font-size:18px;
+
+}
+
+.btn-reset:hover{
+
+    background:var(--primary);
+
+    color:#FFFFFF;
+
+    transform:rotate(180deg);
+
+}
+
+/*==================================================
+=            TABLA
+==================================================*/
+
+.crud-table-card{
+
+    background:#FFFFFF;
+
+    border-radius:22px;
+
+    border:1px solid #EEF2F7;
+
+    overflow:hidden;
+
+    box-shadow:0 8px 30px rgba(15,23,42,.06);
+
+}
+
+.crud-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+.crud-table thead{
+
+    background:#F8FAFC;
+
+}
+
+.crud-table thead th{
+
+    padding:18px 22px;
+
+    text-align:left;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    color:#334155;
+
+    border-bottom:1px solid #E2E8F0;
+
+    white-space:nowrap;
+
+}
+
+.crud-table tbody td{
+
+    padding:18px 22px;
+
+    border-bottom:1px solid #EDF2F7;
+
+    color:#475569;
+
+    vertical-align:middle;
+
+}
+
+.crud-table tbody tr{
+
+    transition:.25s;
+
+}
+
+.crud-table tbody tr:hover{
+
+    background:#FAFBFC;
+
+}
+
+/*==================================================
+=            RESPONSIVE TOOLBAR
+==================================================*/
+
+@media(max-width:992px){
+
+    .crud-toolbar{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .crud-search{
+
+        min-width:100%;
+
+    }
+
+    .crud-toolbar select{
+
+        width:100%;
+
+    }
+
+    .btn-reset{
+
+        width:100%;
+
+    }
+
+}
+
+/*==================================================
+=            INFORMACIÓN PRINCIPAL DE LA TABLA
+==================================================*/
+
+.table-client{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+}
+
+.table-avatar{
+
+    width:52px;
+
+    height:52px;
+
+    border-radius:50%;
+
+    background:#FEECEC;
+
+    color:var(--primary);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    flex-shrink:0;
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+.table-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    min-width:0;
+
+}
+
+.table-info strong{
+
+    color:#0F172A;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    line-height:1.4;
+
+}
+
+.table-info small{
+
+    margin-top:4px;
+
+    color:#64748B;
+
+    font-size:13px;
+
+}
+
+/*==================================================
+=            BADGES
+==================================================*/
+
+.badge{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:7px 16px;
+
+    border-radius:999px;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    line-height:1;
+
+    white-space:nowrap;
+
+}
+
+.badge-success{
+
+    background:#DCFCE7;
+
+    color:#15803D;
+
+}
+
+.badge-danger{
+
+    background:#FEE2E2;
+
+    color:#B91C1C;
+
+}
+
+.badge-warning{
+
+    background:#FEF3C7;
+
+    color:#B45309;
+
+}
+
+.badge-info{
+
+    background:#DBEAFE;
+
+    color:#1D4ED8;
+
+}
+
+/*==================================================
+=            BOTONES DE ACCIÓN
+==================================================*/
+
+.table-actions{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.table-action{
+
+    width:40px;
+
+    height:40px;
+
+    border:none;
+
+    border-radius:12px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:#FFFFFF;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.table-action:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 10px 20px rgba(15,23,42,.15);
+
+}
+
+.table-action.view{
+
+    background:#2563EB;
+
+}
+
+.table-action.edit{
+
+    background:#F59E0B;
+
+}
+
+.table-action.power{
+
+    background:#DC2626;
+
+}
+
+/*==================================================
+=            EMPTY STATE
+==================================================*/
+
+.empty-state{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:70px 30px;
+
+    text-align:center;
+
+}
+
+.empty-state i{
+
+    font-size:64px;
+
+    color:#CBD5E1;
+
+    margin-bottom:20px;
+
+}
+
+.empty-state h3{
+
+    margin-bottom:10px;
+
+    color:#334155;
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+.empty-state p{
+
+    color:#64748B;
+
+    max-width:420px;
+
+    line-height:1.6;
+
+}
+
+.empty-state strong{
+
+    color:var(--primary);
+
+}
+
+/*==================================================
+=            MODAL
+==================================================*/
+
+.crud-modal{
+
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:rgba(15,23,42,.55);
+
+    backdrop-filter:blur(5px);
+
+    z-index:9999;
+
+    padding:25px;
+
+    overflow-y:auto;
+
+}
+
+.crud-modal.active{
+
+    display:flex;
+
+}
+
+.crud-modal-content{
+
+    width:100%;
+
+    max-width:1100px;
+
+    background:#FFFFFF;
+
+    border-radius:24px;
+
+    box-shadow:0 25px 60px rgba(0,0,0,.20);
+
+    max-height:calc(100vh - 50px);
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
+
+}
+
+/*==================================================
+=            ANIMACIONES
+==================================================*/
+
+@keyframes crudFade{
+
+    from{
+
+        opacity:0;
+
+    }
+
+    to{
+
+        opacity:1;
+
+    }
+
+}
+
+@keyframes crudZoom{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(-15px) scale(.98);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0) scale(1);
+
+    }
+
+}
+
+/*==================================================
+=            CABECERA DEL MODAL
+==================================================*/
+
+.crud-modal-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:24px 30px;
+
+    border-bottom:1px solid #E5E7EB;
+
+    background:#FFFFFF;
+
+    flex-shrink:0;
+
+}
+
+.crud-modal-header h2{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin:0;
+
+    font-size:24px;
+
+    font-weight:700;
+
+    color:#1F2937;
+
+}
+
+.crud-modal-header h2 i{
+
+    color:var(--primary);
+
+}
+
+.crud-close{
+
+    width:44px;
+
+    height:44px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#F8FAFC;
+
+    color:#475569;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+}
+
+.crud-close:hover{
+
+    background:#EF4444;
+
+    color:#FFFFFF;
+
+    transform:rotate(90deg);
+
+}
+
+/*==================================================
+=            CUERPO DEL MODAL
+==================================================*/
+
+.crud-modal-body{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:30px;
+
+}
+
+.crud-modal-body::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+.crud-modal-body::-webkit-scrollbar-track{
+
+    background:#F1F5F9;
+
+}
+
+.crud-modal-body::-webkit-scrollbar-thumb{
+
+    background:#CBD5E1;
+
+    border-radius:20px;
+
+}
+
+.crud-modal-body::-webkit-scrollbar-thumb:hover{
+
+    background:#94A3B8;
+
+}
+
+/*==================================================
+=            FORMULARIOS
+==================================================*/
+
+.crud-form{
+
+    padding:30px;
+
+    overflow-y:auto;
+
+    flex:1;
+
+}
+
+.crud-section{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:22px;
+
+    padding:24px;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:18px;
+
+    background:#FAFAFA;
+
+}
+
+.crud-section h3{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin:0;
+
+    padding-bottom:12px;
+
+    border-bottom:1px solid #E5E7EB;
+
+    color:var(--primary);
+
+    font-size:18px;
+
+    font-weight:700;
+
+}
+
+.crud-grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(auto-fit,minmax(250px,1fr));
+
+    gap:20px;
+
+}
+
+/*==================================================
+=            GRUPOS DE CAMPOS
+==================================================*/
+
+.crud-group{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.crud-group label{
+
+    font-size:14px;
+
+    font-weight:600;
+
+    color:#374151;
+
+}
+
+.crud-group input,
+
+.crud-group select,
+
+.crud-group textarea{
+
+    width:100%;
+
+    padding:14px 16px;
+
+    border:1px solid #D1D5DB;
+
+    border-radius:12px;
+
+    background:#FFFFFF;
+
+    font-size:14px;
+
+    font-family:inherit;
+
+    transition:.25s;
+
+}
+
+.crud-group textarea{
+
+    resize:vertical;
+
+    min-height:120px;
+
+}
+
+.crud-group input:focus,
+
+.crud-group select:focus,
+
+.crud-group textarea:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 4px rgba(220,38,38,.10);
+
+}
+
+/*==================================================
+=            CHECKBOX
+==================================================*/
+
+.form-checkbox{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.form-checkbox input[type="checkbox"]{
+
+    width:18px;
+
+    height:18px;
+
+    cursor:pointer;
+
+    accent-color:var(--primary);
+
+    flex-shrink:0;
+
+}
+
+.form-checkbox label{
+
+    margin:0;
+
+    font-size:14px;
+
+    font-weight:500;
+
+    color:#374151;
+
+    cursor:pointer;
+
+}
+
+/*==================================================
+=            BOTONES DEL FORMULARIO
+==================================================*/
+
+.crud-actions{
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:16px;
+
+    padding-top:10px;
+
+}
+
+.btn-save{
+
+    padding:14px 28px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:var(--primary);
+
+    color:#FFFFFF;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+}
+
+.btn-save:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 12px 24px rgba(220,38,38,.20);
+
+}
+
+.btn-cancel{
+
+    padding:14px 28px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#E5E7EB;
+
+    color:#374151;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+}
+
+.btn-cancel:hover{
+
+    background:#D1D5DB;
+
+    transform:translateY(-2px);
+
+}
+
+/*==================================================
+=            RESPONSIVE
+==================================================*/
+
+@media(max-width:992px){
+
+    .crud-toolbar{
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+    }
+
+    .crud-search{
+
+        min-width:100%;
+
+    }
+
+    .crud-toolbar select{
+
+        width:100%;
+
+    }
+
+    .btn-reset{
+
+        width:100%;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .crud-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+    .crud-title{
+
+        width:100%;
+
+    }
+
+    .btn-new{
+
+        width:100%;
+
+    }
+
+    .crud-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .crud-actions{
+
+        flex-direction:column;
+
+    }
+
+    .btn-save,
+
+    .btn-cancel{
+
+        width:100%;
+
+    }
+
+    .crud-modal{
+
+        padding:15px;
+
+    }
+
+    .crud-modal-content{
+
+        max-height:calc(100vh - 20px);
+
+        border-radius:18px;
+
+    }
+
+}

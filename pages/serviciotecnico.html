@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Servicio Técnico | SYSMOVILWT</title>
+
+    <!--=========================================
+    =              GOOGLE FONTS
+    ==========================================-->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!--=========================================
+    =              FONT AWESOME
+    ==========================================-->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!--=========================================
+    =              ESTILOS
+    ==========================================-->
+
+    <link rel="stylesheet"
+          href="../assets/css/styles.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/components.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/dashboard.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/crud.css">      
+
+    <link rel="stylesheet"
+          href="../assets/css/serviciotecnico.css">
+
+</head>
+
+<body>
+
+    <!--=========================================
+    =              SIDEBAR
+    ==========================================-->
+<aside class="sidebar">
+
+    <div class="sidebar-logo">
+
+    <img
+        src="../assets/img/logo/logowt.png"
+        alt="Logo WT SERVIPHONE"
+        class="logo-sidebar">
+
+    <div class="logo-text">
+
+        <h2>SYSMOVILWT</h2>
+
+        <span>Sistema de Gestión Empresarial</span>
+
+    </div>
+
+    </div>
+
+        <nav class="sidebar-menu">
+
+            <ul>
+
+                <li>
+                <a href="dashboard.html">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+                </a>
+                </li>
+
+                <li><a href="inventario.html"><i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></a></li>
+
+                <li><a href="ventas.html"><i class="fa-solid fa-cart-shopping"></i><span>Ventas</span></a></li>
+                
+            <li>
+            <a href="compras.html">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span>Compras</span>
+            </a>
+            </li>
+
+             <li class="active">
+             <a href="serviciotecnico.html">
+             <i class="fa-solid fa-screwdriver-wrench"></i>
+             <span>Servicio Técnico</span>
+             </a>
+             </li>
+                
+            <li><a href="clientes.html"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
+
+            <li><a href="proveedores.html"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a></li>
+
+            <li><a href="usuarios.html"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></a></li>
+
+            <li><a href="reportes.html"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
+                
+            <li>
+            <a href="configuracion.html">
+            <i class="fa-solid fa-gear"></i>
+            <span>Configuración</span>
+            </a>
+            </li>
+
+            </ul>
+
+        </nav>
+
+        <button
+            class="logout-button"
+            id="btnLogout">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Cerrar sesión</span>
+
+        </button>
+
+    </aside>
+    
+
+    <!--=========================================
+    =              TOPBAR
+    ==========================================-->
+
+    <header class="topbar">
+
+        <div class="topbar-left">
+
+            <button class="menu-toggle">
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+            <div class="topbar-title">
+
+                <h1>Servicio Técnico</h1>
+
+                <span>Gestión integral de órdenes de servicio</span>
+
+            </div>
+
+        </div>
+
+        <div class="topbar-right">
+
+            <div class="topbar-date">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                <span id="currentDate"></span>
+
+            </div>
+
+            <button class="notification-button">
+
+                <i class="fa-regular fa-bell"></i>
+
+                <span class="notification-dot"></span>
+
+            </button>
+
+            <div class="topbar-profile">
+
+                <div class="profile-avatar">
+
+                    WT
+
+                </div>
+
+                <div class="profile-info">
+
+                    <strong id="topbarUser">
+
+                        Leonardo
+
+                    </strong>
+
+                    <span id="topbarRole">
+
+                        Administrador
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <!--=========================================
+=              CONTENIDO PRINCIPAL
+==========================================-->
+
+<main class="dashboard-main">
+
+<section class="service-container">
+
+<!--=========================================
+=              ENCABEZADO
+==========================================-->
+
+<div class="service-header">
+
+    <div>
+
+        <h2>
+
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+
+            Gestión de Servicio Técnico
+
+        </h2>
+
+        <p>
+
+            Administra las órdenes de reparación, diagnósticos,
+            seguimiento y entrega de equipos de WT SERVIPHONE.
+
+        </p>
+
+    </div>
+
+    <button
+        id="btnNewService"
+        class="btn-new">
+
+        <i class="fa-solid fa-plus"></i>
+
+        Nueva Orden
+
+    </button>
+
+</div>
+
+<!--=========================================
+=              KPIs
+==========================================-->
+
+<div class="service-kpis">
+
+    <div class="kpi-card">
+
+        <div class="kpi-icon received">
+
+            <i class="fa-solid fa-mobile-screen-button"></i>
+
+        </div>
+
+        <div class="kpi-info">
+
+            <span>Equipos Recibidos</span>
+
+            <h3 id="kpiReceived">0</h3>
+
+        </div>
+
+    </div>
+
+    <div class="kpi-card">
+
+        <div class="kpi-icon diagnosis">
+
+            <i class="fa-solid fa-stethoscope"></i>
+
+        </div>
+
+        <div class="kpi-info">
+
+            <span>En Diagnóstico</span>
+
+            <h3 id="kpiDiagnosis">0</h3>
+
+        </div>
+
+    </div>
+
+    <div class="kpi-card">
+
+        <div class="kpi-icon repair">
+
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+
+        </div>
+
+        <div class="kpi-info">
+
+            <span>En Reparación</span>
+
+            <h3 id="kpiRepair">0</h3>
+
+        </div>
+
+    </div>
+
+    <div class="kpi-card">
+
+        <div class="kpi-icon ready">
+
+            <i class="fa-solid fa-box-open"></i>
+
+        </div>
+
+        <div class="kpi-info">
+
+            <span>Listos para Entrega</span>
+
+            <h3 id="kpiReady">0</h3>
+
+        </div>
+
+    </div>
+
+    <div class="kpi-card">
+
+        <div class="kpi-icon delivered">
+
+            <i class="fa-solid fa-circle-check"></i>
+
+        </div>
+
+        <div class="kpi-info">
+
+            <span>Entregados</span>
+
+            <h3 id="kpiDelivered">0</h3>
+
+        </div>
+
+    </div>
+
+    <div class="kpi-card">
+
+        <div class="kpi-icon income">
+
+            <i class="fa-solid fa-sack-dollar"></i>
+
+        </div>
+
+        <div class="kpi-info">
+
+            <span>Facturación</span>
+
+            <h3 id="kpiIncome">$0</h3>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=========================================
+=              BARRA DE HERRAMIENTAS
+==========================================-->
+
+<div class="service-toolbar">
+
+    <div class="service-search">
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+            type="text"
+            id="searchService"
+            placeholder="Buscar por Orden, Cliente, IMEI o Serial">
+
+    </div>
+
+    <select id="filterStatus">
+
+        <option value="">Estado</option>
+
+        <option>Recibido</option>
+
+        <option>En Diagnóstico</option>
+
+        <option>Pendiente Repuestos</option>
+
+        <option>En Reparación</option>
+
+        <option>Listo para Entrega</option>
+
+        <option>Entregado</option>
+
+    </select>
+
+    <select id="filterPriority">
+
+        <option value="">Prioridad</option>
+
+        <option>Baja</option>
+
+        <option>Media</option>
+
+        <option>Alta</option>
+
+        <option>Urgente</option>
+
+    </select>
+
+    <select id="filterTechnician">
+
+        <option value="">Técnico</option>
+
+    </select>
+
+    <button
+        id="btnResetFiltros"
+        class="btn-reset">
+
+        <i class="fa-solid fa-rotate-right"></i>
+
+    </button>
+
+    <button
+        id="btnExportarServicio"
+        class="btn-export">
+
+        <i class="fa-solid fa-file-export"></i>
+
+        Exportar
+
+    </button>
+
+</div>
+
+<!--=========================================
+=              RESUMEN
+==========================================-->
+
+<div class="service-summary">
+
+    <div>
+
+        <h3>
+
+            Órdenes de Servicio
+
+        </h3>
+
+        <p>
+
+            Consulta y administra todas las órdenes registradas.
+
+        </p>
+
+    </div>
+
+    <strong>
+
+        Total:
+        <span id="totalServices">0</span>
+
+    </strong>
+
+</div>
+
+<!--=========================================
+=              TABLA
+==========================================-->
+
+<div class="crud-table-card">
+
+    <div class="crud-table-responsive">
+
+        <table class="crud-table service-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Orden</th>
+
+                    <th>Fecha</th>
+
+                    <th>Cliente</th>
+
+                    <th>Equipo</th>
+
+                    <th>IMEI / Serial</th>
+
+                    <th>Técnico</th>
+
+                    <th>Estado</th>
+
+                    <th>Prioridad</th>
+
+                    <th>Total</th>
+
+                    <th>Acciones</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="serviceTableBody">
+
+                <tr class="service-empty">
+
+                    <td colspan="10">
+
+                        <div class="empty-state">
+
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+
+                            <h3>
+
+                                No existen órdenes de servicio
+
+                            </h3>
+
+                            <p>
+
+                                Presiona
+
+                                <strong>Nueva Orden</strong>
+
+                                para registrar el primer ingreso.
+
+                            </p>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!--=========================================
+=              FOOTER
+==========================================-->
+
+<div class="service-footer">
+
+    <div class="service-footer-left">
+
+        Mostrando
+
+        <strong id="showingRecords">
+
+            0
+
+        </strong>
+
+        registros
+
+    </div>
+
+    <div class="service-footer-right">
+
+        <button
+            id="btnPreviousPage"
+            class="btn-pagination">
+
+            <i class="fa-solid fa-chevron-left"></i>
+
+        </button>
+
+        <span id="currentPage">
+
+            Página 1
+
+        </span>
+
+        <button
+            id="btnNextPage"
+            class="btn-pagination">
+
+            <i class="fa-solid fa-chevron-right"></i>
+
+        </button>
+
+    </div>
+
+</div>
+<!--=========================================
+=              MODAL NUEVA ORDEN
+==========================================-->
+
+<div id="modalServicio" class="service-modal">
+
+    <div class="service-modal-content">
+
+        <div class="service-modal-header">
+
+            <div>
+                <h2>
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                    Nueva Orden de Servicio
+                </h2>
+
+                <p>
+                    Registra el ingreso de un equipo para reparación.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                id="btnCloseServiceModal"
+                class="service-modal-close">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <form id="formServicio">
+
+
+            <!-- CLIENTE -->
+
+            <div class="service-form-section">
+
+                <h3>
+                    <i class="fa-solid fa-user"></i>
+                    Información del cliente
+                </h3>
+
+                <div class="service-form-grid">
+
+                    <div class="form-group">
+
+                        <label for="idCliente">
+                            Cliente
+                        </label>
+
+                        <select id="idCliente" name="id_cliente" required>
+
+                            <option value="">
+                                Seleccionar cliente
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="idEmpleado">
+                            Técnico
+                        </label>
+
+                        <select id="idEmpleado" name="id_empleado" required>
+
+                            <option value="">
+                                Seleccionar técnico
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- EQUIPO -->
+
+            <div class="service-form-section">
+
+                <h3>
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                    Información del equipo
+                </h3>
+
+                <div class="service-form-grid">
+
+                    <div class="form-group">
+
+                        <label for="equipoServicio">
+                            Equipo
+                        </label>
+
+                        <input
+                            type="text"
+                            id="equipoServicio"
+                            name="equipo"
+                            placeholder="Ej: iPhone 15 Pro Max"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="imeiServicio">
+                            IMEI / Serial
+                        </label>
+
+                        <input
+                            type="text"
+                            id="imeiServicio"
+                            name="imei_serial"
+                            placeholder="IMEI o número de serie">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SERVICIO -->
+
+            <div class="service-form-section">
+
+                <h3>
+                    <i class="fa-solid fa-clipboard-list"></i>
+                    Información del servicio
+                </h3>
+
+                <div class="service-form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="descripcionServicio">
+                            Descripción del problema
+                        </label>
+
+                        <textarea
+                            id="descripcionServicio"
+                            name="descripcion"
+                            rows="4"
+                            placeholder="Describe la falla o trabajo solicitado..."
+                            required></textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="estadoServicio">
+                            Estado
+                        </label>
+
+                        <select
+                            id="estadoServicio"
+                            name="estado"
+                            required>
+
+                            <option value="Recibido">
+                                Recibido
+                            </option>
+
+                            <option value="En Diagnóstico">
+                                En Diagnóstico
+                            </option>
+
+                            <option value="Pendiente Repuestos">
+                                Pendiente Repuestos
+                            </option>
+
+                            <option value="En Reparación">
+                                En Reparación
+                            </option>
+
+                            <option value="Listo para Entrega">
+                                Listo para Entrega
+                            </option>
+
+                            <option value="Entregado">
+                                Entregado
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="prioridadServicio">
+                            Prioridad
+                        </label>
+
+                        <select
+                            id="prioridadServicio"
+                            name="prioridad">
+
+                            <option value="Baja">
+                                Baja
+                            </option>
+
+                            <option value="Media" selected>
+                                Media
+                            </option>
+
+                            <option value="Alta">
+                                Alta
+                            </option>
+
+                            <option value="Urgente">
+                                Urgente
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="costoServicio">
+                            Costo estimado
+                        </label>
+
+                        <input
+                            type="number"
+                            id="costoServicio"
+                            name="costo"
+                            min="0"
+                            step="0.01"
+                            value="0"
+                            placeholder="0">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FECHAS -->
+
+            <div class="service-form-section">
+
+                <h3>
+                    <i class="fa-solid fa-calendar-days"></i>
+                    Fechas
+                </h3>
+
+                <div class="service-form-grid">
+
+                    <div class="form-group">
+
+                        <label for="fechaIngresoServicio">
+                            Fecha de ingreso
+                        </label>
+
+                        <input
+                            type="date"
+                            id="fechaIngresoServicio"
+                            name="fecha_ingreso"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="fechaEntregaServicio">
+                            Fecha de entrega
+                        </label>
+
+                        <input
+                            type="date"
+                            id="fechaEntregaServicio"
+                            name="fecha_entrega">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACCIONES -->
+
+            <div class="service-modal-footer">
+
+                <button
+                    type="button"
+                    id="btnCancelarServicio"
+                    class="btn-modal-secondary">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    id="btnGuardarServicio"
+                    class="btn-modal-primary">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    Guardar Orden
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!--=========================================
+=              JAVASCRIPT
+==========================================-->
+
+<script src="../assets/js/models/ServicioTecnico.js"></script>
+
+<script src="../assets/js/controllers/ServicioTecnicoController.js"></script>
+
+<script src="../assets/js/serviciotecnico.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        Clientes | SYSMOVILWT
+
+    </title>
+
+    <!--=========================================
+    =              GOOGLE FONTS
+    ==========================================-->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!--=========================================
+    =              FONT AWESOME
+    ==========================================-->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!--=========================================
+    =              CSS
+    ==========================================-->
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/styles.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/components.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/dashboard.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/crud.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/clientes.css">
+
+</head>
+
+<body>
+
+<!--=========================================
+=              SIDEBAR
+==========================================-->
+<aside class="sidebar">
+
+    <div class="sidebar-logo">
+
+    <img
+        src="../assets/img/logo/logowt.png"
+        alt="Logo WT SERVIPHONE"
+        class="logo-sidebar">
+
+    <div class="logo-text">
+
+        <h2>SYSMOVILWT</h2>
+
+        <span>Sistema de Gestión Empresarial</span>
+
+    </div>
+
+    </div>
+
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <ul>
+
+                <li>
+                <a href="dashboard.html">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+                </a>
+                </li>
+
+                <li><a href="inventario.html"><i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></a></li>
+
+                <li><a href="ventas.html"><i class="fa-solid fa-cart-shopping"></i><span>Ventas</span></a></li>
+                
+                <li>
+                    <a href="compras.html">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Compras</span>
+                    </a>
+                </li>
+                <li class="active"><a href="clientes.html"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
+
+                <li><a href="proveedores.html"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a></li>
+
+                <li><a href="usuarios.html"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></a></li>
+
+                <li><a href="serviciotecnico.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Servicio Técnico</span></a></li>
+
+                <li><a href="reportes.html"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
+                <li>
+                  <a href="configuracion.html">
+                  <i class="fa-solid fa-gear"></i>
+                  <span>Configuración</span>
+                   </a>
+                  </li>
+            </ul>
+
+        </nav>
+
+        <button
+            class="logout-button"
+            id="btnLogout">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Cerrar sesión</span>
+
+        </button>
+
+    </aside>
+
+<!--=========================================
+=              TOPBAR
+==========================================-->
+
+<header class="topbar">
+
+    <div class="topbar-left">
+
+        <button class="menu-toggle">
+
+            <i class="fa-solid fa-bars"></i>
+
+        </button>
+
+        <div class="topbar-title">
+
+            <h1>
+
+                Clientes
+
+            </h1>
+
+            <span>
+
+                Gestión de clientes
+
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="topbar-right">
+
+        <div class="topbar-date">
+
+            <i class="fa-regular fa-calendar"></i>
+
+            <span id="currentDate"></span>
+
+        </div>
+
+        <button class="notification-button">
+
+            <i class="fa-regular fa-bell"></i>
+
+            <span class="notification-dot"></span>
+
+        </button>
+
+        <div class="topbar-profile">
+
+            <div class="profile-avatar">
+
+                WT
+
+            </div>
+
+            <div class="profile-info">
+
+                <strong id="topbarUser">
+
+                    Leonardo
+
+                </strong>
+
+                <span id="topbarRole">
+
+                    Administrador
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+<!--=========================================
+=              CONTENIDO
+==========================================-->
+
+<main class="dashboard-main">
+
+    <section class="crud-container">
+
+<!--=========================================
+=              CABECERA CRUD
+==========================================-->
+
+<section class="crud-header">
+
+    <div class="crud-title">
+
+        <h2>
+
+            <i class="fa-solid fa-users"></i>
+
+            Gestión de Clientes
+
+        </h2>
+
+        <p>
+
+            Administra la información, historial y estado de todos los clientes registrados en WT SERVIPHONE.
+
+        </p>
+
+    </div>
+
+    <button
+        id="btnNuevoCliente"
+        class="btn-new">
+
+        <i class="fa-solid fa-user-plus"></i>
+
+        Nuevo Cliente
+
+    </button>
+
+</section>
+
+<!--=========================================
+=              TARJETAS
+==========================================-->
+
+<section class="crud-stats">
+
+    <div class="crud-card">
+
+        <div class="crud-card-icon bg-red">
+
+            <i class="fa-solid fa-users"></i>
+
+        </div>
+
+        <div class="crud-card-info">
+
+            <span>
+
+                Clientes Registrados
+
+            </span>
+
+            <strong id="totalClientes">
+
+                0
+
+            </strong>
+
+        </div>
+
+    </div>
+
+    <div class="crud-card">
+
+        <div class="crud-card-icon bg-orange">
+
+            <i class="fa-solid fa-crown"></i>
+
+        </div>
+
+        <div class="crud-card-info">
+
+            <span>
+
+                Clientes VIP
+
+            </span>
+
+            <strong id="clientesVIP">
+
+                0
+
+            </strong>
+
+        </div>
+
+    </div>
+
+    <div class="crud-card">
+
+        <div class="crud-card-icon bg-green">
+
+            <i class="fa-solid fa-user-check"></i>
+
+        </div>
+
+        <div class="crud-card-info">
+
+            <span>
+
+                Clientes Activos
+
+            </span>
+
+            <strong id="clientesActivos">
+
+                0
+
+            </strong>
+
+        </div>
+
+    </div>
+
+    <div class="crud-card">
+
+        <div class="crud-card-icon bg-blue">
+
+            <i class="fa-solid fa-sack-dollar"></i>
+
+        </div>
+
+        <div class="crud-card-info">
+
+            <span>
+
+                Compras Registradas
+
+            </span>
+
+            <strong id="totalComprasClientes">
+
+                0
+
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!--=========================================
+=              BARRA DE HERRAMIENTAS
+==========================================-->
+
+<section class="crud-toolbar">
+
+    <div class="crud-search">
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+            type="text"
+            id="searchClient"
+            placeholder="Buscar por nombre, documento, teléfono o correo...">
+
+    </div>
+
+    <select id="filterEstado">
+
+        <option value="">
+
+            Todos los estados
+
+        </option>
+
+        <option value="Activo">
+
+            Activo
+
+        </option>
+
+        <option value="Inactivo">
+
+            Inactivo
+
+        </option>
+
+    </select>
+
+    <select id="filterTipoCliente">
+
+        <option value="">
+
+            Todos los clientes
+
+        </option>
+
+        <option value="Normal">
+
+            Normal
+
+        </option>
+
+        <option value="VIP">
+
+            VIP
+
+        </option>
+
+    </select>
+
+    <button
+        id="btnResetFilters"
+        class="btn-reset"
+        title="Limpiar filtros">
+
+        <i class="fa-solid fa-rotate-right"></i>
+
+    </button>
+
+</section>
+
+<!--=========================================
+=              TABLA DE CLIENTES
+==========================================-->
+
+<section class="crud-table-card">
+
+    <table class="crud-table">
+
+        <thead>
+
+            <tr>
+
+                <th>
+
+                    Cliente
+
+                </th>
+
+                <th>
+
+                    Documento
+
+                </th>
+
+                <th>
+
+                    Contacto
+
+                </th>
+
+                <th>
+
+                    Ciudad
+
+                </th>
+
+                <th>
+
+                    Compras
+
+                </th>
+
+                <th>
+
+                    Estado
+
+                </th>
+
+                <th>
+
+                    Acciones
+
+                </th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="clientsTableBody">
+
+            <tr class="clients-empty">
+
+                <td colspan="7">
+
+                    <div class="empty-state">
+
+                        <i class="fa-solid fa-user-group"></i>
+
+                        <h3>
+
+                            No hay clientes registrados
+
+                        </h3>
+
+                        <p>
+
+                            Haz clic en
+
+                            <strong>
+
+                                Nuevo Cliente
+
+                            </strong>
+
+                            para comenzar.
+
+                        </p>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</section>
+
+<!--=========================================
+=              MODAL CLIENTE
+==========================================-->
+
+<div
+    id="clientModal"
+    class="crud-modal">
+
+    <div class="crud-modal-content">
+
+        <div class="crud-modal-header">
+
+            <h2>
+
+                <i class="fa-solid fa-user-plus"></i>
+
+                Nuevo Cliente
+
+            </h2>
+
+            <button
+                id="btnCloseModal"
+                class="crud-close">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <form
+            id="clientForm"
+            class="crud-form">
+
+<!--=========================================
+=          INFORMACIÓN PERSONAL
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        Información Personal
+
+    </h3>
+
+    <div class="crud-grid">
+
+        <div class="crud-group">
+
+            <label for="tipoDocumento">
+
+                Tipo de Documento *
+
+            </label>
+
+            <select
+                id="tipoDocumento"
+                required>
+
+                <option value="CC">Cédula de Ciudadanía</option>
+
+                <option value="CE">Cédula de Extranjería</option>
+
+                <option value="TI">Tarjeta de Identidad</option>
+
+                <option value="NIT">NIT</option>
+
+                <option value="PAS">Pasaporte</option>
+
+            </select>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label for="documento">
+
+                Número de Documento *
+
+            </label>
+
+            <input
+                type="text"
+                id="documento"
+                required>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label for="nombres">
+
+                Nombres *
+
+            </label>
+
+            <input
+                type="text"
+                id="nombres"
+                required>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label for="apellidos">
+
+                Apellidos *
+
+            </label>
+
+            <input
+                type="text"
+                id="apellidos"
+                required>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label for="fechaNacimiento">
+
+                Fecha de Nacimiento
+
+            </label>
+
+            <input
+                type="date"
+                id="fechaNacimiento">
+
+        </div>
+
+        <div class="crud-group">
+
+            <label for="genero">
+
+                Género
+
+            </label>
+
+            <select id="genero">
+
+                <option value="">Seleccione...</option>
+
+                <option>Masculino</option>
+
+                <option>Femenino</option>
+
+                <option>Otro</option>
+
+                <option>Prefiero no indicar</option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=========================================
+=        INFORMACIÓN DE CONTACTO
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        Información de Contacto
+
+    </h3>
+
+    <div class="crud-grid">
+
+        <div class="crud-group">
+
+            <label for="telefono">
+
+                Teléfono *
+
+            </label>
+
+            <input
+                type="text"
+                id="telefono"
+                required>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label for="correo">
+
+                Correo Electrónico
+
+            </label>
+
+            <input
+                type="email"
+                id="correo">
+
+        </div>
+
+        <div class="crud-group">
+
+            <label for="ciudad">
+
+                Ciudad
+
+            </label>
+
+            <input
+                type="text"
+                id="ciudad">
+
+        </div>
+
+        <div class="crud-group">
+
+            <label for="direccion">
+
+                Dirección
+
+            </label>
+
+            <input
+                type="text"
+                id="direccion">
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=========================================
+=        INFORMACIÓN COMERCIAL
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        Información Comercial
+
+    </h3>
+
+    <div class="crud-grid">
+
+        <div class="crud-group">
+
+            <label for="tipoCliente">
+
+                Tipo de Cliente
+
+            </label>
+
+            <select id="tipoCliente">
+
+                <option value="Normal">
+
+                    Normal
+
+                </option>
+
+                <option value="VIP">
+
+                    VIP
+
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label for="estadoCliente">
+
+                Estado
+
+            </label>
+
+            <select id="estadoCliente">
+
+                <option value="Activo">
+
+                    Activo
+
+                </option>
+
+                <option value="Inactivo">
+
+                    Inactivo
+
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=========================================
+=        INFORMACIÓN ADICIONAL
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        Información Adicional
+
+    </h3>
+
+    <div class="form-checkbox">
+
+        <input
+            type="checkbox"
+            id="aceptaPromociones"
+            checked>
+
+        <label for="aceptaPromociones">
+
+            Acepta recibir promociones y novedades.
+
+        </label>
+
+    </div>
+
+    <div class="crud-group">
+
+        <label for="observaciones">
+
+            Observaciones
+
+        </label>
+
+        <textarea
+            id="observaciones"
+            rows="4"
+            placeholder="Ingrese observaciones adicionales del cliente..."></textarea>
+
+    </div>
+
+</div>
+
+<!--=========================================
+=        BOTONES
+==========================================-->
+
+<div class="crud-actions">
+
+    <button
+        type="button"
+        class="btn-cancel"
+        id="btnCancelarCliente">
+
+        Cancelar
+
+    </button>
+
+    <button
+        type="submit"
+        class="btn-save">
+
+        Guardar Cliente
+
+    </button>
+
+</div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</section>
+
+</main>
+
+<!--=========================================
+=              JAVASCRIPT
+==========================================-->
+
+<script src="../assets/js/utils.js"></script>
+
+<script src="../assets/js/models/Cliente.js"></script>
+
+<script src="../assets/js/controllers/clientesController.js"></script>
+
+<script src="../assets/js/clientes.js"></script>
+
+</body>
+
+</html>

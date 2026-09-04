@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Usuarios | SYSMOVILWT
+    </title>
+
+
+    <!--=========================================
+    =              GOOGLE FONTS
+    ==========================================-->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+
+    <!--=========================================
+    =              FONT AWESOME
+    ==========================================-->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+
+    <!--=========================================
+    =              CSS
+    ==========================================-->
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/styles.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/components.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/dashboard.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/crud.css">
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/usuarios.css">
+
+</head>
+
+
+<body>
+
+
+<!--=========================================
+=              SIDEBAR
+==========================================-->
+
+<aside class="sidebar">
+
+    <div class="sidebar-logo">
+
+        <img
+            src="../assets/img/logo/logowt.png"
+            alt="Logo WT SERVIPHONE"
+            class="logo-sidebar">
+
+        <div class="logo-text">
+
+            <h2>
+                SYSMOVILWT
+            </h2>
+
+            <span>
+                Sistema de Gestión Empresarial
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <nav class="sidebar-menu">
+
+        <ul>
+
+            <li>
+
+                <a href="dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="inventario.html">
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                    <span>
+                        Inventario
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="ventas.html">
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                    <span>
+                        Ventas
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="compras.html">
+
+                    <i class="fa-solid fa-bag-shopping"></i>
+
+                    <span>
+                        Compras
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="clientes.html">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    <span>
+                        Clientes
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="proveedores.html">
+
+                    <i class="fa-solid fa-truck"></i>
+
+                    <span>
+                        Proveedores
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li class="active">
+
+                <a href="usuarios.html">
+
+                    <i class="fa-solid fa-user-shield"></i>
+
+                    <span>
+                        Usuarios
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="serviciotecnico.html">
+
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+
+                    <span>
+                        Servicio Técnico
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="reportes.html">
+
+                    <i class="fa-solid fa-chart-column"></i>
+
+                    <span>
+                        Reportes
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="configuracion.html">
+
+                    <i class="fa-solid fa-gear"></i>
+
+                    <span>
+                        Configuración
+                    </span>
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <button
+        class="logout-button"
+        id="btnLogout">
+
+        <i class="fa-solid fa-right-from-bracket"></i>
+
+        <span>
+            Cerrar sesión
+        </span>
+
+    </button>
+
+</aside>
+
+
+
+<!--=========================================
+=              TOPBAR
+==========================================-->
+
+<header class="topbar">
+
+    <div class="topbar-left">
+
+        <button class="menu-toggle">
+
+            <i class="fa-solid fa-bars"></i>
+
+        </button>
+
+
+        <div class="topbar-title">
+
+            <h1>
+                Usuarios
+            </h1>
+
+            <span>
+                Gestión de usuarios del sistema
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="topbar-right">
+
+        <div class="topbar-date">
+
+            <i class="fa-regular fa-calendar"></i>
+
+            <span id="currentDate"></span>
+
+        </div>
+
+
+        <button class="notification-button">
+
+            <i class="fa-regular fa-bell"></i>
+
+            <span class="notification-dot"></span>
+
+        </button>
+
+
+        <div class="topbar-profile">
+
+            <div class="profile-avatar">
+                WT
+            </div>
+
+
+            <div class="profile-info">
+
+                <strong id="topbarUser">
+                    Leonardo
+                </strong>
+
+                <span id="topbarRole">
+                    Administrador
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!--=========================================
+=              CONTENIDO
+==========================================-->
+
+<main class="dashboard-main">
+
+    <section class="crud-container">
+
+
+<!--=========================================
+=              CABECERA CRUD
+==========================================-->
+
+<section class="crud-header">
+
+    <div class="crud-title">
+
+        <h2>
+
+            <i class="fa-solid fa-user-shield"></i>
+
+            Gestión de Usuarios
+
+        </h2>
+
+
+        <p>
+
+            Administra las cuentas de acceso,
+            empleados, roles y estados del sistema SYSMOVILWT.
+
+        </p>
+
+    </div>
+
+
+    <button
+        id="btnNuevoUsuario"
+        class="btn-new">
+
+        <i class="fa-solid fa-user-plus"></i>
+
+        Nuevo Usuario
+
+    </button>
+
+</section>
+
+
+
+<!--=========================================
+=              TARJETAS
+==========================================-->
+
+<section class="crud-stats">
+
+
+    <div class="crud-card">
+
+        <div class="crud-card-icon bg-red">
+
+            <i class="fa-solid fa-users"></i>
+
+        </div>
+
+
+        <div class="crud-card-info">
+
+            <span>
+                Usuarios Registrados
+            </span>
+
+            <strong id="totalUsuarios">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="crud-card">
+
+        <div class="crud-card-icon bg-green">
+
+            <i class="fa-solid fa-user-check"></i>
+
+        </div>
+
+
+        <div class="crud-card-info">
+
+            <span>
+                Usuarios Activos
+            </span>
+
+            <strong id="usuariosActivos">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="crud-card">
+
+        <div class="crud-card-icon bg-orange">
+
+            <i class="fa-solid fa-user-slash"></i>
+
+        </div>
+
+
+        <div class="crud-card-info">
+
+            <span>
+                Usuarios Inactivos
+            </span>
+
+            <strong id="usuariosInactivos">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="crud-card">
+
+        <div class="crud-card-icon bg-blue">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+        </div>
+
+
+        <div class="crud-card-info">
+
+            <span>
+                Roles Disponibles
+            </span>
+
+            <strong id="totalRoles">
+                0
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!--=========================================
+=              BARRA DE HERRAMIENTAS
+==========================================-->
+
+<section class="crud-toolbar">
+
+
+    <div class="crud-search">
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+            type="text"
+            id="searchUser"
+            placeholder="Buscar por usuario, empleado o rol...">
+
+    </div>
+
+
+    <select id="filterEstado">
+
+        <option value="">
+            Todos los estados
+        </option>
+
+        <option value="Activo">
+            Activo
+        </option>
+
+        <option value="Inactivo">
+            Inactivo
+        </option>
+
+    </select>
+
+
+    <select id="filterRol">
+
+        <option value="">
+            Todos los roles
+        </option>
+
+    </select>
+
+
+    <button
+        id="btnResetFilters"
+        class="btn-reset"
+        title="Limpiar filtros">
+
+        <i class="fa-solid fa-rotate-right"></i>
+
+    </button>
+
+</section>
+
+
+
+<!--=========================================
+=              TABLA DE USUARIOS
+==========================================-->
+
+<section class="crud-table-card">
+
+    <table class="crud-table">
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Usuario
+                </th>
+
+                <th>
+                    Empleado
+                </th>
+
+                <th>
+                    Rol
+                </th>
+
+                <th>
+                    Estado
+                </th>
+
+                <th>
+                    Último acceso
+                </th>
+
+                <th>
+                    Acciones
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="usersTableBody">
+
+            <tr class="users-empty">
+
+                <td colspan="6">
+
+                    <div class="empty-state">
+
+                        <i class="fa-solid fa-user-shield"></i>
+
+                        <h3>
+                            No hay usuarios registrados
+                        </h3>
+
+                        <p>
+
+                            Haz clic en
+
+                            <strong>
+                                Nuevo Usuario
+                            </strong>
+
+                            para comenzar.
+
+                        </p>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+
+<!--=========================================
+=              MODAL USUARIO
+==========================================-->
+
+<div
+    id="userModal"
+    class="crud-modal">
+
+
+    <div class="crud-modal-content">
+
+
+<!--=========================================
+=              CABECERA MODAL
+==========================================-->
+
+<div class="crud-modal-header">
+
+    <h2>
+
+        <i class="fa-solid fa-user-plus"></i>
+
+        Nuevo Usuario
+
+    </h2>
+
+
+    <button
+        id="btnCloseModal"
+        class="crud-close">
+
+        <i class="fa-solid fa-xmark"></i>
+
+    </button>
+
+</div>
+
+
+
+<form
+    id="userForm"
+    class="crud-form">
+
+
+
+<!--=========================================
+=              INFORMACIÓN PERSONAL
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        <i class="fa-solid fa-id-card"></i>
+
+        Información Personal
+
+    </h3>
+
+
+    <div class="crud-grid">
+
+
+        <!-- NOMBRES -->
+
+        <div class="crud-group">
+
+            <label for="nombresEmpleado">
+
+                Nombres *
+
+            </label>
+
+            <input
+                type="text"
+                id="nombresEmpleado"
+                maxlength="100"
+                placeholder="Ingrese los nombres"
+                required>
+
+        </div>
+
+
+        <!-- APELLIDOS -->
+
+        <div class="crud-group">
+
+            <label for="apellidosEmpleado">
+
+                Apellidos *
+
+            </label>
+
+            <input
+                type="text"
+                id="apellidosEmpleado"
+                maxlength="100"
+                placeholder="Ingrese los apellidos"
+                required>
+
+        </div>
+
+
+        <!-- CÉDULA -->
+
+        <div class="crud-group">
+
+            <label for="cedulaEmpleado">
+
+                Cédula *
+
+            </label>
+
+            <input
+                type="text"
+                id="cedulaEmpleado"
+                maxlength="20"
+                placeholder="Ingrese el número de cédula"
+                required>
+
+        </div>
+
+
+        <!-- TELÉFONO -->
+
+        <div class="crud-group">
+
+            <label for="telefonoEmpleado">
+
+                Teléfono
+
+            </label>
+
+            <input
+                type="tel"
+                id="telefonoEmpleado"
+                maxlength="20"
+                placeholder="Ingrese el teléfono">
+
+        </div>
+
+
+        <!-- CORREO -->
+
+        <div class="crud-group">
+
+            <label for="correoEmpleado">
+
+                Correo
+
+            </label>
+
+            <input
+                type="email"
+                id="correoEmpleado"
+                maxlength="100"
+                placeholder="correo@ejemplo.com">
+
+        </div>
+
+
+        <!-- DIRECCIÓN -->
+
+        <div class="crud-group">
+
+            <label for="direccionEmpleado">
+
+                Dirección
+
+            </label>
+
+            <input
+                type="text"
+                id="direccionEmpleado"
+                maxlength="150"
+                placeholder="Ingrese la dirección">
+
+        </div>
+
+
+        <!-- CARGO -->
+
+        <div class="crud-group">
+
+            <label for="cargoEmpleado">
+
+                Cargo *
+
+            </label>
+
+            <input
+                type="text"
+                id="cargoEmpleado"
+                maxlength="50"
+                placeholder="Ej: Vendedor, Técnico..."
+                required>
+
+        </div>
+
+
+        <!-- FECHA INGRESO -->
+
+        <div class="crud-group">
+
+            <label for="fechaIngresoEmpleado">
+
+                Fecha de Ingreso
+
+            </label>
+
+            <input
+                type="date"
+                id="fechaIngresoEmpleado">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!--=========================================
+=              INFORMACIÓN DE ACCESO
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        <i class="fa-solid fa-lock"></i>
+
+        Información de Acceso
+
+    </h3>
+
+
+    <div class="crud-grid">
+
+
+        <!-- USUARIO -->
+
+        <div class="crud-group">
+
+            <label for="nombreUsuario">
+
+                Nombre de Usuario *
+
+            </label>
+
+            <input
+                type="text"
+                id="nombreUsuario"
+                maxlength="50"
+                autocomplete="username"
+                placeholder="Ej: leonardo"
+                required>
+
+        </div>
+
+
+        <!-- ESTADO -->
+
+        <div class="crud-group">
+
+            <label for="estadoUsuario">
+
+                Estado *
+
+            </label>
+
+            <select
+                id="estadoUsuario"
+                required>
+
+                <option value="Activo">
+                    Activo
+                </option>
+
+                <option value="Inactivo">
+                    Inactivo
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- CONTRASEÑA -->
+
+        <div class="crud-group">
+
+            <label for="contrasena">
+
+                Contraseña *
+
+            </label>
+
+            <input
+                type="password"
+                id="contrasena"
+                minlength="6"
+                autocomplete="new-password"
+                placeholder="Ingrese una contraseña"
+                required>
+
+        </div>
+
+
+        <!-- CONFIRMAR CONTRASEÑA -->
+
+        <div class="crud-group">
+
+            <label for="confirmarContrasena">
+
+                Confirmar Contraseña *
+
+            </label>
+
+            <input
+                type="password"
+                id="confirmarContrasena"
+                minlength="6"
+                autocomplete="new-password"
+                placeholder="Repita la contraseña"
+                required>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!--=========================================
+=              ROL Y ACCESO
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        <i class="fa-solid fa-shield-halved"></i>
+
+        Rol y Acceso
+
+    </h3>
+
+
+    <div class="crud-grid">
+
+
+        <!-- ROL -->
+
+        <div class="crud-group">
+
+            <label for="rolUsuario">
+
+                Rol *
+
+            </label>
+
+            <select
+                id="rolUsuario"
+                required>
+
+                <option value="">
+
+                    Seleccione un rol...
+
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- DESCRIPCIÓN -->
+
+        <div class="crud-group">
+
+            <label for="descripcionRol">
+
+                Descripción del Rol
+
+            </label>
+
+            <input
+                type="text"
+                id="descripcionRol"
+                placeholder="Se mostrará automáticamente"
+                readonly>
+
+        </div>
+
+    </div>
+
+
+    <div class="user-access-info">
+
+        <div class="user-access-icon">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+        </div>
+
+
+        <div class="user-access-text">
+
+            <strong>
+                Acceso del usuario
+            </strong>
+
+            <span id="accessDescription">
+
+                Los permisos serán determinados
+                por el rol seleccionado.
+
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!--=========================================
+=              INFORMACIÓN ADICIONAL
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        <i class="fa-solid fa-note-sticky"></i>
+
+        Información Adicional
+
+    </h3>
+
+
+    <div class="form-checkbox">
+
+        <input
+            type="checkbox"
+            id="forzarCambioContrasena">
+
+        <label for="forzarCambioContrasena">
+
+            Solicitar cambio de contraseña
+            en el próximo inicio de sesión.
+
+        </label>
+
+    </div>
+
+
+    <div class="crud-group">
+
+        <label for="observacionesUsuario">
+
+            Observaciones
+
+        </label>
+
+        <textarea
+            id="observacionesUsuario"
+            rows="4"
+            placeholder="Ingrese observaciones adicionales del usuario..."></textarea>
+
+    </div>
+
+</div>
+
+
+
+<!--=========================================
+=              BOTONES
+==========================================-->
+
+<div class="crud-actions">
+
+    <button
+        type="button"
+        class="btn-cancel"
+        id="btnCancelarUsuario">
+
+        Cancelar
+
+    </button>
+
+
+    <button
+        type="submit"
+        class="btn-save">
+
+        Guardar Usuario
+
+    </button>
+
+</div>
+
+
+</form>
+
+</div>
+
+</div>
+
+
+    </section>
+
+</main>
+
+
+
+<!--=========================================
+=              JAVASCRIPT
+==========================================-->
+
+<script src="../assets/js/utils.js"></script>
+
+<script src="../assets/js/models/Usuario.js"></script>
+
+<script src="../assets/js/controllers/usuariosController.js"></script>
+
+<script src="../assets/js/usuarios.js"></script>
+
+
+</body>
+
+</html>
+

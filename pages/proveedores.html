@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Proveedores | SYSMOVILWT</title>
+
+    <!-- Google Fonts -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="../assets/css/styles.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/components.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/dashboard.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/crud.css">
+
+    <link rel="stylesheet"
+          href="../assets/css/proveedores.css">
+
+</head>
+
+<body>
+
+<!--=========================================
+=              SIDEBAR
+==========================================-->
+
+<aside class="sidebar">
+
+    <div class="sidebar-logo">
+
+    <img
+        src="../assets/img/logo/logowt.png"
+        alt="Logo WT SERVIPHONE"
+        class="logo-sidebar">
+
+    <div class="logo-text">
+
+        <h2>SYSMOVILWT</h2>
+
+        <span>Sistema de Gestión Empresarial</span>
+
+    </div>
+
+    </div>
+
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <ul>
+
+                <li>
+                <a href="dashboard.html">
+                <i class="fa-solid fa-house"></i>
+                <span>Dashboard</span>
+                </a>
+                </li>
+
+                <li><a href="inventario.html"><i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></a></li>
+
+                <li><a href="ventas.html"><i class="fa-solid fa-cart-shopping"></i><span>Ventas</span></a></li>
+                
+                <li>
+                    <a href="compras.html">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Compras</span>
+                    </a>
+                </li>
+                <li><a href="clientes.html"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
+
+                <li class="active"><a href="proveedores.html"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a></li>
+
+                <li><a href="usuarios.html"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></a></li>
+
+                <li><a href="serviciotecnico.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Servicio Técnico</span></a></li>
+
+                <li><a href="reportes.html"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
+                <li>
+                  <a href="configuracion.html">
+                  <i class="fa-solid fa-gear"></i>
+                  <span>Configuración</span>
+                   </a>
+                  </li>
+            </ul>
+
+        </nav>
+
+        <button
+            class="logout-button"
+            id="btnLogout">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Cerrar sesión</span>
+
+        </button>
+
+    </aside>
+
+<!--=========================================
+=              TOPBAR
+==========================================-->
+
+<header class="topbar">
+
+    <div class="topbar-left">
+
+        <button class="menu-toggle">
+
+            <i class="fa-solid fa-bars"></i>
+
+        </button>
+
+        <div class="topbar-title">
+
+            <h1>
+
+                Proveedores
+
+            </h1>
+
+            <span>
+
+                Gestión de proveedores
+
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="topbar-right">
+
+        <div class="topbar-date">
+
+            <i class="fa-regular fa-calendar"></i>
+
+            <span id="currentDate"></span>
+
+        </div>
+
+        <button class="notification-button">
+
+            <i class="fa-regular fa-bell"></i>
+
+            <span class="notification-dot"></span>
+
+        </button>
+
+        <div class="topbar-profile">
+
+            <div class="profile-avatar">
+
+                WT
+
+            </div>
+
+            <div class="profile-info">
+
+                <strong id="topbarUser">
+
+                    Leonardo
+
+                </strong>
+
+                <span id="topbarRole">
+
+                    Administrador
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+<!--=========================================
+=              CONTENIDO
+==========================================-->
+
+<main class="dashboard-main">
+
+<section class="crud-container">
+
+<!--=========================================
+=              CABECERA
+==========================================-->
+
+<section class="crud-header">
+
+    <div class="crud-title">
+
+        <h2>
+
+            <i class="fa-solid fa-truck"></i>
+
+            Gestión de Proveedores
+
+        </h2>
+
+        <p>
+
+            Administra toda la información de los proveedores de WT SERVIPHONE.
+
+        </p>
+
+    </div>
+
+    <button
+        id="btnNuevoProveedor"
+        class="btn-new">
+
+        <i class="fa-solid fa-plus"></i>
+
+        Nuevo Proveedor
+
+    </button>
+
+</section>
+
+<!--=========================================
+=              ESTADÍSTICAS
+==========================================-->
+
+<section class="crud-stats">
+
+    <article class="crud-card">
+
+        <div class="crud-card-icon bg-red">
+
+            <i class="fa-solid fa-truck"></i>
+
+        </div>
+
+        <div class="crud-card-info">
+
+            <span>Proveedores</span>
+
+            <strong id="totalProveedores">
+
+                0
+
+            </strong>
+
+        </div>
+
+    </article>
+
+    <article class="crud-card">
+
+        <div class="crud-card-icon bg-green">
+
+            <i class="fa-solid fa-circle-check"></i>
+
+        </div>
+
+        <div class="crud-card-info">
+
+            <span>Activos</span>
+
+            <strong id="proveedoresActivos">
+
+                0
+
+            </strong>
+
+        </div>
+
+    </article>
+
+    <article class="crud-card">
+
+        <div class="crud-card-icon bg-blue">
+
+            <i class="fa-solid fa-cart-flatbed"></i>
+
+        </div>
+
+        <div class="crud-card-info">
+
+            <span>Compras</span>
+
+            <strong id="comprasProveedor">
+
+                0
+
+            </strong>
+
+        </div>
+
+    </article>
+
+    <article class="crud-card">
+
+        <div class="crud-card-icon bg-orange">
+
+            <i class="fa-solid fa-sack-dollar"></i>
+
+        </div>
+
+        <div class="crud-card-info">
+
+            <span>Valor Comprado</span>
+
+            <strong id="valorComprado">
+
+                $0
+
+            </strong>
+
+        </div>
+
+    </article>
+
+</section>
+
+<!--=========================================
+=              BARRA DE HERRAMIENTAS
+==========================================-->
+
+<section class="crud-toolbar">
+
+    <div class="crud-search">
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+
+        <input
+            type="text"
+            id="searchProveedor"
+            placeholder="Buscar por empresa, NIT, contacto o teléfono...">
+
+    </div>
+
+    <select id="filterEstado">
+
+        <option value="">
+
+            Todos los estados
+
+        </option>
+
+        <option value="Activo">
+
+            Activo
+
+        </option>
+
+        <option value="Inactivo">
+
+            Inactivo
+
+        </option>
+
+    </select>
+
+    <select id="filterTipo">
+
+        <option value="">
+
+            Todos los proveedores
+
+        </option>
+
+        <option value="Nacional">
+
+            Nacional
+
+        </option>
+
+        <option value="Internacional">
+
+            Internacional
+
+        </option>
+
+    </select>
+
+    <button
+        id="btnResetFilters"
+        class="btn-reset">
+
+        <i class="fa-solid fa-rotate-right"></i>
+
+    </button>
+
+</section>
+
+<!--=========================================
+=              TABLA
+==========================================-->
+
+<section class="crud-table-card">
+
+    <table class="crud-table">
+
+        <thead>
+
+            <tr>
+
+                <th>Empresa</th>
+
+                <th>NIT</th>
+
+                <th>Contacto</th>
+
+                <th>Ciudad</th>
+
+                <th>Teléfono</th>
+
+                <th>Estado</th>
+
+                <th>Acciones</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="suppliersTableBody">
+
+            <tr>
+
+                <td colspan="7">
+
+                    <div class="empty-state">
+
+                        <i class="fa-solid fa-truck"></i>
+
+                        <h3>
+
+                            No hay proveedores registrados
+
+                        </h3>
+
+                        <p>
+
+                            Haz clic en <strong>Nuevo Proveedor</strong> para registrar el primero.
+
+                        </p>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</section>
+
+<!--=========================================
+=              MODAL PROVEEDOR
+==========================================-->
+
+<div
+    id="supplierModal"
+    class="crud-modal">
+
+    <div class="crud-modal-content">
+
+        <div class="crud-modal-header">
+
+            <h2>
+
+                <i class="fa-solid fa-truck"></i>
+
+                Nuevo Proveedor
+
+            </h2>
+
+            <button
+                id="btnCloseModal"
+                class="crud-close">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <form
+            id="supplierForm"
+            class="crud-form">
+
+<!--=========================================
+=          INFORMACIÓN GENERAL
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        Información General
+
+    </h3>
+
+    <div class="crud-grid">
+
+        <div class="crud-group">
+
+            <label>
+
+                Empresa *
+
+            </label>
+
+            <input
+                type="text"
+                id="empresa"
+                required>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label>
+
+                Tipo de Proveedor *
+
+            </label>
+
+            <select id="tipoProveedor">
+
+                <option value="Distribuidor">
+
+                    Distribuidor
+
+                </option>
+
+                <option value="Fabricante">
+
+                    Fabricante
+
+                </option>
+
+                <option value="Mayorista">
+
+                    Mayorista
+
+                </option>
+
+                <option value="Importador">
+
+                    Importador
+
+                </option>
+
+                <option value="Servicio Técnico">
+
+                    Servicio Técnico
+
+                </option>
+
+                <option value="Otro">
+
+                    Otro
+
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label>
+
+                NIT *
+
+            </label>
+
+            <input
+                type="text"
+                id="nit"
+                required>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label>
+
+                Representante Legal
+
+            </label>
+
+            <input
+                type="text"
+                id="representante">
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=========================================
+=          PERSONA DE CONTACTO
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        Persona de Contacto
+
+    </h3>
+
+    <div class="crud-grid">
+
+        <div class="crud-group">
+
+            <label>
+
+                Nombre del Contacto *
+
+            </label>
+
+            <input
+                type="text"
+                id="contacto"
+                required>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label>
+
+                Cargo
+
+            </label>
+
+            <input
+                type="text"
+                id="cargo">
+
+        </div>
+
+        <div class="crud-group">
+
+            <label>
+
+                Celular *
+
+            </label>
+
+            <input
+                type="tel"
+                id="celular"
+                required>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label>
+
+                Correo Electrónico
+
+            </label>
+
+            <input
+                type="email"
+                id="correo">
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--=========================================
+=          UBICACIÓN
+==========================================-->
+
+<div class="crud-section">
+
+    <h3>
+
+        Ubicación
+
+    </h3>
+
+    <div class="crud-grid">
+
+        <div class="crud-group">
+
+            <label>
+
+                País
+
+            </label>
+
+            <select id="pais">
+
+                <option value="Colombia">
+
+                    Colombia
+
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label>
+
+                Departamento
+
+            </label>
+
+            <select id="departamento">
+
+                <option value="">
+
+                    Seleccione...
+
+                </option>
+
+                <option>Amazonas</option>
+                <option>Antioquia</option>
+                <option>Arauca</option>
+                <option>Atlántico</option>
+                <option>Bolívar</option>
+                <option>Boyacá</option>
+                <option>Caldas</option>
+                <option>Caquetá</option>
+                <option>Casanare</option>
+                <option>Cauca</option>
+                <option>Cesar</option>
+                <option>Chocó</option>
+                <option>Córdoba</option>
+                <option>Cundinamarca</option>
+                <option>Guainía</option>
+                <option>Guaviare</option>
+                <option>Huila</option>
+                <option>La Guajira</option>
+                <option>Magdalena</option>
+                <option>Meta</option>
+                <option>Nariño</option>
+                <option>Norte de Santander</option>
+                <option>Putumayo</option>
+                <option>Quindío</option>
+                <option>Risaralda</option>
+                <option>Santander</option>
+                <option>Sucre</option>
+                <option>Tolima</option>
+                <option>Valle del Cauca</option>
+                <option>Vaupés</option>
+                <option>Vichada</option>
+
+            </select>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label>
+
+                Ciudad
+
+            </label>
+
+            <select id="ciudad">
+
+                <option value="">
+
+                    Seleccione un departamento
+
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="crud-group">
+
+            <label>
+
+                Dirección
+
+            </label>
+
+            <input
+                type="text"
+                id="direccion">
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="crud-actions">
+
+    <button
+        type="button"
+        id="btnCancelarProveedor"
+        class="btn-cancel">
+
+        Cancelar
+
+    </button>
+
+    <button
+        type="submit"
+        class="btn-save">
+
+        Guardar Proveedor
+
+    </button>
+
+</div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</section>
+
+</main>
+
+<!--=========================================
+=              JAVASCRIPT
+==========================================-->
+
+<script src="../assets/js/utils.js"></script>
+
+<script src="../assets/js/models/Proveedor.js"></script>
+
+<script src="../assets/js/controllers/proveedoresController.js"></script>
+
+<script src="../assets/js/proveedores.js"></script>
+
+</body>
+
+</html>

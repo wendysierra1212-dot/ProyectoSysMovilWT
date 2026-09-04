@@ -1,0 +1,56 @@
+
+
+/*=========================================================
+=                 LOGO LOGIN V3
+=========================================================*/
+
+/* Contenedor del logo del panel izquierdo */
+.login-brand .brand-logo{
+
+    display:block;
+
+    width:150px;
+
+    height:auto;
+
+    margin:0 auto 28px auto;
+
+    padding:10px;
+
+    background:#ffffff;
+
+    border-radius:12px;
+
+    box-sizing:border-box;
+
+    object-fit:contain;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.15);
+
+}
+
+
+/* Asegurar que el logo quede centrado */
+.login-brand{
+
+    text-align:center;
+
+}
+
+
+/* Evitar que otros estilos del sistema desplacen el logo */
+.login-brand .brand-logo{
+
+    position:relative;
+
+    left:auto;
+
+    right:auto;
+
+    top:auto;
+
+    bottom:auto;
+
+    transform:none;
+
+}
