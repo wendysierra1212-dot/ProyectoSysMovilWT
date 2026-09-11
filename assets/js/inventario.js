@@ -2,747 +2,958 @@
  * ==================================================
  * SYSMOVILWT
  * MÓDULO DE INVENTARIO
- * VERSIÓN 1.1
+ * INTEGRACIÓN PHP + MYSQL
  * ==================================================
  */
 
-const inventario = new InventarioController();
 
-let productoEditando = null;
+/* ==================================================
+   ELEMENTOS DEL DOM
+   ================================================== */
 
-/*==================================================
-=            ELEMENTOS DEL DOM
-==================================================*/
+const btnNuevoProducto =
+    document.getElementById("btnNuevoProducto");
 
-const btnNuevoProducto = document.getElementById("btnNuevoProducto");
+const btnCerrarModal =
+    document.getElementById("btnCloseModal");
 
-const btnCerrarModal = document.getElementById("btnCloseModal");
+const btnCancelar =
+    document.getElementById("btnCancelarProducto");
 
-const btnCancelar = document.getElementById("btnCancelarProducto");
+const modal =
+    document.getElementById("productModal");
 
-const modal = document.getElementById("productModal");
+const formulario =
+    document.getElementById("productForm");
 
-const formulario = document.getElementById("productForm");
+const tipoProducto =
+    document.getElementById("productoTipo");
 
-const tipoProducto = document.getElementById("productoTipo");
+const grupoSerial =
+    document.getElementById("grupoSerial");
 
-const categoriaProducto = document.getElementById("productoCategoria");
+const tabla =
+    document.getElementById("inventoryTableBody");
 
-const grupoSerial = document.getElementById("grupoSerial");
+const buscador =
+    document.getElementById("searchProduct");
 
-const tabla = document.getElementById("inventoryTableBody");
+const filtroCategoria =
+    document.getElementById("filterCategory");
 
-const buscador = document.getElementById("searchProduct");
+const filtroEstado =
+    document.getElementById("filterStatus");
 
-const filtroCategoria = document.getElementById("filterCategory");
+const btnReset =
+    document.getElementById("btnResetFilters");
 
-const filtroEstado = document.getElementById("filterStatus");
 
-const btnReset = document.getElementById("btnResetFilters");
+/* ==================================================
+   INICIALIZACIÓN
+   ================================================== */
 
-/*==================================================
-=            INICIALIZACIÓN
-==================================================*/
+document.addEventListener(
+    "DOMContentLoaded",
+    iniciar
+);
 
-document.addEventListener("DOMContentLoaded", iniciar);
 
-function iniciar(){
+function iniciar() {
 
-    inicializarCerrarSesion();
+    if (
+        typeof inicializarCerrarSesion ===
+        "function"
+    ) {
 
-    cargarFecha();
+        inicializarCerrarSesion();
+
+    }
+
+
+    if (
+        typeof cargarFecha ===
+        "function"
+    ) {
+
+        cargarFecha();
+
+    }
+
 
     inicializarEventos();
 
-    cargarTabla();
+}
+
+
+/* ==================================================
+   EVENTOS
+   ================================================== */
+
+function inicializarEventos() {
+
+
+    /* ==============================================
+       NUEVO PRODUCTO
+       ============================================== */
+
+    if (btnNuevoProducto) {
+
+        btnNuevoProducto.addEventListener(
+            "click",
+            abrirNuevoProducto
+        );
+
+    }
+
+
+    /* ==============================================
+       CERRAR MODAL
+       ============================================== */
+
+    if (btnCerrarModal) {
+
+        btnCerrarModal.addEventListener(
+            "click",
+            cerrarModal
+        );
+
+    }
+
+
+    /* ==============================================
+       CANCELAR
+       ============================================== */
+
+    if (btnCancelar) {
+
+        btnCancelar.addEventListener(
+            "click",
+            cerrarModal
+        );
+
+    }
+
+
+    /* ==============================================
+       TIPO DE PRODUCTO
+       ============================================== */
+
+    if (tipoProducto) {
+
+        tipoProducto.addEventListener(
+            "change",
+            controlarSerial
+        );
+
+    }
+
+
+    /* ==============================================
+       BÚSQUEDA
+       ============================================== */
+
+    if (buscador) {
+
+        buscador.addEventListener(
+            "input",
+            filtrarTabla
+        );
+
+    }
+
+
+    /* ==============================================
+       FILTRO CATEGORÍA
+       ============================================== */
+
+    if (filtroCategoria) {
+
+        filtroCategoria.addEventListener(
+            "change",
+            filtrarTabla
+        );
+
+    }
+
+
+    /* ==============================================
+       FILTRO ESTADO
+       ============================================== */
+
+    if (filtroEstado) {
+
+        filtroEstado.addEventListener(
+            "change",
+            filtrarTabla
+        );
+
+    }
+
+
+    /* ==============================================
+       RESET FILTROS
+       ============================================== */
+
+    if (btnReset) {
+
+        btnReset.addEventListener(
+            "click",
+            limpiarFiltros
+        );
+
+    }
+
+
+    /* ==============================================
+       CERRAR AL HACER CLIC FUERA
+       ============================================== */
+
+    if (modal) {
+
+        modal.addEventListener(
+            "click",
+            function (e) {
+
+                if (e.target === modal) {
+
+                    cerrarModal();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* ==============================================
+       BOTONES EDITAR
+       ============================================== */
+
+    inicializarBotonesEditar();
 
 }
 
-/*==================================================
-=            EVENTOS
-==================================================*/
 
-function inicializarEventos(){
+/* ==================================================
+   NUEVO PRODUCTO
+   ================================================== */
 
-    if(tipoProducto){
+function abrirNuevoProducto() {
 
-    tipoProducto.addEventListener("change", actualizarCategorias);
+    if (!modal || !formulario) {
 
-    }
-
-    if(btnNuevoProducto){
-
-        btnNuevoProducto.addEventListener("click", abrirModal);
+        return;
 
     }
 
-    if(btnCerrarModal){
 
-        btnCerrarModal.addEventListener("click", cerrarModal);
+    /*
+     * El formulario vuelve a crear.php
+     */
 
-    }
+    formulario.action =
+        "../productos/crear.php";
 
-    if(btnCancelar){
 
-        btnCancelar.addEventListener("click", cerrarModal);
+    /*
+     * Quitamos cualquier ID de edición
+     */
 
-    }
+    formulario.removeAttribute(
+        "data-editando"
+    );
 
-    if(formulario){
 
-        formulario.addEventListener("submit", guardarProducto);
-
-    }
-
-    if(buscador){
-
-        buscador.addEventListener("input", buscarProductos);
-
-    }
-
-    if(filtroCategoria){
-
-        filtroCategoria.addEventListener("change", aplicarFiltros);
-
-    }
-
-    if(filtroEstado){
-
-        filtroEstado.addEventListener("change", aplicarFiltros);
-
-    }
-
-    if(btnReset){
-
-        btnReset.addEventListener("click", limpiarFiltros);
-
-    }
-
-}
-
-/*==================================================
-=            MODAL
-==================================================*/
-
-function abrirModal(){
-
-    modal.style.display = "flex";
-
-    actualizarCategorias();
-
-}
-
-function cerrarModal(){
-
-    modal.style.display = "none";
-
-    productoEditando = null;
+    /*
+     * Limpiamos el formulario
+     */
 
     formulario.reset();
 
-    actualizarCategorias();
 
-    document.querySelector(".btn-save").textContent =
+    /*
+     * Título del modal
+     */
 
-        "Guardar Producto";
-
-}
-
-/*==================================================
-=            GUARDAR PRODUCTO
-==================================================*/
-
-function guardarProducto(e){
-
-    e.preventDefault();
-
-    const datos = {
-
-    codigo: document.getElementById("productoCodigo").value.trim(),
-
-    nombre: document.getElementById("productoNombre").value.trim(),
-
-    tipo: document.getElementById("productoTipo").value,
-
-    marca: document.getElementById("productoMarca").value,
-
-    categoria: document.getElementById("productoCategoria").value,
-
-    proveedor: document.getElementById("productoProveedor").value,
-
-    estado: document.getElementById("productoEstado").value,
-
-    costo: Number(document.getElementById("productoCosto").value),
-
-    precio: Number(document.getElementById("productoPrecio").value),
-
-    stock: Number(document.getElementById("productoStock").value),
-
-    stockMinimo: Number(document.getElementById("productoStockMinimo").value),
-
-    garantia: Number(document.getElementById("productoGarantia").value),
-
-    ubicacion: document.getElementById("productoUbicacion").value.trim(),
-
-    serial: document.getElementById("productoSerial").value.trim(),
-
-    descripcion: document.getElementById("productoDescripcion").value.trim()
-
-    };
-
-
-   if(
-
-    datos.codigo === "" ||
-
-    datos.nombre === "" ||
-
-    datos.tipo === "" ||
-
-    datos.marca === "" ||
-
-    datos.categoria === "" ||
-
-    datos.proveedor === "" ||
-
-    datos.precio <= 0
-
-   ){
-
-        alert("Complete todos los campos obligatorios.");
-
-        return;
-
-    }
-
-    if(productoEditando){
-
-        inventario.actualizarProducto(
-
-            productoEditando.id,
-
-            datos
-
-        );
-
-        registrarActividad(
-
-            "producto",
-
-            "editar",
-
-            `Producto "${datos.nombre}" actualizado.`
-
-        );
-
-    }
-
-    else{
-
-        inventario.agregarProducto(datos);
-
-        registrarActividad(
-
-            "producto",
-
-            "crear",
-
-            `Producto "${datos.nombre}" registrado.`
-
-        );
-
-    }
-
-    cerrarModal();
-
-    cargarTabla();
-
-}
-
-/*==================================================
-=            CARGAR TABLA
-==================================================*/
-
-function cargarTabla(){
-
-    const productos = inventario.obtenerProductos();
-
-    if(productos.length === 0){
-
-        tabla.innerHTML = `
-
-            <tr class="inventory-empty">
-
-                <td colspan="8">
-
-                    <div class="empty-state">
-
-                        <i class="fa-solid fa-box-open"></i>
-
-                        <h3>No hay productos registrados</h3>
-
-                        <p>
-
-                            Haz clic en <strong>Nuevo Producto</strong>
-                            para comenzar.
-
-                        </p>
-
-                    </div>
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-    tabla.innerHTML = "";
-
-    productos.forEach(producto => {
-
-        tabla.innerHTML += `
-
-            <tr>
-
-                <td>${producto.codigo}</td>
-
-                <td>${producto.nombre}</td>
-
-                <td>${producto.marca}</td>
-
-                <td>${producto.categoria}</td>
-
-                <td>$${producto.precio.toLocaleString("es-CO")}</td>
-
-                <td>${producto.stock}</td>
-
-                <td>
-
-                    <span class="status-badge ${obtenerClaseEstado(producto.obtenerEstadoStock())}">
-
-                        ${producto.obtenerEstadoStock()}
-
-                    </span>
-
-                </td>
-
-                <td>
-
-                    <button
-
-                        class="btn-table btn-edit"
-
-                        title="Editar"
-
-                        onclick="editarProducto('${producto.id}')">
-
-                        <i class="fa-solid fa-pen"></i>
-
-                    </button>
-
-                    <button
-
-                        class="btn-table btn-delete"
-
-                        title="Eliminar"
-
-                        onclick="eliminarProducto('${producto.id}')">
-
-                        <i class="fa-solid fa-trash"></i>
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-        `;
-
-    });
-
-}
-
-/*==================================================
-=            EDITAR
-==================================================*/
-
-function editarProducto(id){
-
-    const producto = inventario.obtenerProducto(id);
-
-    if(!producto){
-
-        return;
-
-    }
-
-    productoEditando = producto;
-
-    document.getElementById("productoCodigo").value = producto.codigo;
-
-    document.getElementById("productoNombre").value = producto.nombre;
-
-    document.getElementById("productoTipo").value = producto.tipo;
-
-    actualizarCategorias();
-
-    document.getElementById("productoMarca").value = producto.marca;
-
-    document.getElementById("productoCategoria").value = producto.categoria;
-
-    document.getElementById("productoProveedor").value = producto.proveedor;
-
-    document.getElementById("productoEstado").value = producto.estado;
-
-    document.getElementById("productoCosto").value = producto.costo;
-
-    document.getElementById("productoPrecio").value = producto.precio;
-
-    document.getElementById("productoStock").value = producto.stock;
-
-    document.getElementById("productoStockMinimo").value = producto.stockMinimo;
-
-    document.getElementById("productoGarantia").value = producto.garantia;
-
-    document.getElementById("productoUbicacion").value = producto.ubicacion;
-
-    document.getElementById("productoSerial").value = producto.serial;
-
-    document.getElementById("productoDescripcion").value = producto.descripcion;
-
-    document.querySelector(".btn-save").textContent =
-
-        "Actualizar Producto";
-
-    abrirModal();
-
-}
-
-/*==================================================
-=            ELIMINAR
-==================================================*/
-
-function eliminarProducto(id){
-
-    const confirmar = confirm(
-
-        "¿Desea eliminar este producto?"
-
+    cambiarTituloModal(
+        "Nuevo Producto"
     );
 
-    if(!confirmar){
 
-        return;
+    /*
+     * Botón de guardar
+     */
 
-    }
-
-    const producto = inventario.obtenerProducto(id);
-
-    if(!producto){
-
-        return;
-
-    }
-
-    inventario.eliminarProducto(id);
-
-    registrarActividad(
-
-        "producto",
-
-        "eliminar",
-
-        `Producto "${producto.nombre}" eliminado.`
-
+    cambiarTextoBoton(
+        "Guardar Producto"
     );
 
-    cargarTabla();
 
-}
+    /*
+     * Condición por defecto
+     */
 
-/*==================================================
-=            BUSCAR PRODUCTOS
-==================================================*/
-
-function buscarProductos(){
-
-    const texto = buscador.value.trim().toLowerCase();
-
-    if(texto === ""){
-
-        cargarTabla();
-
-        return;
-
-    }
-
-    const productos = inventario.buscar(texto);
-
-    renderizarTabla(productos);
-
-}
-
-/*==================================================
-=            FILTROS
-==================================================*/
-
-function aplicarFiltros(){
-
-    const categoria = filtroCategoria.value;
-
-    const estado = filtroEstado.value;
-
-    const productos = inventario.filtrar(
-
-        categoria,
-
-        estado
-
+    establecerCondicion(
+        "Nuevo"
     );
 
-    renderizarTabla(productos);
+
+    /*
+     * Mostrar modal
+     */
+
+    modal.style.display = "flex";
+
+
+    controlarSerial();
 
 }
 
-/*==================================================
-=            LIMPIAR FILTROS
-==================================================*/
 
-function limpiarFiltros(){
+/* ==================================================
+   EDITAR PRODUCTO
+   ================================================== */
 
-    buscador.value = "";
+function inicializarBotonesEditar() {
 
-    filtroCategoria.selectedIndex = 0;
+    const botonesEditar =
+        document.querySelectorAll(
+            ".btn-editar-producto"
+        );
 
-    filtroEstado.selectedIndex = 0;
 
-    cargarTabla();
+    botonesEditar.forEach(
+        function (boton) {
+
+            boton.addEventListener(
+                "click",
+                function (e) {
+
+                    e.preventDefault();
+
+                    cargarProductoParaEditar(
+                        boton
+                    );
+
+                }
+            );
+
+        }
+    );
 
 }
 
-/*==================================================
-=            RENDERIZAR TABLA
-==================================================*/
 
-function renderizarTabla(productos){
+/* ==================================================
+   CARGAR PRODUCTO EN EL MODAL
+   ================================================== */
 
-    if(productos.length === 0){
+function cargarProductoParaEditar(
+    boton
+) {
 
-        tabla.innerHTML = `
-
-            <tr class="inventory-empty">
-
-                <td colspan="8">
-
-                    <div class="empty-state">
-
-                        <i class="fa-solid fa-box-open"></i>
-
-                        <h3>No se encontraron productos</h3>
-
-                        <p>
-
-                            No existen productos que coincidan con la búsqueda.
-
-                        </p>
-
-                    </div>
-
-                </td>
-
-            </tr>
-
-        `;
+    if (!modal || !formulario) {
 
         return;
 
     }
 
-    tabla.innerHTML = "";
 
-    productos.forEach(producto => {
+    /*
+     * Obtenemos los datos directamente
+     * de los atributos data-* de la fila.
+     */
 
-        tabla.innerHTML += `
+    const id =
+        boton.dataset.id;
 
-            <tr>
+    const codigo =
+        boton.dataset.codigo || "";
 
-                <td>${producto.codigo}</td>
+    const nombre =
+        boton.dataset.nombre || "";
 
-                <td>${producto.nombre}</td>
+    const tipo =
+        boton.dataset.tipo || "";
 
-                <td>${producto.marca}</td>
+    const marca =
+        boton.dataset.marca || "";
 
-                <td>${producto.categoria}</td>
+    const modelo =
+        boton.dataset.modelo || "";
 
-                <td>$${producto.precio.toLocaleString("es-CO")}</td>
+    const imei =
+        boton.dataset.imei || "";
 
-                <td>${producto.stock}</td>
+    const descripcion =
+        boton.dataset.descripcion || "";
 
-                <td>
+    const precioCompra =
+        boton.dataset.precioCompra || "";
 
-                    <span class="status-badge ${obtenerClaseEstado(producto.obtenerEstadoStock())}">
+    const precioVenta =
+        boton.dataset.precioVenta || "";
 
-                        ${producto.obtenerEstadoStock()}
+    const stock =
+        boton.dataset.stock || "0";
 
-                    </span>
+    const stockMinimo =
+        boton.dataset.stockMinimo || "5";
 
-                </td>
+    const garantia =
+        boton.dataset.garantia || "0";
 
-                <td>
+    const condicion =
+        boton.dataset.condicion || "Nuevo";
 
-                    <button
+    const categoria =
+        boton.dataset.categoria || "";
 
-                        class="btn-table btn-edit"
+    const proveedor =
+        boton.dataset.proveedor || "";
 
-                        title="Editar"
 
-                        onclick="editarProducto('${producto.id}')">
+    /*
+     * Cargar campos
+     */
 
-                        <i class="fa-solid fa-pen"></i>
+    establecerValor(
+        "productoCodigo",
+        codigo
+    );
 
-                    </button>
+    establecerValor(
+        "productoNombre",
+        nombre
+    );
 
-                    <button
+    establecerValor(
+        "productoTipo",
+        tipo
+    );
 
-                        class="btn-table btn-delete"
+    establecerValor(
+        "productoMarca",
+        marca
+    );
 
-                        title="Eliminar"
+    establecerValor(
+        "productoCategoria",
+        categoria
+    );
 
-                        onclick="eliminarProducto('${producto.id}')">
+    establecerValor(
+        "productoProveedor",
+        proveedor
+    );
 
-                        <i class="fa-solid fa-trash"></i>
+    establecerValor(
+        "productoCosto",
+        precioCompra
+    );
 
-                    </button>
+    establecerValor(
+        "productoPrecio",
+        precioVenta
+    );
 
-                </td>
+    establecerValor(
+        "productoStock",
+        stock
+    );
 
-            </tr>
+    establecerValor(
+        "productoStockMinimo",
+        stockMinimo
+    );
 
-        `;
+    establecerValor(
+        "productoGarantia",
+        garantia
+    );
 
-    });
+    establecerValor(
+        "productoSerial",
+        imei
+    );
+
+    establecerValor(
+        "productoDescripcion",
+        descripcion
+    );
+
+
+    /*
+     * Campos que no están en la tabla
+     * principal pero pueden existir
+     * en el formulario.
+     */
+
+    establecerValor(
+        "productoModelo",
+        modelo
+    );
+
+
+    /*
+     * Condición
+     */
+
+    establecerCondicion(
+        condicion
+    );
+
+
+    /*
+     * Configurar formulario para UPDATE
+     */
+
+    formulario.action =
+        "../productos/editar.php?id=" +
+        encodeURIComponent(id);
+
+
+    formulario.setAttribute(
+        "data-editando",
+        id
+    );
+
+
+    /*
+     * Cambiar textos del modal
+     */
+
+    cambiarTituloModal(
+        "Editar Producto"
+    );
+
+    cambiarTextoBoton(
+        "Guardar Cambios"
+    );
+
+
+    /*
+     * Mostrar modal
+     */
+
+    modal.style.display = "flex";
+
+
+    controlarSerial();
 
 }
 
-/*==================================================
-=            BADGES DE ESTADO
-==================================================*/
 
-function obtenerClaseEstado(estado){
+/* ==================================================
+   ESTABLECER VALOR
+   ================================================== */
 
-    switch(estado){
+function establecerValor(
+    id,
+    valor
+) {
 
-        case "Disponible":
+    const elemento =
+        document.getElementById(id);
 
-            return "status-success";
 
-        case "Stock Bajo":
+    if (!elemento) {
 
-            return "status-warning";
-
-        case "Agotado":
-
-            return "status-danger";
-
-        default:
-
-            return "";
+        return;
 
     }
 
-}/*==================================================
-=      CATEGORÍAS DINÁMICAS
-==================================================*/
 
-function actualizarCategorias(){
-
-    const tipo = tipoProducto.value;
-
-    categoriaProducto.innerHTML = '<option value="">Seleccione...</option>';
-
-    let categorias = [];
-
-    switch(tipo){
-
-        case "Equipo":
-
-            categorias = [
-                "Celulares",
-                "Tablets",
-                "Smartwatch"
-            ];
-
-            grupoSerial.style.display = "block";
-
-            break;
-
-        case "Accesorio":
-
-            categorias = [
-                "Cargadores",
-                "Audífonos",
-                "Fundas",
-                "Vidrios templados",
-                "Cables",
-                "Parlantes",
-                "Power Bank",
-                "Proyectores",
-                "Linternas",
-                "Relojes Inteligentes",
-                "Accesorios Gaming",
-                "Periféricos",
-                "Otros accesorios"
-            ];
-
-            grupoSerial.style.display = "none";
-
-            document.getElementById("productoSerial").value = "";
-
-            break;
-
-        case "Repuesto":
-
-            categorias = [
-                "Pantallas",
-                "Baterías",
-                "Pines de carga",
-                "Cámaras",
-                "Flex",
-                "Tapas",
-                "Otros repuestos"
-            ];
-
-            grupoSerial.style.display = "none";
-
-            document.getElementById("productoSerial").value = "";
-
-            break;
-
-        default:
-
-            grupoSerial.style.display = "none";
-
-            document.getElementById("productoSerial").value = "";
-
-            return;
-
-    }
-
-    categorias.forEach(categoria => {
-
-        const option = document.createElement("option");
-
-        option.value = categoria;
-
-        option.textContent = categoria;
-
-        categoriaProducto.appendChild(option);
-
-    });
+    elemento.value = valor;
 
 }
 
+
+/* ==================================================
+   CONDICIÓN
+   ================================================== */
+
+function establecerCondicion(
+    condicion
+) {
+
+    /*
+     * Si existe un select de condición
+     */
+
+    const campo =
+        document.getElementById(
+            "productoCondicion"
+        );
+
+
+    if (campo) {
+
+        campo.value =
+            condicion || "Nuevo";
+
+        return;
+
+    }
+
+
+    /*
+     * Si no existe, buscamos un input
+     * hidden llamado condicion.
+     */
+
+    let hidden =
+        formulario
+            ? formulario.querySelector(
+                'input[name="condicion"]'
+            )
+            : null;
+
+
+    if (hidden) {
+
+        hidden.value =
+            condicion || "Nuevo";
+
+    }
+
+}
+
+
+/* ==================================================
+   TÍTULO DEL MODAL
+   ================================================== */
+
+function cambiarTituloModal(
+    texto
+) {
+
+    const titulo =
+        modal
+            ? modal.querySelector(
+                ".inventory-modal-header h2"
+            )
+            : null;
+
+
+    if (titulo) {
+
+        titulo.textContent =
+            texto;
+
+        return;
+
+    }
+
+
+    /*
+     * Alternativa por si el encabezado
+     * utiliza otra estructura.
+     */
+
+    const tituloAlternativo =
+        modal
+            ? modal.querySelector(
+                ".inventory-modal-header"
+            )
+            : null;
+
+
+    if (
+        tituloAlternativo &&
+        tituloAlternativo.querySelector("h2")
+    ) {
+
+        tituloAlternativo
+            .querySelector("h2")
+            .textContent = texto;
+
+    }
+
+}
+
+
+/* ==================================================
+   TEXTO BOTÓN
+   ================================================== */
+
+function cambiarTextoBoton(
+    texto
+) {
+
+    const boton =
+        formulario
+            ? formulario.querySelector(
+                ".btn-save"
+            )
+            : null;
+
+
+    if (boton) {
+
+        boton.textContent =
+            texto;
+
+    }
+
+}
+
+
+/* ==================================================
+   CERRAR MODAL
+   ================================================== */
+
+function cerrarModal() {
+
+    if (!modal) {
+
+        return;
+
+    }
+
+
+    modal.style.display =
+        "none";
+
+
+    if (formulario) {
+
+        formulario.reset();
+
+        formulario.action =
+            "../productos/crear.php";
+
+        formulario.removeAttribute(
+            "data-editando"
+        );
+
+    }
+
+
+    cambiarTituloModal(
+        "Nuevo Producto"
+    );
+
+
+    cambiarTextoBoton(
+        "Guardar Producto"
+    );
+
+
+    establecerCondicion(
+        "Nuevo"
+    );
+
+
+    controlarSerial();
+
+}
+
+
+/* ==================================================
+   CONTROL IMEI / SERIAL
+   ================================================== */
+
+function controlarSerial() {
+
+    if (!tipoProducto || !grupoSerial) {
+
+        return;
+
+    }
+
+
+    const tipo =
+        tipoProducto.value;
+
+
+    if (tipo === "Equipo") {
+
+        grupoSerial.style.display =
+            "block";
+
+    }
+
+    else {
+
+        grupoSerial.style.display =
+            "none";
+
+
+        const serial =
+            document.getElementById(
+                "productoSerial"
+            );
+
+
+        if (serial) {
+
+            /*
+             * No borramos el serial si
+             * estamos editando.
+             */
+
+            const editando =
+                formulario &&
+                formulario.getAttribute(
+                    "data-editando"
+                );
+
+
+            if (!editando) {
+
+                serial.value = "";
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* ==================================================
+   BÚSQUEDA Y FILTROS
+   ================================================== */
+
+function filtrarTabla() {
+
+    if (!tabla) {
+
+        return;
+
+    }
+
+
+    const texto =
+        buscador
+            ? buscador.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+
+    const categoria =
+        filtroCategoria
+            ? filtroCategoria.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+
+    const estado =
+        filtroEstado
+            ? filtroEstado.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+
+    const filas =
+        tabla.querySelectorAll("tr");
+
+
+    filas.forEach(
+        function (fila) {
+
+            if (
+                fila.classList.contains(
+                    "inventory-empty"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            const contenido =
+                fila.textContent
+                    .toLowerCase();
+
+
+            const coincideTexto =
+                texto === "" ||
+                contenido.includes(
+                    texto
+                );
+
+
+            const coincideCategoria =
+                categoria === "" ||
+                categoria.includes(
+                    "todas"
+                ) ||
+                contenido.includes(
+                    categoria
+                );
+
+
+            const coincideEstado =
+                estado === "" ||
+                estado.includes(
+                    "todos"
+                ) ||
+                contenido.includes(
+                    estado
+                );
+
+
+            if (
+                coincideTexto &&
+                coincideCategoria &&
+                coincideEstado
+            ) {
+
+                fila.style.display =
+                    "";
+
+            }
+
+            else {
+
+                fila.style.display =
+                    "none";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ==================================================
+   LIMPIAR FILTROS
+   ================================================== */
+
+function limpiarFiltros() {
+
+    if (buscador) {
+
+        buscador.value = "";
+
+    }
+
+
+    if (filtroCategoria) {
+
+        filtroCategoria.selectedIndex =
+            0;
+
+    }
+
+
+    if (filtroEstado) {
+
+        filtroEstado.selectedIndex =
+            0;
+
+    }
+
+
+    filtrarTabla();
+
+}
