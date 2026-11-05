@@ -1275,7 +1275,7 @@ function claseEstado($estado)
 
             <li>
 
-                <a href="dashboard.html">
+                <a href="dashboard.php">
 
                     <i class="fa-solid fa-house"></i>
 
@@ -1305,7 +1305,7 @@ function claseEstado($estado)
 
             <li>
 
-                <a href="ventas.html">
+                <a href="ventas.php">
 
                     <i class="fa-solid fa-cart-shopping"></i>
 
@@ -1320,7 +1320,7 @@ function claseEstado($estado)
 
             <li>
 
-                <a href="compras.html">
+                <a href="compras.php">
 
                     <i class="fa-solid fa-bag-shopping"></i>
 
@@ -1365,7 +1365,7 @@ function claseEstado($estado)
 
             <li>
 
-                <a href="usuarios.html">
+                <a href="usuarios.php">
 
                     <i class="fa-solid fa-user-shield"></i>
 
@@ -1395,7 +1395,7 @@ function claseEstado($estado)
 
             <li>
 
-                <a href="reportes.html">
+                <a href="reportes.php">
 
                     <i class="fa-solid fa-chart-column"></i>
 
@@ -1410,7 +1410,7 @@ function claseEstado($estado)
 
             <li>
 
-                <a href="configuracion.html">
+                <a href="configuracion.php">
 
                     <i class="fa-solid fa-gear"></i>
 

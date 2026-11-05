@@ -75,6 +75,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
 
+    /* =====================================================
+       ACCIÓN: ABRIR LA PESTAÑA SOLICITADA EN EL ENLACE
+    ===================================================== */
+
+    const tabFromHash = window.location.hash.replace("#tab-", "");
+    const requestedTab = Array.from(tabs).find(function (tab) {
+        return tab.getAttribute("data-tab") === tabFromHash;
+    });
+
+    if (requestedTab) {
+        requestedTab.click();
+    }
+
 
     /* =====================================================
        FECHA ACTUAL
@@ -122,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (confirmar) {
 
-                window.location.href = "login.html";
+                window.location.href = "../login.html";
 
             }
 

@@ -252,16 +252,16 @@ main.main-content.sales-page .sales-table tbody tr:nth-child(even) {
 <aside class="sidebar">
   <div class="sidebar-logo"><img src="../assets/img/logo/logowt.png" alt="Logo WT SERVIPHONE" class="logo-sidebar"><div class="logo-text"><h2>SYSMOVILWT</h2><span>Sistema de Gestión Empresarial</span></div></div>
   <nav class="sidebar-menu"><ul>
-    <li><a href="dashboard.html"><i class="fa-solid fa-house"></i><span>Dashboard</span></a></li>
+    <li><a href="dashboard.php"><i class="fa-solid fa-house"></i><span>Dashboard</span></a></li>
     <li><a href="inventario.php"><i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></a></li>
     <li class="active"><a href="ventas.php"><i class="fa-solid fa-cart-shopping"></i><span>Ventas</span></a></li>
     <li><a href="compras.php"><i class="fa-solid fa-bag-shopping"></i><span>Compras</span></a></li>
-    <li><a href="clientes.html"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
-    <li><a href="proveedores.html"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a></li>
-    <li><a href="usuarios.html"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></a></li>
-    <li><a href="serviciotecnico.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Servicio Técnico</span></a></li>
-    <li><a href="reportes.html"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
-    <li><a href="configuracion.html"><i class="fa-solid fa-gear"></i><span>Configuración</span></a></li>
+    <li><a href="clientes.php"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
+    <li><a href="proveedores.php"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a></li>
+    <li><a href="usuarios.php"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></a></li>
+    <li><a href="serviciotecnico.php"><i class="fa-solid fa-screwdriver-wrench"></i><span>Servicio Técnico</span></a></li>
+    <li><a href="reportes.php"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
+    <li><a href="configuracion.php"><i class="fa-solid fa-gear"></i><span>Configuración</span></a></li>
   </ul></nav>
 </aside>
 <main class="main-content sales-page"><div class="sales-wrap">

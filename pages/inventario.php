@@ -134,7 +134,7 @@ if ($resultado) {
             <ul>
 
                 <li>
-              <a href="dashboard.html">
+              <a href="dashboard.php">
               <i class="fa-solid fa-house"></i>
               <span>Dashboard</span>
               </a>
@@ -142,25 +142,25 @@ if ($resultado) {
 
                 <li class="active"><a href="inventario.php"><i class="fa-solid fa-boxes-stacked"></i><span>Inventario</span></a></li>
 
-                <li><a href="ventas.html"><i class="fa-solid fa-cart-shopping"></i><span>Ventas</span></a></li>
+                <li><a href="ventas.php"><i class="fa-solid fa-cart-shopping"></i><span>Ventas</span></a></li>
                 
                 <li>
-                    <a href="compras.html">
+                    <a href="compras.php">
                     <i class="fa-solid fa-bag-shopping"></i>
                     <span>Compras</span>
                     </a>
                 </li>
-                <li><a href="clientes.html"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
+                <li><a href="clientes.php"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
 
-                <li><a href="proveedores.html"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a></li>
+                <li><a href="proveedores.php"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a></li>
 
-                <li><a href="usuarios.html"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></a></li>
+                <li><a href="usuarios.php"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></a></li>
 
-                <li><a href="servicio.html"><i class="fa-solid fa-screwdriver-wrench"></i><span>Servicio Técnico</span></a></li>
+                <li><a href="serviciotecnico.php"><i class="fa-solid fa-screwdriver-wrench"></i><span>Servicio Técnico</span></a></li>
 
-                <li><a href="reportes.html"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
+                <li><a href="reportes.php"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
                 <li>
-                  <a href="configuracion.html">
+                  <a href="configuracion.php">
                   <i class="fa-solid fa-gear"></i>
                   <span>Configuración</span>
                    </a>

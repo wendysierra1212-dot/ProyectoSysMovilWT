@@ -604,7 +604,7 @@ function limpiar($dato)
         <ul>
 
             <li>
-                <a href="dashboard.html">
+                <a href="dashboard.php">
                     <i class="fa-solid fa-house"></i>
                     <span>Dashboard</span>
                 </a>
@@ -620,7 +620,7 @@ function limpiar($dato)
 
 
             <li>
-                <a href="ventas.html">
+                <a href="ventas.php">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span>Ventas</span>
                 </a>
@@ -628,7 +628,7 @@ function limpiar($dato)
 
 
             <li>
-                <a href="compras.html">
+                <a href="compras.php">
                     <i class="fa-solid fa-bag-shopping"></i>
                     <span>Compras</span>
                 </a>
@@ -644,7 +644,7 @@ function limpiar($dato)
 
 
             <li>
-                <a href="proveedores.html">
+                <a href="proveedores.php">
                     <i class="fa-solid fa-truck"></i>
                     <span>Proveedores</span>
                 </a>
@@ -652,7 +652,7 @@ function limpiar($dato)
 
 
             <li>
-                <a href="usuarios.html">
+                <a href="usuarios.php">
                     <i class="fa-solid fa-user-shield"></i>
                     <span>Usuarios</span>
                 </a>
@@ -660,7 +660,7 @@ function limpiar($dato)
 
 
             <li>
-                <a href="serviciotecnico.html">
+                <a href="serviciotecnico.php">
                     <i class="fa-solid fa-screwdriver-wrench"></i>
                     <span>Servicio Técnico</span>
                 </a>
@@ -668,7 +668,7 @@ function limpiar($dato)
 
 
             <li>
-                <a href="reportes.html">
+                <a href="reportes.php">
                     <i class="fa-solid fa-chart-column"></i>
                     <span>Reportes</span>
                 </a>
@@ -676,7 +676,7 @@ function limpiar($dato)
 
 
             <li>
-                <a href="configuracion.html">
+                <a href="configuracion.php">
                     <i class="fa-solid fa-gear"></i>
                     <span>Configuración</span>
                 </a>

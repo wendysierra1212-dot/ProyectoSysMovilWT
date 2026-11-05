@@ -101,7 +101,7 @@ function validarLogin(e){
 
     );
 
-    window.location.href="pages/dashboard.html";
+    window.location.href="pages/dashboard.php";
 
 }
 
