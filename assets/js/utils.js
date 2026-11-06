@@ -12,6 +12,13 @@ function inicializarCerrarSesion() {
 
     }
 
+    // Los módulos pueden llamar esta función además de la inicialización común.
+    // Evita registrar más de un manejador y mostrar confirmaciones duplicadas.
+    if (btnLogout.dataset.logoutInitialized === "true") {
+        return;
+    }
+    btnLogout.dataset.logoutInitialized = "true";
+
     btnLogout.addEventListener("click", () => {
 
         const confirmar = confirm(
@@ -30,6 +37,13 @@ function inicializarCerrarSesion() {
 
     });
 
+}
+
+// Enlaza el cierre de sesión en todas las páginas que cargan utils.js.
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", inicializarCerrarSesion, { once: true });
+} else {
+    inicializarCerrarSesion();
 }
 
 /*==================================================
