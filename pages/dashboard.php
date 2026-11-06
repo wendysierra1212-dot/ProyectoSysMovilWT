@@ -1,65 +1,40 @@
 <?php
 declare(strict_types=1);
-
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 require_once __DIR__ . '/../config/conexion.php';
+require_once __DIR__ . '/../config/autenticacion.php';
+require_once __DIR__ . '/../config/actividad.php';
+exigirPermiso($conn, 'dashboard', 'ver');
 
-/* =========================================================
-   ACCIÓN: PREPARAR FUNCIONES DE PRESENTACIÓN
-   ========================================================= */
-function h(mixed $value): string
-{
-    return htmlspecialchars((string)($value ?? ''), ENT_QUOTES, 'UTF-8');
-}
+function h(mixed $valor): string { return htmlspecialchars((string)($valor ?? ''), ENT_QUOTES, 'UTF-8'); }
 
-function moneda(mixed $value): string
-{
-    return '$ ' . number_format((float)$value, 0, ',', '.');
-}
-
-/* =========================================================
-   ACCIÓN: CONSULTAR INDICADORES DEL NEGOCIO
-   ========================================================= */
+/* ACCIÓN: consultar los indicadores que alimentan las tarjetas */
 $resumen = [
     'productos' => (int)$conn->query('SELECT COUNT(*) FROM productos')->fetch_row()[0],
-    'ventas_hoy' => 0,
+    'ventas' => (int)$conn->query("SELECT COUNT(*) FROM ventas WHERE estado = 'Completada'")->fetch_row()[0],
     'clientes' => (int)$conn->query('SELECT COUNT(*) FROM clientes')->fetch_row()[0],
-    'ingresos_mes' => 0.0,
+    'ingresos' => (float)$conn->query("SELECT COALESCE(SUM(total), 0) FROM ventas WHERE estado = 'Completada'")->fetch_row()[0],
 ];
 
-$stmt = $conn->prepare("SELECT COUNT(*), COALESCE(SUM(total), 0) FROM ventas WHERE estado = 'Completada' AND fecha_venta >= CURDATE() AND fecha_venta < DATE_ADD(CURDATE(), INTERVAL 1 DAY)");
-$stmt->execute();
-$ventasHoy = $stmt->get_result()->fetch_row();
-$resumen['ventas_hoy'] = (int)($ventasHoy[0] ?? 0);
-$stmt->close();
+/* ACCIÓN: consultar los eventos recientes de todos los módulos */
+$actividad = [];
+try {
+    prepararTablaActividadSistema($conn);
+    $actividad = $conn->query(
+        'SELECT modulo, accion, descripcion, fecha
+         FROM actividad_sistema ORDER BY fecha DESC, id_actividad DESC LIMIT 10'
+    )->fetch_all(MYSQLI_ASSOC);
+} catch (Throwable $e) {
+    // El dashboard permanece disponible aunque la bitácora todavía no exista.
+}
 
-$stmt = $conn->prepare("SELECT COALESCE(SUM(total), 0) FROM ventas WHERE estado = 'Completada' AND fecha_venta >= DATE_FORMAT(CURDATE(), '%Y-%m-01') AND fecha_venta < DATE_ADD(CURDATE(), INTERVAL 1 DAY)");
-$stmt->execute();
-$resumen['ingresos_mes'] = (float)$stmt->get_result()->fetch_row()[0];
-$stmt->close();
-
-/* =========================================================
-   ACCIÓN: CONSULTAR PRODUCTOS CON STOCK BAJO
-   ========================================================= */
-$productosBajos = $conn->query(
-    'SELECT id_producto, codigo_producto, nombre_producto, stock, stock_minimo
+/* ACCIÓN: consultar productos en el mínimo o por debajo del mínimo configurado */
+$alertasStock = $conn->query(
+    'SELECT id_producto, codigo_producto, nombre_producto, stock, COALESCE(stock_minimo, 5) AS stock_minimo
      FROM productos
-     WHERE stock <= stock_minimo
+     WHERE stock <= COALESCE(stock_minimo, 5)
      ORDER BY stock ASC, nombre_producto ASC
-     LIMIT 8'
-)->fetch_all(MYSQLI_ASSOC);
-
-/* =========================================================
-   ACCIÓN: CONSULTAR ACTIVIDAD RECIENTE
-   ========================================================= */
-$actividad = $conn->query(
-    "SELECT v.fecha_venta AS fecha, 'Venta' AS tipo,
-            CONCAT('Factura ', v.numero_factura) AS descripcion,
-            v.total AS valor
-     FROM ventas v
-     WHERE v.estado = 'Completada'
-     ORDER BY v.fecha_venta DESC
-     LIMIT 6"
+     LIMIT 10'
 )->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -76,19 +51,27 @@ $actividad = $conn->query(
     <link rel="stylesheet" href="../assets/css/components.css">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
     <style>
-        .dashboard-panels{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;margin-top:24px}
-        .dashboard-panel{background:#fff;border-radius:16px;padding:22px;box-shadow:0 8px 24px #15213b12}
-        .dashboard-panel h3{margin:0 0 16px;color:#162b4d}
-        .dashboard-table{width:100%;border-collapse:collapse}
-        .dashboard-table th,.dashboard-table td{text-align:left;padding:11px 8px;border-bottom:1px solid #edf0f5}
-        .dashboard-table th{font-size:12px;color:#667085}
-        .stock-low{color:#c0392b;font-weight:600}
-        .dashboard-empty{color:#667085;padding:12px 0}
-        @media(max-width:900px){.dashboard-panels{grid-template-columns:1fr}}
+        .sidebar{width:250px}
+        .topbar{left:250px;width:calc(100% - 250px);height:72px}
+        .dashboard-main{margin-left:250px;margin-top:72px;padding-top:30px}
+        .dashboard-header{display:none}
+        .dashboard-grid{grid-template-columns:2fr 1fr;gap:22px}
+        .activity-item{display:grid;grid-template-columns:22px 1fr;gap:8px;margin:0 0 10px;color:#334155;font-size:14px}
+        .activity-item i{color:#334155;margin-top:3px}
+        .activity-item small{color:#64748b}
+        .activity-empty{color:#64748b;padding:4px 0}
+        .stock-alert-item{display:flex;align-items:flex-start;gap:10px;margin:0 0 12px;color:#334155;font-size:13px}
+        .stock-alert-item i{margin-top:3px;color:#dc2626}
+        .stock-alert-item strong{display:block;color:#1f2937}
+        .stock-alert-item small{color:#64748b}
+        @media(max-width:900px){.dashboard-grid{grid-template-columns:1fr}}
+        @media(max-width:900px){.sidebar{width:250px}.topbar{left:250px;width:calc(100% - 250px)}.dashboard-main{margin-left:250px}}
+        @media(max-width:600px){.dashboard-main{padding:22px 16px;margin-left:0;margin-top:72px}.topbar{left:0;width:100%;padding:0 14px}.topbar-date{display:none}.topbar-right{gap:10px}.topbar-profile .profile-info{display:none}.dashboard-cards{grid-template-columns:1fr 1fr;gap:12px}.dashboard-card{padding:16px;gap:12px}.card-icon{width:50px;height:50px;font-size:21px}.card-info span{font-size:23px}}
     </style>
+    <link rel="stylesheet" href="../assets/css/acciones-compartidas.css">
 </head>
 <body>
-    <!-- ACCIÓN: MOSTRAR NAVEGACIÓN PRINCIPAL -->
+    <!-- ACCIÓN: presentar el menú principal del sistema -->
     <aside class="sidebar">
         <div class="sidebar-logo"><img src="../assets/img/logo/logowt.png" alt="Logo WT SERVIPHONE" class="logo-sidebar"><div class="logo-text"><h2>SYSMOVILWT</h2><span>Sistema de Gestión Empresarial</span></div></div>
         <nav class="sidebar-menu"><ul>
@@ -99,49 +82,45 @@ $actividad = $conn->query(
             <li><a href="clientes.php"><i class="fa-solid fa-users"></i><span>Clientes</span></a></li>
             <li><a href="proveedores.php"><i class="fa-solid fa-truck"></i><span>Proveedores</span></a></li>
             <li><a href="usuarios.php"><i class="fa-solid fa-user-shield"></i><span>Usuarios</span></a></li>
-            <li><a href="serviciotecnico.php"><i class="fa-solid fa-screwdriver-wrench"></i><span>Servicio técnico</span></a></li>
+            <li><a href="serviciotecnico.php"><i class="fa-solid fa-screwdriver-wrench"></i><span>Servicio Técnico</span></a></li>
             <li><a href="reportes.php"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
             <li><a href="configuracion.php"><i class="fa-solid fa-gear"></i><span>Configuración</span></a></li>
         </ul></nav>
         <button class="logout-button" id="btnLogout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></button>
     </aside>
 
-    <!-- ACCIÓN: MOSTRAR CONTEXTO Y FECHA -->
-    <header class="topbar"><div class="topbar-left"><button class="menu-toggle" type="button"><i class="fa-solid fa-bars"></i></button><div class="topbar-title"><h1>Dashboard</h1><span>Resumen de la operación</span></div></div><div class="topbar-right"><div class="topbar-date"><i class="fa-regular fa-calendar"></i><span><?= h(date('d/m/Y')) ?></span></div></div></header>
+    <!-- ACCIÓN: mostrar título, fecha y perfil del usuario -->
+    <header class="topbar">
+        <div class="topbar-left"><button class="menu-toggle" type="button"><i class="fa-solid fa-bars"></i></button><div class="topbar-title"><h1>Dashboard</h1><span>Sistema Integral de Gestión Empresarial</span></div></div>
+        <div class="topbar-right"><div class="topbar-date"><i class="fa-regular fa-calendar"></i><span id="currentDate"></span></div><button class="notification-button" type="button" aria-label="Notificaciones"><i class="fa-regular fa-bell"></i><span class="notification-dot"></span></button><div class="topbar-profile"><div class="profile-avatar">WT</div><div class="profile-info"><strong id="topbarUser">Leonardo</strong><span id="topbarRole">Administrador</span></div></div></div>
+    </header>
 
     <main class="dashboard-main">
-        <section class="dashboard-header"><div class="dashboard-title"><h2>Resumen del negocio</h2><p>Indicadores consultados directamente desde MySQL.</p></div></section>
-
-        <!-- ACCIÓN: RESUMIR INDICADORES -->
+        <section class="dashboard-header"><div class="dashboard-title"><h2>Resumen</h2><p>Bienvenido a SYSMOVILWT.</p></div></section>
+        <!-- ACCIÓN: resumir productos, ventas, clientes e ingresos -->
         <section class="dashboard-cards">
             <article class="dashboard-card"><div class="card-icon products"><i class="fa-solid fa-boxes-stacked"></i></div><div class="card-info"><h3>Productos</h3><span><?= number_format($resumen['productos'], 0, ',', '.') ?></span></div></article>
-            <article class="dashboard-card"><div class="card-icon sales"><i class="fa-solid fa-cart-shopping"></i></div><div class="card-info"><h3>Ventas de hoy</h3><span><?= number_format((int)$resumen['ventas_hoy'], 0, ',', '.') ?></span></div></article>
+            <article class="dashboard-card"><div class="card-icon sales"><i class="fa-solid fa-cart-shopping"></i></div><div class="card-info"><h3>Ventas</h3><span><?= number_format($resumen['ventas'], 0, ',', '.') ?></span></div></article>
             <article class="dashboard-card"><div class="card-icon clients"><i class="fa-solid fa-users"></i></div><div class="card-info"><h3>Clientes</h3><span><?= number_format($resumen['clientes'], 0, ',', '.') ?></span></div></article>
-            <article class="dashboard-card"><div class="card-icon income"><i class="fa-solid fa-coins"></i></div><div class="card-info"><h3>Ingresos del mes</h3><span><?= h(moneda($resumen['ingresos_mes'])) ?></span></div></article>
+            <article class="dashboard-card"><div class="card-icon income"><i class="fa-solid fa-sack-dollar"></i></div><div class="card-info"><h3>Ingresos</h3><span>$ <?= number_format($resumen['ingresos'], 0, ',', '.') ?></span></div></article>
         </section>
-
-        <!-- ACCIÓN: MOSTRAR ALERTAS Y ACTIVIDAD -->
-        <section class="dashboard-panels">
-            <div class="dashboard-panel"><h3><i class="fa-solid fa-triangle-exclamation"></i> Productos con stock bajo</h3>
-                <?php if (!$productosBajos): ?><p class="dashboard-empty">No hay productos por debajo del stock mínimo.</p>
-                <?php else: ?><div class="table-responsive"><table class="dashboard-table"><thead><tr><th>Código</th><th>Producto</th><th>Stock</th><th>Mínimo</th></tr></thead><tbody>
-                    <?php foreach ($productosBajos as $producto): ?><tr><td><?= h($producto['codigo_producto']) ?></td><td><?= h($producto['nombre_producto']) ?></td><td class="stock-low"><?= (int)$producto['stock'] ?></td><td><?= (int)$producto['stock_minimo'] ?></td></tr><?php endforeach; ?>
-                </tbody></table></div><?php endif; ?>
-            </div>
-            <div class="dashboard-panel"><h3><i class="fa-solid fa-clock-rotate-left"></i> Ventas recientes</h3>
-                <?php if (!$actividad): ?><p class="dashboard-empty">Aún no hay ventas registradas.</p>
-                <?php else: ?><div class="table-responsive"><table class="dashboard-table"><thead><tr><th>Fecha</th><th>Factura</th><th>Valor</th></tr></thead><tbody>
-                    <?php foreach ($actividad as $evento): ?><tr><td><?= h(date('d/m/Y H:i', strtotime((string)$evento['fecha']))) ?></td><td><?= h($evento['descripcion']) ?></td><td><?= h(moneda($evento['valor'])) ?></td></tr><?php endforeach; ?>
-                </tbody></table></div><?php endif; ?>
-            </div>
+        <!-- ACCIÓN: presentar actividad reciente y alertas -->
+        <section class="dashboard-grid">
+            <div class="dashboard-panel"><div class="panel-header"><h3><i class="fa-solid fa-clock-rotate-left"></i> Actividad reciente</h3></div><div class="panel-body">
+                <?php if (!$actividad): ?><p class="activity-empty">No hay actividad registrada en los módulos todavía.</p>
+                <?php else: foreach ($actividad as $evento): ?><div class="activity-item"><i class="fa-solid fa-circle-info"></i><div><strong><?= h($evento['descripcion']) ?></strong><br><small><?= h($evento['modulo']) ?> · <?= h($evento['accion']) ?> · <?= h(date('d/m/Y H:i', strtotime((string)$evento['fecha']))) ?></small></div></div><?php endforeach; endif; ?>
+            </div></div>
+            <div class="dashboard-panel"><div class="panel-header"><h3><i class="fa-solid fa-triangle-exclamation"></i> Alertas de inventario</h3></div><div class="panel-body">
+                <?php if (!$alertasStock): ?><p class="activity-empty">No hay productos con stock bajo.</p>
+                <?php else: foreach ($alertasStock as $alerta): ?><div class="stock-alert-item"><i class="fa-solid fa-triangle-exclamation"></i><div><strong><?= h($alerta['nombre_producto']) ?><?= (int)$alerta['stock'] === 0 ? ' · Agotado' : ' · Stock bajo' ?></strong><small>Código <?= h($alerta['codigo_producto']) ?> · Stock: <?= (int)$alerta['stock'] ?> · Mínimo: <?= (int)$alerta['stock_minimo'] ?></small></div></div><?php endforeach; endif; ?>
+            </div></div>
         </section>
     </main>
+    <script src="../assets/js/utils.js"></script>
     <script>
-        document.getElementById('btnLogout')?.addEventListener('click', () => {
-            if (confirm('¿Deseas cerrar la sesión?')) {
-                localStorage.removeItem('usuarioActivo');
-                window.location.href = '../login.html';
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof cargarFecha === 'function') cargarFecha();
+            if (typeof inicializarCerrarSesion === 'function') inicializarCerrarSesion();
         });
     </script>
 </body>

@@ -1,0 +1,149 @@
+/* Patrón común para acciones de tabla, basado en Proveedores. */
+body .sidebar { transition: transform .28s ease; }
+body.sidebar-collapsed .sidebar { transform: translateX(-105%); }
+body.sidebar-collapsed .topbar { left: 0 !important; width: 100% !important; }
+body.sidebar-collapsed .dashboard-main,
+body.sidebar-collapsed .reports-main,
+body.sidebar-collapsed .configuracion-main,
+body.sidebar-collapsed .main-content.sales-page { margin-left: 0 !important; width: 100% !important; }
+
+.profile-menu-container { position: relative; display: flex; align-items: center; }
+.topbar-profile { cursor: pointer; }
+.topbar-profile::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    margin-left: 8px;
+    border-right: 2px solid #64748b;
+    border-bottom: 2px solid #64748b;
+    transform: rotate(45deg) translateY(-2px);
+    transition: transform .18s ease;
+}
+.topbar-profile[aria-expanded="true"]::after { transform: rotate(225deg) translate(-1px, -1px); }
+.topbar-profile:focus-visible { outline: 2px solid #94a3b8; outline-offset: 4px; border-radius: 8px; }
+.profile-menu {
+    position: absolute;
+    z-index: 1200;
+    top: calc(100% + 12px);
+    right: 0;
+    min-width: 190px;
+    padding: 6px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, .16);
+}
+.profile-menu[hidden] { display: none !important; }
+.profile-menu .logout-button {
+    width: 100% !important;
+    height: 42px !important;
+    margin: 0 !important;
+    padding: 0 12px !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: #b42318 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+.profile-menu .logout-button:hover { background: #fee2e2 !important; color: #991b1b !important; }
+
+.provider-actions,
+.client-actions,
+.inventory-actions,
+.purchase-actions-cell,
+.service-actions,
+.user-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 5px !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+}
+
+.provider-actions a,
+.provider-actions button,
+.client-actions a,
+.client-actions button,
+.inventory-actions a,
+.inventory-actions button,
+.purchase-actions-cell a,
+.purchase-actions-cell button,
+.service-actions a,
+.service-actions button,
+.user-actions a,
+.user-actions button {
+    box-sizing: border-box !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    flex: 0 0 32px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    cursor: pointer;
+    transition: transform .2s ease, filter .2s ease;
+}
+
+.provider-actions a:hover,
+.provider-actions button:hover,
+.client-actions a:hover,
+.client-actions button:hover,
+.inventory-actions a:hover,
+.inventory-actions button:hover,
+.purchase-actions-cell a:hover,
+.purchase-actions-cell button:hover,
+.service-actions a:hover,
+.service-actions button:hover,
+.user-actions a:hover,
+.user-actions button:hover {
+    transform: translateY(-2px);
+    filter: brightness(.94);
+}
+
+.btn-view-provider, .btn-view-client, .btn-view-purchase, .btn-view-service, .btn-view-user, .btn-view-inventory { background: #2563eb !important; color: #fff !important; }
+.btn-edit-provider, .btn-edit-client, .btn-edit-purchase, .btn-edit-service, .btn-edit-user, .btn-editar-producto { background: #f59e0b !important; color: #fff !important; }
+.btn-state-provider, .btn-state-service, .btn-toggle-user { background: #dc2626 !important; color: #fff !important; }
+.btn-delete-provider, .btn-delete-client, .btn-delete-purchase, .btn-delete-service, .btn-delete-user, .btn-delete-inventory { background: #64748b !important; color: #fff !important; }
+.inventory-actions a:not([class]), .inventory-actions .btn-delete-inventory { background: #64748b !important; color: #fff !important; }
+.btn-delete-row { width: 32px !important; height: 32px !important; border-radius: 8px !important; }
+
+/* Todos los módulos usan el tamaño y la interacción del limpiar filtros de Proveedores. */
+.btn-reset {
+    box-sizing: border-box !important;
+    width: 55px !important;
+    min-width: 55px !important;
+    max-width: 55px !important;
+    height: 55px !important;
+    min-height: 55px !important;
+    flex: 0 0 55px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 16px !important;
+    background: #f8fafc !important;
+    color: #475569 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.btn-reset:hover { background: #e52424 !important; color: #fff !important; transform: rotate(180deg); }
+.btn-reset:focus-visible { outline: 3px solid #cbd5e1; outline-offset: 2px; }
+
+.status-badge.inventory-available { background: #dcfce7 !important; color: #15803d !important; }
+.status-badge.inventory-low,
+.status-badge.inventory-out { background: #fee2e2 !important; color: #dc2626 !important; }

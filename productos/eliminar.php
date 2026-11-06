@@ -1,6 +1,9 @@
 <?php
 
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+require_once "../config/actividad.php";
+exigirPermiso($conn, 'inventario', 'eliminar');
 
 if (!isset($_GET["id"])) {
     die("No se recibió el ID del producto.");
@@ -21,6 +24,8 @@ $stmt->bind_param("i", $id_producto);
 
 
 if ($stmt->execute()) {
+
+    registrarActividadSistema($conn, "Inventario", "Eliminación", "Producto #" . $id_producto . " eliminado.");
 
     header("Location: ../pages/inventario.php");
     exit;

@@ -161,7 +161,7 @@
             =              FORMULARIO
             ==========================================-->
 
-            <form id="loginForm">
+            <form id="loginForm" method="post" action="auth/login_action.php">
 
                 <div class="form-group">
 
@@ -176,8 +176,11 @@
                     <input
                         type="text"
                         id="username"
+                        name="username"
                         class="form-control"
                         placeholder="Ingrese su usuario"
+                        required
+                        maxlength="50"
                         autocomplete="username">
 
                 </div>
@@ -197,8 +200,10 @@
                         <input
                             type="password"
                             id="password"
+                            name="password"
                             class="form-control"
                             placeholder="Ingrese su contraseña"
+                            required
                             autocomplete="current-password">
 
                         <button
@@ -216,17 +221,9 @@
 
                 <div class="login-options">
 
-                    <label class="remember-me">
+                    <span></span>
 
-                        <input
-                            type="checkbox"
-                            id="remember">
-
-                        Recordarme
-
-                    </label>
-
-                    <a href="#">
+                    <a href="pages/solicitar-restablecimiento.php">
 
                         ¿Olvidaste tu contraseña?
 
@@ -246,6 +243,9 @@
 
             </form>
 
+            <div id="loginMessage" class="login-message" role="alert" hidden></div>
+            <p class="login-setup-link">¿Primera instalación? <a href="setup-admin.php">Crear la cuenta inicial de administrador</a></p>
+
             <div class="login-footer">
 
                 © 2026 WT SERVIPHONE
@@ -262,6 +262,4 @@
 <script src="assets/js/login.js"></script>
 
 </body>
-
 </html>
-    

@@ -69,9 +69,11 @@
         .config-role-row{display:grid;grid-template-columns:minmax(120px,.8fr) minmax(140px,1.4fr) auto;gap:12px;align-items:center;padding:12px;border-bottom:1px solid #e8ebf0}
         .config-role-row span{color:#667085}
         .config-permission-note{margin-top:18px}
+        .permissions-static-placeholder,.permissions-static-actions{display:none!important}
         @media(max-width:700px){.config-role-row{grid-template-columns:1fr}}
     </style>
 
+    <link rel="stylesheet" href="../assets/css/acciones-compartidas.css">
 </head>
 
 
@@ -663,9 +665,50 @@
     <div class="config-divider"></div>
 
 
-    <!-- SELECTOR DE ROL -->
-
     <div class="roles-config-header">
+        <div class="config-form-group">
+            <label for="rolPermisos"><i class="fa-solid fa-users-gear"></i> Seleccionar rol</label>
+            <form method="get" action="configuracion.php#tab-roles">
+                <select id="rolPermisos" name="rol_permisos" onchange="this.form.submit()">
+                    <?php foreach ($rolesConfiguracion as $rolPermisosOpcion): ?>
+                        <option value="<?= (int)$rolPermisosOpcion['id_rol'] ?>" <?= (int)$rolPermisosOpcion['id_rol'] === $idRolPermisosSeleccionado ? 'selected' : '' ?>><?= escaparConfiguracion($rolPermisosOpcion['nombre_rol']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </form>
+        </div>
+        <div class="role-description"><strong>Permisos guardados en MySQL</strong><span>Estos permisos se aplican a todos los usuarios que tengan asignado el rol seleccionado.</span></div>
+    </div>
+
+    <?php if (isset($_GET['guardado']) && $_GET['guardado'] === 'permisos'): ?>
+        <div class="config-status success" role="status">Los permisos del rol se guardaron correctamente.</div>
+    <?php endif; ?>
+
+    <form method="post" action="configuracion.php#tab-roles" class="permissions-section">
+        <input type="hidden" name="csrf_token" value="<?= escaparConfiguracion($_SESSION['csrf_configuracion']) ?>">
+        <input type="hidden" name="accion" value="guardar_permisos">
+        <input type="hidden" name="id_rol" value="<?= $idRolPermisosSeleccionado ?>">
+        <div class="permissions-header"><div><h4><i class="fa-solid fa-list-check"></i> Permisos del rol</h4><p>Los cambios se aplican en el servidor al guardar.</p></div></div>
+        <div class="permissions-table-wrapper"><table class="permissions-table">
+            <thead><tr><th>Módulo</th><th>Ver</th><th>Crear</th><th>Editar</th><th>Eliminar</th><th>Exportar</th></tr></thead>
+            <tbody>
+            <?php foreach ($modulosPermisosConfiguracion as $moduloPermiso => [$nombreModuloPermiso, $iconoModuloPermiso]):
+                $filaPermiso = $permisosRolSeleccionado[$moduloPermiso] ?? ['ver'=>false,'crear'=>false,'editar'=>false,'eliminar'=>false,'exportar'=>false]; ?>
+                <tr><td><i class="fa-solid <?= escaparConfiguracion($iconoModuloPermiso) ?>"></i> <?= escaparConfiguracion($nombreModuloPermiso) ?></td>
+                <?php foreach (['ver'=>'Ver','crear'=>'Crear','editar'=>'Editar','eliminar'=>'Eliminar','exportar'=>'Exportar'] as $accionPermiso => $etiquetaPermiso): ?>
+                    <td><label aria-label="<?= escaparConfiguracion($etiquetaPermiso . ' ' . $nombreModuloPermiso) ?>"><input type="checkbox" name="permisos[<?= escaparConfiguracion($moduloPermiso) ?>][<?= escaparConfiguracion($accionPermiso) ?>]" value="1" <?= !empty($filaPermiso[$accionPermiso]) ? 'checked' : '' ?>></label></td>
+                <?php endforeach; ?></tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table></div>
+        <div class="config-form-actions">
+            <button type="reset" class="config-btn"><i class="fa-solid fa-rotate-left"></i> Deshacer cambios</button>
+            <button type="submit" class="config-btn config-btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar permisos</button>
+        </div>
+    </form>
+
+    <!-- SELECTOR DE ROL (maqueta estática antigua) -->
+
+    <div class="roles-config-header permissions-static-placeholder">
 
         <div class="config-form-group">
 
@@ -717,7 +760,7 @@
 
     <!-- MATRIZ DE PERMISOS -->
 
-    <div class="permissions-section">
+    <div class="permissions-section permissions-static-placeholder">
 
         <div class="permissions-header">
 
@@ -1206,7 +1249,7 @@
 
     <!-- ACCIONES -->
 
-    <div class="config-form-actions">
+    <div class="config-form-actions permissions-static-actions">
 
         <button
             type="button"
@@ -1254,7 +1297,7 @@
             </div>
         </div>
     </div>
-    <div class="config-placeholder config-permission-note"><i class="fa-solid fa-circle-info"></i><p>Las casillas de permisos conservan la referencia visual de la maqueta, pero están deshabilitadas porque el esquema de MySQL todavía no almacena permisos por módulo.</p></div></div>
+    <div class="config-placeholder config-permission-note" style="display:none"></div></div>
 
 
 

@@ -5,6 +5,9 @@
  */
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 require_once __DIR__ . '/../config/conexion.php';
+require_once __DIR__ . '/../config/autenticacion.php';
+require_once __DIR__ . '/../config/actividad.php';
+exigirPermiso($conn, 'ventas', 'ver');
 $conn->set_charset('utf8mb4');
 
 function h($value): string { return htmlspecialchars((string)($value ?? ''), ENT_QUOTES, 'UTF-8'); }
@@ -20,6 +23,7 @@ $ventaConfirmada = null;
 
 /* Registrar una venta: los precios, stock y totales se verifican en el servidor. */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'registrar_venta') {
+    exigirPermiso($conn, 'ventas', 'crear');
     $idEmpleado = (int)($_POST['id_empleado'] ?? 0);
     $idCliente = (int)($_POST['id_cliente'] ?? 0);
     $metodoPago = (string)($_POST['metodo_pago'] ?? 'Efectivo');
@@ -93,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'regis
         }
         $stmtDetalle->close(); $stmtStock->close();
         $conn->commit();
+        registrarActividadSistema($conn, "Ventas", "Registro", "Venta " . $numeroFactura . " registrada por " . cop($total) . ".");
         redirectVentas('Venta ' . $numeroFactura . ' registrada correctamente. Total: ' . cop($total));
     } catch (Throwable $e) {
         try { $conn->rollback(); } catch (Throwable $ignored) {}
@@ -123,7 +128,7 @@ $ventasHoy = (int)$resDia['cantidad']; $totalDia = (float)$resDia['total'];
 <style>
 :root{--sale-red:#c62828;--sale-dark:#172033;--sale-bg:#f4f6fa;--sale-border:#e6e9f0;--sale-muted:#687386}
 /* Alinear el contenido de ventas al lado de la barra lateral fija */
-main.main-content.sales-page{margin-left:280px;width:calc(100% - 280px);min-width:0;padding:26px;overflow-x:hidden}
+main.main-content.sales-page{margin-left:280px;width:calc(100% - 280px);min-width:0;padding:26px;overflow-x:hidden;margin-top:80px}
 main.main-content.sales-page .sales-wrap{width:100%;max-width:1500px;margin:0 auto;min-width:0}
 main.main-content.sales-page .sales-grid{grid-template-columns:minmax(0,1.1fr) minmax(340px,.9fr)}
 main.main-content.sales-page .panel,main.main-content.sales-page .panel-body,main.main-content.sales-page .panel-head{min-width:0}
@@ -131,7 +136,7 @@ main.main-content.sales-page .panel,main.main-content.sales-page .panel-body,mai
 @media(max-width:768px){main.main-content.sales-page{margin-left:0;width:100%;padding:14px}}
 *{box-sizing:border-box}.sales-page{padding:26px;background:var(--sale-bg);min-height:100vh;color:#202939;font-family:Poppins, sans-serif}.sales-wrap{max-width:1500px;margin:auto}.sales-top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px}.sales-title h1{font-size:26px;margin:0 0 5px;font-weight:700}.sales-title p{margin:0;color:var(--sale-muted);font-size:13px}.sales-stats{display:flex;gap:12px;flex-wrap:wrap}.stat-card{background:#fff;border:1px solid var(--sale-border);border-radius:14px;padding:14px 18px;min-width:160px;box-shadow:0 4px 14px #1b29400a}.stat-card span{display:block;color:var(--sale-muted);font-size:12px}.stat-card strong{font-size:20px}.sales-alert{padding:13px 16px;border-radius:10px;margin-bottom:18px;font-size:13px}.sales-alert.success{background:#e9f8ef;color:#176b3a;border:1px solid #bce8cc}.sales-alert.error{background:#fff0f0;color:#a61d24;border:1px solid #f3c4c6}.sales-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(360px,.85fr);gap:20px;align-items:start}.panel{background:#fff;border:1px solid var(--sale-border);border-radius:15px;overflow:hidden;box-shadow:0 5px 20px #1b29400a}.panel-head{padding:18px 20px;border-bottom:1px solid var(--sale-border);display:flex;justify-content:space-between;align-items:center;gap:12px}.panel-head h2{font-size:16px;margin:0;font-weight:650}.panel-head h2 i{color:var(--sale-red);margin-right:8px}.panel-body{padding:18px 20px}.searchbox{position:relative;margin-bottom:16px}.searchbox i{position:absolute;left:14px;top:14px;color:#8a94a6}.searchbox input{width:100%;padding:12px 14px 12px 40px;border:1px solid #dfe4ed;border-radius:9px;font:inherit;font-size:13px;outline:none}.searchbox input:focus,select:focus,input:focus{border-color:#c62828;box-shadow:0 0 0 3px #c6282814}.product-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-height:540px;overflow:auto;padding:1px 3px 4px}.product-card{border:1px solid var(--sale-border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}.product-card h3{font-size:13px;margin:0;line-height:1.45}.product-meta{color:var(--sale-muted);font-size:11px}.product-price{font-size:18px;font-weight:700;color:var(--sale-dark)}.product-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto}.stock{font-size:11px;border-radius:20px;padding:4px 8px;background:#e8f8ef;color:#187343}.stock.low{background:#fff5dc;color:#8b5a00}.stock.out{background:#ffebee;color:#b4232c}.btn{border:0;border-radius:8px;padding:10px 13px;font:600 12px Poppins,sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;text-decoration:none}.btn-red{background:var(--sale-red);color:#fff}.btn-red:hover{background:#a91f1f}.btn-light{background:#f0f2f6;color:#364152}.btn:disabled{opacity:.45;cursor:not-allowed}.cart-items{display:flex;flex-direction:column;gap:10px;max-height:360px;overflow:auto}.cart-row{border:1px solid var(--sale-border);border-radius:10px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}.cart-row h4{font-size:12px;margin:0 0 4px}.cart-row small{font-size:11px;color:var(--sale-muted)}.qty-controls{display:flex;align-items:center;gap:8px;margin-top:9px}.qty-controls input{width:64px;padding:6px;border:1px solid #dfe4ed;border-radius:6px;text-align:center}.remove-item{border:0;background:transparent;color:#c62828;cursor:pointer;padding:4px}.cart-price{text-align:right;font-size:13px;font-weight:700;white-space:nowrap}.empty{padding:28px 10px;text-align:center;color:var(--sale-muted);font-size:13px}.empty i{display:block;font-size:28px;margin-bottom:8px;color:#adb5c4}.sale-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:15px}.field label{display:block;font-size:11px;font-weight:600;color:#596579;margin-bottom:6px}.field select,.field input{width:100%;padding:10px;border:1px solid #dfe4ed;border-radius:8px;background:#fff;font:12px Poppins,sans-serif;min-width:0}.summary{border-top:1px solid var(--sale-border);margin-top:16px;padding-top:14px;display:flex;flex-direction:column;gap:9px}.summary-line{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:#536074}.summary-line strong{color:#202939}.summary-line.total{border-top:1px dashed #d9deea;padding-top:12px;margin-top:3px;font-size:17px;font-weight:700}.summary-line.total strong{color:var(--sale-red);font-size:21px}.sale-actions{display:flex;gap:10px;margin-top:18px}.sale-actions .btn{flex:1;padding:12px 10px}.history-panel{margin-top:22px}.table-wrap{overflow-x:auto}.sales-table{width:100%;border-collapse:collapse;min-width:850px;font-size:12px}.sales-table th,.sales-table td{padding:12px 14px;text-align:left;border-bottom:1px solid #edf0f5}.sales-table th{font-size:11px;color:#697589;background:#fafbfc}.sales-table tr:last-child td{border-bottom:0}.pill{display:inline-block;border-radius:20px;padding:4px 8px;background:#e8f8ef;color:#176b3a;font-size:10px}.muted{color:var(--sale-muted)}.empty-history{padding:24px;text-align:center;color:var(--sale-muted);font-size:13px}
 @media(max-width:1050px){.sales-grid{grid-template-columns:1fr}.product-grid{max-height:none}}@media(max-width:600px){.sales-page{padding:14px}.product-grid{grid-template-columns:1fr}.sale-fields{grid-template-columns:1fr}.panel-body{padding:14px}.panel-head{padding:14px}.sales-title h1{font-size:22px}.sales-stats{width:100%}.stat-card{flex:1;min-width:130px}.sale-actions{flex-direction:column}}
-@media print{.sidebar,.sales-top,.sales-products-panel,.history-panel,.sales-alert,.sale-actions,.panel-head .no-print{display:none!important}.sales-page{padding:0;background:#fff}.sales-grid{display:block}.sales-cart-panel{border:0;box-shadow:none}.panel-body{padding:0}.cart-items{max-height:none;overflow:visible}.sales-cart-panel .panel-head{border:0}.sales-cart-panel .panel-head:after{content:'Factura de venta';font-size:20px;font-weight:700}.sales-cart-panel .panel-head h2{display:none}.sales-stats{display:none}}
+@media print{.sidebar,.topbar,.sales-top,.sales-products-panel,.history-panel,.sales-alert,.sale-actions,.panel-head .no-print{display:none!important}.sales-page{margin:0!important;padding:0;background:#fff}.sales-grid{display:block}.sales-cart-panel{border:0;box-shadow:none}.panel-body{padding:0}.cart-items{max-height:none;overflow:visible}.sales-cart-panel .panel-head{border:0}.sales-cart-panel .panel-head:after{content:'Factura de venta';font-size:20px;font-weight:700}.sales-cart-panel .panel-head h2{display:none}.sales-stats{display:none}}
 
 /* Ajustes visuales para Ventas */
 main.main-content.sales-page {
@@ -246,7 +251,12 @@ main.main-content.sales-page .sales-table tbody tr:nth-child(even) {
     }
 }
 
+.sales-products-panel .searchbox{display:flex;align-items:center;gap:8px}
+.sales-products-panel .searchbox input{width:calc(100% - 63px);flex:1}
+.sales-products-panel .searchbox .btn-reset i{position:static;left:auto;top:auto}
+
 </style>
+    <link rel="stylesheet" href="../assets/css/acciones-compartidas.css">
 </head>
 <body>
 <aside class="sidebar">
@@ -263,14 +273,16 @@ main.main-content.sales-page .sales-table tbody tr:nth-child(even) {
     <li><a href="reportes.php"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li>
     <li><a href="configuracion.php"><i class="fa-solid fa-gear"></i><span>Configuración</span></a></li>
   </ul></nav>
+  <button class="logout-button" id="btnLogout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></button>
 </aside>
+<header class="topbar"><div class="topbar-left"><button class="menu-toggle" type="button"><i class="fa-solid fa-bars"></i></button><div class="topbar-title"><h1>Ventas</h1><span>Sistema Integral de Gestión Empresarial</span></div></div><div class="topbar-right"><div class="topbar-date"><i class="fa-regular fa-calendar"></i><span id="currentDate"></span></div><button class="notification-button" type="button" aria-label="Notificaciones"><i class="fa-regular fa-bell"></i><span class="notification-dot"></span></button><div class="topbar-profile"><div class="profile-avatar">WT</div><div class="profile-info"><strong id="topbarUser">Leonardo</strong><span id="topbarRole">Administrador</span></div></div></div></header>
 <main class="main-content sales-page"><div class="sales-wrap">
   <header class="sales-top"><div class="sales-title"><h1><i class="fa-solid fa-cart-shopping" style="color:#c62828"></i> Punto de venta</h1><p>Registra ventas, administra el carrito y controla el inventario.</p></div><div class="sales-stats"><div class="stat-card"><span>Ventas completadas hoy</span><strong><?= $ventasHoy ?></strong></div><div class="stat-card"><span>Ingresos de hoy</span><strong><?= h(cop($totalDia)) ?></strong></div></div></header>
   <?php if ($mensaje !== ''): ?><div class="sales-alert <?= h($tipoMensaje) ?>"><i class="fa-solid <?= $tipoMensaje === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check' ?>"></i> <?= h($mensaje) ?></div><?php endif; ?>
   <form method="post" id="saleForm" autocomplete="off"><input type="hidden" name="accion" value="registrar_venta">
   <div class="sales-grid">
     <section class="panel sales-products-panel"><div class="panel-head"><h2><i class="fa-solid fa-mobile-screen-button"></i> Productos disponibles</h2><span class="muted" style="font-size:11px"><?= count($productos) ?> productos</span></div><div class="panel-body">
-      <div class="searchbox"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="productSearch" placeholder="Buscar por nombre, marca, modelo o código..."></div>
+      <div class="searchbox"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="productSearch" placeholder="Buscar por nombre, marca, modelo o código..."><button type="button" class="btn-reset" id="clearProductSearch" title="Limpiar filtros" aria-label="Limpiar filtros"><i class="fa-solid fa-rotate-right"></i></button></div>
       <div class="product-grid" id="productGrid">
       <?php foreach ($productos as $p): $stock=(int)$p['stock']; $low=$stock>0 && $stock<=(int)($p['stock_minimo'] ?? 5); ?>
         <article class="product-card" data-search="<?= h(strtolower($p['nombre_producto'].' '.$p['marca'].' '.$p['modelo'].' '.$p['codigo_producto'].' '.$p['tipo_producto'].' '.$p['nombre_categoria'])) ?>">
@@ -374,6 +386,12 @@ main.main-content.sales-page .sales-table tbody tr:nth-child(even) {
     document.querySelectorAll('.product-card').forEach(card => { const match=card.dataset.search.includes(q); card.style.display=match?'':'none'; if(match)shown++; });
     document.getElementById('noSearchResults').style.display = shown ? 'none' : '';
   });
+  document.getElementById('clearProductSearch').addEventListener('click', () => {
+    const search = document.getElementById('productSearch');
+    search.value = '';
+    search.dispatchEvent(new Event('input', {bubbles:true}));
+    search.focus();
+  });
   document.getElementById('saleForm').addEventListener('submit', e => {
     if (!cart.size) { e.preventDefault(); alert('Agrega al menos un producto antes de finalizar.'); return; }
     const emp = document.getElementById('id_empleado'); if (!emp.value) { e.preventDefault(); alert('Selecciona el empleado responsable.'); emp.focus(); return; }
@@ -388,4 +406,6 @@ main.main-content.sales-page .sales-table tbody tr:nth-child(even) {
   renderCart();
 })();
 </script>
+<script src="../assets/js/utils.js"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{cargarFecha();inicializarCerrarSesion();});</script>
 </body></html>

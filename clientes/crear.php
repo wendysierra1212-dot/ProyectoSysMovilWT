@@ -1,6 +1,8 @@
 <?php
 
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+exigirPermiso($conn, 'clientes', 'crear');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 

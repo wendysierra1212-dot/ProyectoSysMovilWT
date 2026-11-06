@@ -2,6 +2,8 @@
 <?php
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 require_once __DIR__ . '/../config/conexion.php';
+require_once __DIR__ . '/../config/autenticacion.php';
+exigirPermiso($conn, 'ventas', 'ver');
 $conn->set_charset('utf8mb4');
 
 function h($value): string {

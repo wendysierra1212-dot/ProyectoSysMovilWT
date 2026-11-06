@@ -1,6 +1,9 @@
 <?php
 
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+require_once "../config/actividad.php";
+exigirPermiso($conn, 'usuarios', 'ver');
 
 /* =========================================================
    MODULO DE USUARIOS
@@ -11,6 +14,7 @@ require_once "../config/conexion.php";
 $mensaje = "";
 $tipoMensaje = "";
 $usuarioEditar = null;
+$modoLectura = false;
 
 function limpiar($dato)
 {
@@ -24,6 +28,25 @@ function limpiar($dato)
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $accion = $_POST["accion"] ?? "";
+    exigirPermiso($conn, 'usuarios', match ($accion) { 'crear' => 'crear', 'editar', 'cambiar_estado' => 'editar', default => 'ver' });
+
+    /* ACCIÓN: CAMBIAR EL ESTADO DEL USUARIO */
+    if ($accion === "cambiar_estado") {
+        $idEstado = (int)($_POST["id_usuario"] ?? 0);
+        try {
+            if ($idEstado <= 0) throw new Exception("Identificador inválido.");
+            $stmt = $conexion->prepare("UPDATE usuarios SET estado = IF(estado = 'Activo', 'Inactivo', 'Activo') WHERE id_usuario = ?");
+            $stmt->bind_param("i", $idEstado);
+            $stmt->execute();
+            $actualizado = $stmt->affected_rows;
+            $stmt->close();
+            if ($actualizado) registrarActividadSistema($conn, "Usuarios", "Cambio de estado", "Estado del usuario #" . $idEstado . " actualizado.");
+            header("Location: usuarios.php?mensaje=" . ($actualizado ? "estado_actualizado" : "error_estado"));
+        } catch (Exception $e) {
+            header("Location: usuarios.php?mensaje=error_estado");
+        }
+        exit;
+    }
 
     $id_usuario = (int)($_POST["id_usuario"] ?? 0);
     $id_empleado = (int)($_POST["id_empleado"] ?? 0);
@@ -126,6 +149,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $stmt->close();
 
                 $conexion->commit();
+                registrarActividadSistema($conn, "Usuarios", "Registro", "Usuario " . $nombre_usuario . " registrado.");
                 header("Location: usuarios.php?mensaje=creado");
                 exit;
             }
@@ -188,6 +212,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $stmt->close();
 
                 $conexion->commit();
+                registrarActividadSistema($conn, "Usuarios", "Actualización", "Usuario " . $nombre_usuario . " actualizado.");
                 header("Location: usuarios.php?mensaje=editado");
                 exit;
             }
@@ -208,6 +233,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    ========================================================= */
 
 if (isset($_GET["eliminar"])) {
+    exigirPermiso($conn, 'usuarios', 'eliminar');
 
     $idEliminar = (int)$_GET["eliminar"];
 
@@ -239,6 +265,7 @@ if (isset($_GET["eliminar"])) {
             }
 
             $conexion->commit();
+            registrarActividadSistema($conn, "Usuarios", "Eliminación", "Usuario #" . $idEliminar . " eliminado.");
             header("Location: usuarios.php?mensaje=eliminado");
             exit;
 
@@ -268,6 +295,14 @@ if (isset($_GET["mensaje"])) {
             $mensaje = "Usuario eliminado correctamente.";
             $tipoMensaje = "success";
             break;
+        case "estado_actualizado":
+            $mensaje = "Estado del usuario actualizado correctamente.";
+            $tipoMensaje = "success";
+            break;
+        case "error_estado":
+            $mensaje = "No se pudo actualizar el estado del usuario.";
+            $tipoMensaje = "error";
+            break;
     }
 }
 
@@ -275,8 +310,9 @@ if (isset($_GET["mensaje"])) {
    USUARIO A EDITAR
    ========================================================= */
 
-if (isset($_GET["editar"])) {
-    $idEditar = (int)$_GET["editar"];
+if (isset($_GET["editar"]) || isset($_GET["ver"])) {
+    $modoLectura = isset($_GET["ver"]);
+    $idEditar = (int)($_GET["ver"] ?? $_GET["editar"]);
 
     if ($idEditar > 0) {
         $stmt = $conexion->prepare("SELECT
@@ -436,6 +472,7 @@ if ($resultadoStats) {
         rel="stylesheet"
         href="../assets/css/usuarios.css">
 
+    <link rel="stylesheet" href="../assets/css/acciones-compartidas.css">
 </head>
 
 
@@ -936,6 +973,7 @@ if ($resultadoStats) {
     <button
         id="btnResetFilters"
         class="btn-reset"
+        type="button"
         title="Limpiar filtros">
 
         <i class="fa-solid fa-rotate-right"></i>
@@ -1022,6 +1060,10 @@ if ($resultadoStats) {
 
     <td>
         <div class="user-actions" style="display:flex; gap:8px;">
+            <a class="btn-view-user" href="usuarios.php?ver=<?= (int)$usuarioFila["id_usuario"] ?>" title="Ver usuario" aria-label="Ver usuario"
+               style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:9px;text-decoration:none;color:white;background:#2563eb;">
+                <i class="fa-solid fa-eye"></i>
+            </a>
             <a href="usuarios.php?editar=<?= (int)$usuarioFila["id_usuario"] ?>"
                class="btn-edit-user"
                title="Editar usuario"
@@ -1029,7 +1071,18 @@ if ($resultadoStats) {
                 <i class="fa-solid fa-pen"></i>
             </a>
 
-            <a href="usuarios.php?eliminar=<?= (int)$usuarioFila["id_usuario"] ?>"
+            <form method="POST" action="usuarios.php" style="display:inline-flex;">
+                <input type="hidden" name="accion" value="cambiar_estado">
+                <input type="hidden" name="id_usuario" value="<?= (int)$usuarioFila["id_usuario"] ?>">
+                <button type="submit" class="btn-toggle-user" title="<?= $usuarioFila["estado"] === "Activo" ? "Desactivar usuario" : "Activar usuario" ?>"
+                        aria-label="<?= $usuarioFila["estado"] === "Activo" ? "Desactivar usuario" : "Activar usuario" ?>"
+                        onclick="return confirm('¿Desea <?= $usuarioFila["estado"] === "Activo" ? "desactivar" : "activar" ?> este usuario?');"
+                        style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:0;border-radius:9px;color:white;background:<?= $usuarioFila["estado"] === "Activo" ? "#64748b" : "#16a34a" ?>;cursor:pointer;">
+                    <i class="fa-solid <?= $usuarioFila["estado"] === "Activo" ? "fa-user-slash" : "fa-user-check" ?>"></i>
+                </button>
+            </form>
+
+            <a class="btn-delete-user" href="usuarios.php?eliminar=<?= (int)$usuarioFila["id_usuario"] ?>"
                title="Eliminar usuario"
                onclick="return confirm('¿Está seguro de eliminar este usuario y su empleado asociado? Esta acción no se puede deshacer.');"
                style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:9px;text-decoration:none;color:white;background:#dc2626;">
@@ -1070,7 +1123,8 @@ if ($resultadoStats) {
 
 <div
     id="userModal"
-    class="crud-modal">
+    class="crud-modal"
+    data-readonly="<?= $modoLectura ? "true" : "false" ?>">
 
 
     <div class="crud-modal-content">
@@ -1086,7 +1140,7 @@ if ($resultadoStats) {
 
         <i class="fa-solid <?= $usuarioEditar ? "fa-user-pen" : "fa-user-plus" ?>"></i>
 
-        <?= $usuarioEditar ? "Editar Usuario" : "Nuevo Usuario" ?>
+        <?= $usuarioEditar ? ($modoLectura ? "Ver Usuario" : "Editar Usuario") : "Nuevo Usuario" ?>
 
     </h2>
 
@@ -1596,7 +1650,7 @@ if ($resultadoStats) {
         type="submit"
         class="btn-save">
 
-        <?= $usuarioEditar ? "Actualizar Usuario" : "Guardar Usuario" ?>
+        <?= $modoLectura ? "Cerrar" : ($usuarioEditar ? "Actualizar Usuario" : "Guardar Usuario") ?>
 
     </button>
 
@@ -1641,6 +1695,30 @@ document.addEventListener("DOMContentLoaded", function () {
     const filterRol = document.getElementById("filterRol");
     const btnReset = document.getElementById("btnResetFilters");
 
+    if (modal?.dataset.readonly === "true") {
+        form.querySelectorAll("input:not([type=hidden]), select, textarea").forEach(campo => {
+            if (campo.type === "password") {
+                campo.closest(".crud-group")?.remove();
+            } else if (campo.tagName === "SELECT") {
+                campo.disabled = true;
+            } else if (campo.type === "checkbox" || campo.type === "radio") {
+                campo.disabled = true;
+            } else {
+                campo.readOnly = true;
+            }
+        });
+        form.querySelector(".btn-save")?.addEventListener("click", e => e.preventDefault());
+        const guardar = form.querySelector(".btn-save");
+        if (guardar) {
+            guardar.type = "button";
+            guardar.addEventListener("click", cerrarModal);
+            guardar.classList.add("btn-cancel");
+            guardar.classList.remove("btn-save");
+        }
+        form.addEventListener("submit", e => e.preventDefault());
+        form.querySelector("#btnCancelarUsuario").textContent = "Cerrar";
+    }
+
     function abrirModal() {
         if (!modal) return;
         modal.classList.add("active");
@@ -1649,6 +1727,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function cerrarModal() {
         if (!modal) return;
+        if (modal.dataset.readonly === "true") {
+            window.location.href = "usuarios.php";
+            return;
+        }
         modal.classList.remove("active");
         modal.setAttribute("aria-hidden", "true");
     }

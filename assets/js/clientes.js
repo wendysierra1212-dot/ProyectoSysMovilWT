@@ -113,13 +113,7 @@ function cargarUsuario(){
 
     );
 
-    if(!usuario){
-
-        window.location.href = "../login.html";
-
-        return;
-
-    }
+    if(!usuario) return;
 
     const topbarUser =
         document.getElementById("topbarUser");

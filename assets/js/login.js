@@ -1,138 +1,69 @@
-/*=========================================================
-=                 USUARIOS DE PRUEBA
-=========================================================*/
+document.addEventListener('DOMContentLoaded', () => {
+    const formulario = document.getElementById('loginForm');
+    const campoUsuario = document.getElementById('username');
+    const campoContrasena = document.getElementById('password');
+    const botonMostrar = document.getElementById('togglePassword');
+    const mensaje = document.getElementById('loginMessage');
+    const botonEnviar = formulario?.querySelector('[type="submit"]');
 
-const usuarios = [
+    const mostrarMensaje = (texto, tipo = 'error') => {
+        if (!mensaje) return;
+        mensaje.textContent = texto;
+        mensaje.hidden = false;
+        mensaje.classList.toggle('success', tipo === 'success');
+    };
 
-    {
-        nombre: "Leonardo",
-        username: "admin",
-        password: "admin123",
-        rol: "Administrador"
-    },
+    const parametros = new URLSearchParams(window.location.search);
+    if (parametros.get('inicializado') === '1') mostrarMensaje('Administrador inicial creado. Ya puedes iniciar sesión.', 'success');
+    if (parametros.get('restablecida') === '1') mostrarMensaje('Contraseña actualizada. Inicia sesión con la nueva contraseña.', 'success');
+    if (parametros.get('motivo') === 'inactivo') mostrarMensaje('La cuenta está inactiva. Contacta al administrador.');
 
-    {
-        nombre: "Carlos",
-        username: "vendedor",
-        password: "venta123",
-        rol: "Vendedor"
-    },
-
-    {
-        nombre: "Andrés",
-        username: "tecnico",
-        password: "tec123",
-        rol: "Tecnico"
-    }
-
-];
-
-
-/*=========================================================
-=                 INICIAR LOGIN
-=========================================================*/
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    iniciarLogin();
-
-});
-
-
-function iniciarLogin(){
-
-    configurarFormulario();
-
-    configurarPassword();
-
-}
-
-/*=========================================================
-=                 FORMULARIO
-=========================================================*/
-
-function configurarFormulario(){
-
-    const formulario = document.getElementById("loginForm");
-
-    formulario.addEventListener("submit", validarLogin);
-
-}
-
-/*=========================================================
-=                 VALIDAR LOGIN
-=========================================================*/
-
-function validarLogin(e){
-
-    e.preventDefault();
-
-    const username = document.getElementById("username");
-
-    const password = document.getElementById("password");
-
-    const usuario = usuarios.find(u =>
-
-        u.username === username.value.trim()
-
-        &&
-
-        u.password === password.value
-
-    );
-
-    if(!usuario){
-
-        alert("Usuario o contraseña incorrectos.");
-
-        password.value="";
-
-        password.focus();
-
-        return;
-
-    }
-
-    localStorage.setItem(
-
-        "usuarioActivo",
-
-        JSON.stringify(usuario)
-
-    );
-
-    window.location.href="pages/dashboard.php";
-
-}
-
-/*=========================================================
-=                 MOSTRAR CONTRASEÑA
-=========================================================*/
-
-function configurarPassword(){
-
-    const boton = document.getElementById("togglePassword");
-
-    const input = document.getElementById("password");
-
-    boton.addEventListener("click", ()=>{
-
-        if(input.type==="password"){
-
-            input.type="text";
-
-            boton.innerHTML='<i class="fa-solid fa-eye-slash"></i>';
-
+    formulario?.addEventListener('submit', async evento => {
+        evento.preventDefault();
+        if (mensaje) mensaje.hidden = true;
+        if (botonEnviar) {
+            botonEnviar.disabled = true;
+            botonEnviar.dataset.textoOriginal = botonEnviar.innerHTML;
+            botonEnviar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Validando…';
         }
 
-        else{
+        try {
+            const respuesta = await fetch(formulario.action, {
+                method: 'POST',
+                body: new FormData(formulario),
+                headers: { 'Accept': 'application/json' },
+                credentials: 'same-origin'
+            });
+            const datos = await respuesta.json();
+            if (!respuesta.ok || !datos.ok) {
+                mostrarMensaje(datos.mensaje || 'No fue posible iniciar sesión.');
+                campoContrasena.value = '';
+                campoContrasena.focus();
+                return;
+            }
 
-            input.type="password";
-
-            boton.innerHTML='<i class="fa-solid fa-eye"></i>';
-
+            try {
+                localStorage.setItem('usuarioActivo', JSON.stringify(datos.usuario));
+            } catch (error) {
+                // La sesión PHP es la que autoriza el acceso; localStorage solo alimenta el perfil visual.
+            }
+            window.location.assign(datos.redirect || 'pages/dashboard.php');
+        } catch (error) {
+            mostrarMensaje('No se pudo conectar con el servidor. Verifica Apache y MySQL.');
+        } finally {
+            if (botonEnviar) {
+                botonEnviar.disabled = false;
+                botonEnviar.innerHTML = botonEnviar.dataset.textoOriginal || '<i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión';
+            }
         }
-
     });
 
-}
+    botonMostrar?.addEventListener('click', () => {
+        const mostrar = campoContrasena.type === 'password';
+        campoContrasena.type = mostrar ? 'text' : 'password';
+        botonMostrar.innerHTML = mostrar
+            ? '<i class="fa-solid fa-eye-slash"></i>'
+            : '<i class="fa-solid fa-eye"></i>';
+        botonMostrar.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
+});

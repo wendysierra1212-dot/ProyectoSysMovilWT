@@ -6,6 +6,9 @@ declare(strict_types=1);
    ========================================================= */
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 require_once __DIR__ . '/../../config/conexion.php';
+require_once __DIR__ . '/../../config/autenticacion.php';
+require_once __DIR__ . '/../../config/actividad.php';
+exigirPermiso($conn, 'configuracion', 'ver');
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
@@ -41,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tipoMensajeConfiguracion = 'error';
     } else {
         $accion = (string)($_POST['accion'] ?? '');
+        exigirPermiso($conn, 'configuracion', 'editar');
 
         try {
             if ($accion === 'guardar_empresa') {
@@ -72,9 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 );
                 $stmt->execute();
                 $stmt->close();
+                registrarActividadSistema($conn, 'Configuración', 'Actualización', 'Datos generales de la empresa actualizados.');
                 $mensajeConfiguracion = 'Los datos de la empresa se guardaron correctamente.';
             } elseif ($accion === 'guardar_rol') {
                 $idRol = (int)($_POST['id_rol'] ?? 0);
+                $rolNuevo = $idRol <= 0;
                 $nombreRol = trim((string)($_POST['nombre_rol'] ?? ''));
                 $descripcionRol = trim((string)($_POST['descripcion_rol'] ?? ''));
 
@@ -91,8 +97,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $stmt->execute();
+                if ($rolNuevo) $idRol = (int)$conn->insert_id;
                 $stmt->close();
-                $mensajeConfiguracion = $idRol > 0 ? 'El rol se actualizó correctamente.' : 'El rol se creó correctamente.';
+                permisosInicialesRol($conn, $idRol, $nombreRol);
+                registrarActividadSistema($conn, 'Configuración', $rolNuevo ? 'Registro de rol' : 'Actualización de rol', 'Rol ' . $nombreRol . ($rolNuevo ? ' creado.' : ' actualizado.'));
+                $mensajeConfiguracion = $rolNuevo ? 'El rol se creó correctamente.' : 'El rol se actualizó correctamente.';
+            } elseif ($accion === 'guardar_permisos') {
+                $idRolPermisos = (int)($_POST['id_rol'] ?? 0);
+                if ($idRolPermisos <= 0) throw new InvalidArgumentException('Selecciona un rol válido.');
+                $stmt = $conn->prepare('SELECT id_rol, nombre_rol FROM roles WHERE id_rol = ?');
+                $stmt->bind_param('i', $idRolPermisos);
+                $stmt->execute();
+                $rolPermisos = $stmt->get_result()->fetch_assoc();
+                $stmt->close();
+                if (!$rolPermisos) throw new InvalidArgumentException('El rol seleccionado no existe.');
+
+                $valores = $_POST['permisos'] ?? [];
+                $stmt = $conn->prepare('INSERT INTO permisos_rol (id_rol, modulo, puede_ver, puede_crear, puede_editar, puede_eliminar, puede_exportar) VALUES (?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE puede_ver=VALUES(puede_ver), puede_crear=VALUES(puede_crear), puede_editar=VALUES(puede_editar), puede_eliminar=VALUES(puede_eliminar), puede_exportar=VALUES(puede_exportar)');
+                $conn->begin_transaction();
+                foreach (modulosSysmovil() as $modulo) {
+                    $datos = is_array($valores[$modulo] ?? null) ? $valores[$modulo] : [];
+                    $ver = isset($datos['ver']) ? 1 : 0;
+                    $crear = $ver && isset($datos['crear']) ? 1 : 0;
+                    $editar = $ver && isset($datos['editar']) ? 1 : 0;
+                    $eliminar = $ver && isset($datos['eliminar']) ? 1 : 0;
+                    $exportar = $ver && isset($datos['exportar']) ? 1 : 0;
+                    $stmt->bind_param('isiiiii', $idRolPermisos, $modulo, $ver, $crear, $editar, $eliminar, $exportar);
+                    $stmt->execute();
+                }
+                $stmt->close();
+                $conn->commit();
+                registrarActividadSistema($conn, 'Configuración', 'Permisos actualizados', 'Se actualizaron los permisos del rol ' . $rolPermisos['nombre_rol'] . '.');
+                header('Location: configuracion.php?rol_permisos=' . $idRolPermisos . '&guardado=permisos#tab-roles');
+                exit;
             } else {
                 throw new InvalidArgumentException('La acción solicitada no está disponible.');
             }
@@ -100,6 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mensajeConfiguracion = $e->getMessage();
             $tipoMensajeConfiguracion = 'error';
         } catch (mysqli_sql_exception $e) {
+            if ($conn->errno) { try { $conn->rollback(); } catch (Throwable $ignorado) {} }
             $mensajeConfiguracion = $e->getCode() === 1062
                 ? 'Ya existe un rol con ese nombre.'
                 : 'No fue posible guardar los cambios. Verifica la migración y los datos enviados.';
@@ -136,6 +174,24 @@ try {
 $rolesConfiguracion = $conn->query(
     'SELECT id_rol, nombre_rol, descripcion FROM roles ORDER BY id_rol'
 )->fetch_all(MYSQLI_ASSOC);
+
+$idRolPermisosSeleccionado = (int)($_GET['rol_permisos'] ?? ($rolesConfiguracion[0]['id_rol'] ?? 0));
+$permisosRolSeleccionado = [];
+if ($idRolPermisosSeleccionado > 0) {
+    $permisosRolSeleccionado = obtenerPermisosSysmovil($conn, $idRolPermisosSeleccionado);
+}
+$modulosPermisosConfiguracion = [
+    'dashboard' => ['Dashboard', 'fa-house'],
+    'inventario' => ['Inventario', 'fa-boxes-stacked'],
+    'ventas' => ['Ventas', 'fa-cart-shopping'],
+    'compras' => ['Compras', 'fa-bag-shopping'],
+    'clientes' => ['Clientes', 'fa-users'],
+    'proveedores' => ['Proveedores', 'fa-truck'],
+    'usuarios' => ['Usuarios', 'fa-user-shield'],
+    'servicio_tecnico' => ['Servicio Técnico', 'fa-screwdriver-wrench'],
+    'reportes' => ['Reportes', 'fa-chart-column'],
+    'configuracion' => ['Configuración', 'fa-gear'],
+];
 
 if (isset($_GET['editar_rol'])) {
     $idRolEditar = (int)$_GET['editar_rol'];

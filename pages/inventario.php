@@ -1,6 +1,8 @@
 <?php
 
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+exigirPermiso($conn, 'inventario', 'ver');
 
 $sql = "SELECT
             p.id_producto,
@@ -47,7 +49,7 @@ if ($resultado) {
             $productosAgotados++;
         }
 
-        if ($producto["stock"] > 0 && $producto["stock"] <= 5) {
+        if ($producto["stock"] > 0 && $producto["stock"] <= (int)($producto["stock_minimo"] ?? 5)) {
             $stockBajo++;
         }
     }
@@ -100,6 +102,7 @@ if ($resultado) {
     <link rel="stylesheet"
           href="../assets/css/inventario.css">
 
+    <link rel="stylesheet" href="../assets/css/acciones-compartidas.css">
 </head>
 
 <body>
@@ -330,7 +333,10 @@ if ($resultado) {
 
                 <button
                     id="btnResetFilters"
-                    class="btn-reset">
+                    class="btn-reset"
+                    type="button"
+                    title="Limpiar filtros"
+                    aria-label="Limpiar filtros">
 
                     <i class="fa-solid fa-rotate-right"></i>
 
@@ -392,9 +398,9 @@ if ($resultado) {
 
                 $estado = "Agotado";
 
-            } elseif ($producto["stock"] <= 5) {
+            } elseif ($producto["stock"] <= (int)($producto["stock_minimo"] ?? 5)) {
 
-                $estado = "Stock bajo";
+                $estado = "Stock Bajo";
 
             } else {
 
@@ -432,7 +438,7 @@ if ($resultado) {
 
                 <td>
 
-                    <span class="status-badge">
+                    <span class="status-badge <?= $estado === "Disponible" ? "inventory-available" : ($estado === "Agotado" ? "inventory-out" : "inventory-low") ?>">
 
                         <?= $estado ?>
 
@@ -441,10 +447,10 @@ if ($resultado) {
                 </td>
 
                <td>
-
+    <div class="inventory-actions">
     <a
         href="#"
-        class="btn-editar-producto"
+        class="btn-editar-producto btn-edit-inventory"
         title="Editar producto"
 
         data-id="<?= $producto["id_producto"] ?>"
@@ -484,7 +490,7 @@ if ($resultado) {
     </a>
 
 
-    <a
+    <a class="btn-delete-inventory"
         href="../productos/eliminar.php?id=<?= $producto["id_producto"] ?>"
         title="Eliminar producto"
         onclick="return confirm('¿Está seguro de eliminar este producto?');">
@@ -493,6 +499,7 @@ if ($resultado) {
 
     </a>
 
+    </div>
 </td>
             </tr>
 

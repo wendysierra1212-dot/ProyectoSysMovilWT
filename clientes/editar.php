@@ -1,6 +1,8 @@
 <?php
 
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+exigirPermiso($conn, 'clientes', 'editar');
 
 if (!isset($_GET["id"])) {
     die("No se recibió el ID del cliente.");

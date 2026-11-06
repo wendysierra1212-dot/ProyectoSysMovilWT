@@ -1,6 +1,8 @@
 <?php
 
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+exigirPermiso($conn, 'clientes', 'ver');
 
 $sql = "SELECT * FROM clientes ORDER BY id_cliente DESC";
 $resultado = $conn->query($sql);

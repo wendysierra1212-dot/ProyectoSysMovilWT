@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 require_once __DIR__ . '/../config/conexion.php';
+require_once __DIR__ . '/../config/autenticacion.php';
+exigirPermiso($conn, 'reportes', 'ver');
 
 /* =========================================================
    ACCIÓN: VALIDAR FILTROS DE CONSULTA
@@ -165,6 +167,7 @@ $titulos = ['general' => 'Reporte general', 'ventas' => 'Ventas', 'compras' => '
         .reports-filters .report-form button.btn-reset:hover{background:var(--primary);color:#fff;transform:rotate(180deg)}
         .reports-filters .report-form button.btn-reset:focus-visible{outline:3px solid #cbd5e1;outline-offset:2px}
     </style>
+    <link rel="stylesheet" href="../assets/css/acciones-compartidas.css">
 </head>
 <body>
     <!-- ACCIÓN: MOSTRAR NAVEGACIÓN PRINCIPAL -->
@@ -178,7 +181,7 @@ $titulos = ['general' => 'Reporte general', 'ventas' => 'Ventas', 'compras' => '
             <li class="active"><a href="reportes.php"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></a></li><li><a href="configuracion.php"><i class="fa-solid fa-gear"></i><span>Configuración</span></a></li>
         </ul></nav><button class="logout-button" id="btnLogout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span>Cerrar sesión</span></button>
     </aside>
-    <header class="topbar"><div class="topbar-left"><button class="menu-toggle" type="button"><i class="fa-solid fa-bars"></i></button><div class="topbar-title"><h1>Reportes</h1><span>Consulta información registrada en MySQL</span></div></div><div class="topbar-right"><div class="topbar-date"><i class="fa-regular fa-calendar"></i><span><?= h(date('d/m/Y')) ?></span></div></div></header>
+    <header class="topbar"><div class="topbar-left"><button class="menu-toggle" type="button"><i class="fa-solid fa-bars"></i></button><div class="topbar-title"><h1>Reportes</h1><span>Consulta información registrada en MySQL</span></div></div><div class="topbar-right"><div class="topbar-date"><i class="fa-regular fa-calendar"></i><span><?= h(date('d/m/Y')) ?></span></div><button class="notification-button" type="button" aria-label="Notificaciones"><i class="fa-regular fa-bell"></i><span class="notification-dot"></span></button><div class="topbar-profile"><div class="profile-avatar">WT</div><div class="profile-info"><strong id="topbarUser">Leonardo</strong><span id="topbarRole">Administrador</span></div></div></div></header>
     <main class="reports-main">
         <section class="reports-header"><div class="reports-title"><h2><i class="fa-solid fa-chart-column"></i> Reportes del sistema</h2><p>Filtra y consulta ventas, compras, inventario, clientes y servicios técnicos.</p></div></section>
 
@@ -217,6 +220,7 @@ $titulos = ['general' => 'Reporte general', 'ventas' => 'Ventas', 'compras' => '
             </tbody></table></div>
         </section>
     </main>
+    <script src="../assets/js/utils.js"></script>
     <script>
         function exportarCSV(){
             const filas=[...document.querySelectorAll('#tablaReporte tr')].map(f=>[...f.cells].map(c=>'"'+c.innerText.replaceAll('"','""')+'"').join(','));
@@ -231,7 +235,6 @@ $titulos = ['general' => 'Reporte general', 'ventas' => 'Ventas', 'compras' => '
             if (formulario.requestSubmit) formulario.requestSubmit();
             else formulario.submit();
         });
-        document.getElementById('btnLogout')?.addEventListener('click',()=>{if(confirm('¿Deseas cerrar la sesión?')){localStorage.removeItem('usuarioActivo');location.href='../login.html';}});
     </script>
 </body>
 </html>

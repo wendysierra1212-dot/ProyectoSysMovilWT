@@ -1,6 +1,9 @@
 <?php
 
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+require_once "../config/actividad.php";
+exigirPermiso($conn, 'servicio_tecnico', 'ver');
 
 /* =========================================================
    VARIABLES
@@ -15,6 +18,7 @@ $tipoMensaje = "";
    ========================================================= */
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    exigirPermiso($conn, 'servicio_tecnico', ($_POST['accion'] ?? '') === 'crear' ? 'crear' : 'editar');
 
     $accion = $_POST["accion"] ?? "";
 
@@ -104,6 +108,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 if ($stmt->execute()) {
 
+                    registrarActividadSistema($conn, "Servicio técnico", "Registro", "Servicio técnico para cliente #" . $idCliente . " registrado.");
+
                     $stmt->close();
 
                     header("Location: serviciotecnico.php?mensaje=creado");
@@ -172,6 +178,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 if ($stmt->execute()) {
 
+                    registrarActividadSistema($conn, "Servicio técnico", "Actualización", "Servicio técnico #" . $idServicio . " actualizado.");
+
                     $stmt->close();
 
                     header("Location: serviciotecnico.php?mensaje=editado");
@@ -195,6 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    ========================================================= */
 
 if (isset($_GET["cambiar_estado"])) {
+    exigirPermiso($conn, 'servicio_tecnico', 'editar');
 
     $idServicio = intval($_GET["cambiar_estado"]);
     $estadoActual = $_GET["estado_actual"] ?? "";
@@ -240,6 +249,7 @@ if (isset($_GET["cambiar_estado"])) {
 
         $stmt->execute();
         $stmt->close();
+        registrarActividadSistema($conn, "Servicio técnico", "Cambio de estado", "Estado del servicio técnico #" . $idServicio . " cambiado a " . $nuevoEstado . ".");
     }
 
     header("Location: serviciotecnico.php?mensaje=estado");
@@ -252,6 +262,7 @@ if (isset($_GET["cambiar_estado"])) {
    ========================================================= */
 
 if (isset($_GET["eliminar"])) {
+    exigirPermiso($conn, 'servicio_tecnico', 'eliminar');
 
     $idServicio = intval($_GET["eliminar"]);
 
@@ -268,6 +279,8 @@ if (isset($_GET["eliminar"])) {
         );
 
         if ($stmt->execute()) {
+
+            registrarActividadSistema($conn, "Servicio técnico", "Eliminación", "Servicio técnico #" . $idServicio . " eliminado.");
 
             $stmt->close();
 
@@ -1231,6 +1244,7 @@ function claseEstado($estado)
 
     </style>
 
+    <link rel="stylesheet" href="../assets/css/acciones-compartidas.css">
 </head>
 
 
@@ -1460,6 +1474,10 @@ function claseEstado($estado)
 
 
         <div class="topbar-left">
+
+            <button class="menu-toggle" type="button" aria-label="Menú lateral">
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
             <h1>
                 Servicio Técnico
@@ -1900,6 +1918,7 @@ function claseEstado($estado)
                     href="serviciotecnico.php"
                     class="btn-reset"
                     title="Limpiar filtros"
+                    aria-label="Limpiar filtros"
                 >
 
                     <i
@@ -3235,36 +3254,10 @@ window.addEventListener(
    CERRAR SESIÓN
    ========================================================= */
 
-const btnLogout =
-    document.getElementById(
-        "btnLogout"
-    );
-
-if (btnLogout) {
-
-    btnLogout.addEventListener(
-        "click",
-        function () {
-
-            if (
-                confirm(
-                    "¿Desea cerrar la sesión?"
-                )
-            ) {
-
-                window.location.href =
-                    "login.html";
-
-            }
-
-        }
-    );
-
-}
-
 </script>
 
 
+<script src="../assets/js/utils.js"></script>
 </body>
 
 </html>

@@ -1,5 +1,8 @@
 <?php
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+require_once "../config/actividad.php";
+exigirPermiso($conn, 'proveedores', 'ver');
 
 $mensaje = "";
 $tipoMensaje = "";
@@ -13,6 +16,7 @@ function limpiar($valor) {
 ========================= */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $accion = $_POST["accion"] ?? "";
+    exigirPermiso($conn, 'proveedores', $accion === 'crear' ? 'crear' : 'editar');
     $id = isset($_POST["id_proveedor"]) ? (int)$_POST["id_proveedor"] : 0;
 
     $nit = trim($_POST["nit"] ?? "");
@@ -57,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 );
 
                 if ($stmt->execute()) {
+                    registrarActividadSistema($conn, "Proveedores", "Registro", "Proveedor " . $nombre . " registrado.");
                     header("Location: proveedores.php?mensaje=Proveedor registrado correctamente&tipo=success");
                     exit;
                 }
@@ -102,6 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 );
 
                 if ($stmt->execute()) {
+                    registrarActividadSistema($conn, "Proveedores", "Actualización", "Proveedor " . $nombre . " actualizado.");
                     header("Location: proveedores.php?mensaje=Proveedor actualizado correctamente&tipo=success");
                     exit;
                 }
@@ -125,6 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    CAMBIAR ESTADO
 ========================= */
 if (isset($_GET["cambiar_estado"])) {
+    exigirPermiso($conn, 'proveedores', 'editar');
     $id = (int)$_GET["cambiar_estado"];
 
     $stmt = $conn->prepare("UPDATE proveedores
@@ -137,6 +144,7 @@ if (isset($_GET["cambiar_estado"])) {
     if ($stmt) {
         $stmt->bind_param("i", $id);
         if ($stmt->execute()) {
+            registrarActividadSistema($conn, "Proveedores", "Cambio de estado", "Estado del proveedor #" . $id . " actualizado.");
             header("Location: proveedores.php?mensaje=Estado del proveedor actualizado&tipo=success");
             exit;
         }
@@ -150,6 +158,7 @@ if (isset($_GET["cambiar_estado"])) {
    ELIMINAR
 ========================= */
 if (isset($_GET["eliminar"])) {
+    exigirPermiso($conn, 'proveedores', 'eliminar');
     $id = (int)$_GET["eliminar"];
 
     $stmt = $conn->prepare("DELETE FROM proveedores WHERE id_proveedor = ?");
@@ -158,6 +167,7 @@ if (isset($_GET["eliminar"])) {
         $stmt->bind_param("i", $id);
 
         if ($stmt->execute()) {
+            registrarActividadSistema($conn, "Proveedores", "Eliminación", "Proveedor #" . $id . " eliminado.");
             header("Location: proveedores.php?mensaje=Proveedor eliminado correctamente&tipo=success");
             exit;
         }
@@ -356,6 +366,7 @@ foreach ($proveedores as $proveedor) {
     .provider-detail-grid{grid-template-columns:1fr;}
 }
 </style>
+    <link rel="stylesheet" href="../assets/css/acciones-compartidas.css">
 </head>
 
 <body>

@@ -1,6 +1,9 @@
 <?php
 
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+require_once "../config/actividad.php";
+exigirPermiso($conn, 'clientes', 'ver');
 
 /* =========================================================
    PROCESAMIENTO DEL CRUD
@@ -17,6 +20,7 @@ $tipoMensaje = "";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $accion = $_POST["accion"] ?? "";
+    exigirPermiso($conn, 'clientes', $accion === 'crear' ? 'crear' : 'editar');
 
     $cedula = trim($_POST["cedula"] ?? "");
     $nombres = trim($_POST["nombres"] ?? "");
@@ -89,6 +93,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 if ($stmt->execute()) {
 
+                    registrarActividadSistema($conn, "Clientes", "Registro", "Cliente " . $nombres . " " . $apellidos . " registrado.");
+
                     $stmt->close();
 
                     header("Location: clientes.php?mensaje=creado");
@@ -160,6 +166,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                     if ($stmt->execute()) {
 
+                        registrarActividadSistema($conn, "Clientes", "Actualización", "Cliente " . $nombres . " " . $apellidos . " actualizado.");
+
                         $stmt->close();
 
                         header("Location: clientes.php?mensaje=editado");
@@ -188,6 +196,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    ========================================================= */
 
 if (isset($_GET["eliminar"])) {
+    exigirPermiso($conn, 'clientes', 'eliminar');
 
     $idEliminar = (int) $_GET["eliminar"];
 
@@ -202,6 +211,8 @@ if (isset($_GET["eliminar"])) {
             $stmt->bind_param("i", $idEliminar);
 
             if ($stmt->execute()) {
+
+                registrarActividadSistema($conn, "Clientes", "Eliminación", "Cliente #" . $idEliminar . " eliminado.");
 
                 $stmt->close();
 
@@ -565,6 +576,7 @@ function limpiar($dato)
 
     </style>
 
+    <link rel="stylesheet" href="../assets/css/acciones-compartidas.css">
 </head>
 
 
@@ -995,6 +1007,7 @@ function limpiar($dato)
             <button
                 id="btnResetFilters"
                 class="btn-reset"
+                type="button"
                 title="Limpiar filtros">
 
                 <i class="fa-solid fa-rotate-right"></i>

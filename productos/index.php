@@ -1,6 +1,8 @@
 <?php
 
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+exigirPermiso($conn, 'inventario', 'ver');
 
 $sql = "SELECT 
             p.id_producto,

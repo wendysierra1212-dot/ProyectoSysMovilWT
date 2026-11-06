@@ -89,13 +89,7 @@ function cargarUsuario(){
 
     );
 
-    if(!usuario){
-
-        window.location.href = "../login.html";
-
-        return;
-
-    }
+    if(!usuario) return;
 
     document.getElementById(
 

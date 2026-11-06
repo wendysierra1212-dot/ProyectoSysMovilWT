@@ -1,5 +1,8 @@
 <?php
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+require_once "../config/actividad.php";
+exigirPermiso($conn, 'compras', 'ver');
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 $conn->set_charset("utf8mb4");
 
@@ -13,6 +16,7 @@ $tipoMensaje = "success";
 /* CREAR / EDITAR */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $accion = $_POST["accion"] ?? "crear";
+    exigirPermiso($conn, 'compras', $accion === 'editar' ? 'editar' : 'crear');
     $idCompra = (int)($_POST["id_compra"] ?? 0);
     $idProveedor = (int)($_POST["id_proveedor"] ?? 0);
     $idEmpleado = (int)($_POST["id_empleado"] ?? 0);
@@ -138,6 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $qDetalle->close();
             $qStock->close();
             $conn->commit();
+            registrarActividadSistema($conn, "Compras", $accion === "editar" ? "Actualización" : "Registro", "Compra #" . $idGuardado . ($factura ? " · factura " . $factura : "") . " guardada.");
             redirectCompra($accion === "editar" ? "editada" : "creada");
         } catch (Throwable $e) {
             $conn->rollback();
@@ -149,6 +154,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 /* ELIMINAR Y REVERTIR STOCK */
 if (isset($_GET["eliminar"])) {
+    exigirPermiso($conn, 'compras', 'eliminar');
     $idEliminar = (int)$_GET["eliminar"];
     try {
         $conn->begin_transaction();
@@ -192,6 +198,7 @@ if (isset($_GET["eliminar"])) {
         $stmt->execute();
         $stmt->close();
         $conn->commit();
+        registrarActividadSistema($conn, "Compras", "Eliminación", "Compra #" . $idEliminar . " eliminada.");
         redirectCompra("eliminada");
     } catch (Throwable $e) {
         $conn->rollback();
@@ -270,6 +277,7 @@ $hoy = date("Y-m-d");
 .purchase-filter-form{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.purchase-filter-form .purchase-search{flex:1;min-width:230px}.purchase-filter-form select{min-width:190px}.purchase-table td small{color:#64748b}
 @media(max-width:720px){.purchase-grid,.purchase-summary{grid-template-columns:1fr}.purchase-form{padding:16px}.purchase-modal{padding:8px}}
 </style>
+    <link rel="stylesheet" href="../assets/css/acciones-compartidas.css">
 </head>
 <body>
 <aside class="sidebar">
@@ -293,7 +301,7 @@ $hoy = date("Y-m-d");
 <div class="purchase-header"><div><h2><i class="fa-solid fa-bag-shopping"></i> Gestión de Compras</h2><p>Administra las compras realizadas a los proveedores de WT SERVIPHONE.</p></div><button id="btnNuevaCompra" class="btn-new" type="button"><i class="fa-solid fa-plus"></i> Nueva Compra</button></div>
 <?php if ($mensaje !== ""): ?><div class="purchase-alert <?= h($tipoMensaje) ?>"><i class="fa-solid fa-circle-info"></i> <?= h($mensaje) ?></div><?php endif; ?>
 <div class="purchase-summary"><div class="purchase-summary-card"><span>Compras encontradas</span><strong><?= $totalCompras ?></strong></div><div class="purchase-summary-card"><span>Valor de compras filtradas</span><strong><?= cop($totalValor) ?></strong></div><div class="purchase-summary-card"><span>Productos disponibles</span><strong><?= count($productos) ?></strong></div></div>
-<form method="GET" class="purchase-toolbar purchase-filter-form"><div class="purchase-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" name="buscar" value="<?= h($buscar) ?>" placeholder="Buscar compra, factura, proveedor o empleado..."></div><select name="proveedor"><option value="">Todos los proveedores</option><?php foreach($proveedores as $p): ?><option value="<?= (int)$p["id_proveedor"] ?>" <?= $idProveedorFiltro === (int)$p["id_proveedor"] ? "selected" : "" ?>><?= h($p["nombre_proveedor"]) ?></option><?php endforeach; ?></select><button type="submit" class="btn-new"><i class="fa-solid fa-filter"></i> Filtrar</button><a href="compras.php" class="btn-reset" title="Limpiar filtros"><i class="fa-solid fa-rotate-right"></i></a></form>
+<form method="GET" class="purchase-toolbar purchase-filter-form"><div class="purchase-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" name="buscar" value="<?= h($buscar) ?>" placeholder="Buscar compra, factura, proveedor o empleado..."></div><select name="proveedor"><option value="">Todos los proveedores</option><?php foreach($proveedores as $p): ?><option value="<?= (int)$p["id_proveedor"] ?>" <?= $idProveedorFiltro === (int)$p["id_proveedor"] ? "selected" : "" ?>><?= h($p["nombre_proveedor"]) ?></option><?php endforeach; ?></select><button type="submit" class="btn-new"><i class="fa-solid fa-filter"></i> Filtrar</button><a href="compras.php" class="btn-reset" title="Limpiar filtros" aria-label="Limpiar filtros"><i class="fa-solid fa-rotate-right"></i></a></form>
 <div class="purchase-table-card purchase-table-wrapper"><table class="purchase-table"><thead><tr><th>Código</th><th>Fecha</th><th>Proveedor</th><th>Empleado</th><th>Productos</th><th>Total</th><th>Acciones</th></tr></thead><tbody>
 <?php if (!$compras): ?><tr class="purchase-empty"><td colspan="7"><div class="empty-state"><i class="fa-solid fa-bag-shopping"></i><h3>No hay compras registradas</h3><p>Haz clic en <strong>Nueva Compra</strong> para registrar la primera compra.</p></div></td></tr>
 <?php else: foreach($compras as $c): $idc=(int)$c["id_compra"]; ?>
@@ -336,9 +344,8 @@ document.getElementById("btnAgregarProductoCompra").addEventListener("click",()=
 document.getElementById("btnCloseViewModal").addEventListener("click",()=>viewModal.classList.remove("show"));
 window.addEventListener("click",e=>{if(e.target===modal)cerrar();if(e.target===viewModal)viewModal.classList.remove("show");});
 form.addEventListener("submit",e=>{if(!tbody.querySelector("tr")){e.preventDefault();alert("Agrega al menos un producto.");return;}if([...tbody.querySelectorAll("tr")].some(r=>!r.querySelector(".producto-select").value||Number(r.querySelector(".cantidad-input").value)<=0||Number(r.querySelector(".costo-input").value)<0)){e.preventDefault();alert("Revisa los productos, cantidades y costos.");}});
-document.getElementById("btnLogout").addEventListener("click",()=>{if(confirm("¿Deseas cerrar la sesión?"))location.href="login.html";});
 document.getElementById("currentDate").textContent=new Date().toLocaleDateString("es-CO",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
-document.querySelector(".menu-toggle")?.addEventListener("click",()=>document.querySelector(".sidebar")?.classList.toggle("show"));
 </script>
+<script src="../assets/js/utils.js"></script>
 </body>
 </html>

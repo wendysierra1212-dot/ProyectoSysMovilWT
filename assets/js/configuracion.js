@@ -117,30 +117,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    /* =====================================================
-       BOTÓN CERRAR SESIÓN
-    ===================================================== */
-
-    const btnLogout = document.getElementById("btnLogout");
-
-
-    if (btnLogout) {
-
-        btnLogout.addEventListener("click", function () {
-
-            const confirmar = confirm(
-                "¿Está seguro de que desea cerrar sesión?"
-            );
-
-
-            if (confirmar) {
-
-                window.location.href = "../login.html";
-
-            }
-
-        });
-
-    }
-
 });

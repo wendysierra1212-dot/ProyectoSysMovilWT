@@ -1,6 +1,9 @@
 <?php
 
 require_once "../config/conexion.php";
+require_once "../config/autenticacion.php";
+require_once "../config/actividad.php";
+exigirPermiso($conn, 'inventario', 'editar');
 
 
 /* ==================================================
@@ -223,6 +226,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
        ================================================== */
 
     if ($stmt->execute()) {
+
+        registrarActividadSistema($conn, "Inventario", "Actualización", "Producto " . $nombre_producto . " actualizado.");
 
         $stmt->close();
 
