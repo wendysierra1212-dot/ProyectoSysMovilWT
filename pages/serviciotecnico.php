@@ -4,6 +4,7 @@ require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 require_once "../config/actividad.php";
 exigirPermiso($conn, 'servicio_tecnico', 'ver');
+$csrfToken = tokenCsrfSysmovil();
 
 /* =========================================================
    VARIABLES
@@ -17,7 +18,8 @@ $tipoMensaje = "";
    CREAR / EDITAR SERVICIO
    ========================================================= */
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
+    exigirCsrfSysmovil();
     exigirPermiso($conn, 'servicio_tecnico', ($_POST['accion'] ?? '') === 'crear' ? 'crear' : 'editar');
 
     $accion = $_POST["accion"] ?? "";
@@ -78,7 +80,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if (!$stmt) {
 
-                $mensaje = "Error al preparar el registro: " . $conn->error;
+                error_log('SYSMOVILWT servicio técnico al preparar registro: ' . $conn->error);
+                $mensaje = 'No fue posible preparar el registro. Inténtalo de nuevo.';
                 $tipoMensaje = "error";
 
             } else {
@@ -117,7 +120,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 } else {
 
-                    $mensaje = "Error al registrar el servicio: " . $stmt->error;
+                    error_log('SYSMOVILWT servicio técnico al registrar: ' . $stmt->error);
+                    $mensaje = 'No fue posible registrar el servicio técnico. Inténtalo de nuevo.';
                     $tipoMensaje = "error";
 
                     $stmt->close();
@@ -146,7 +150,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if (!$stmt) {
 
-                $mensaje = "Error al preparar la actualización: " . $conn->error;
+                error_log('SYSMOVILWT servicio técnico al preparar actualización: ' . $conn->error);
+                $mensaje = 'No fue posible preparar la actualización. Inténtalo de nuevo.';
                 $tipoMensaje = "error";
 
             } else {
@@ -187,7 +192,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 } else {
 
-                    $mensaje = "Error al actualizar el servicio: " . $stmt->error;
+                    error_log('SYSMOVILWT servicio técnico al actualizar: ' . $stmt->error);
+                    $mensaje = 'No fue posible actualizar el servicio técnico. Inténtalo de nuevo.';
                     $tipoMensaje = "error";
 
                     $stmt->close();
@@ -202,11 +208,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    CAMBIAR ESTADO
    ========================================================= */
 
-if (isset($_GET["cambiar_estado"])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["cambiar_estado"])) {
+    exigirCsrfSysmovil();
     exigirPermiso($conn, 'servicio_tecnico', 'editar');
 
-    $idServicio = intval($_GET["cambiar_estado"]);
-    $estadoActual = $_GET["estado_actual"] ?? "";
+    $idServicio = intval($_POST["cambiar_estado"]);
+    $estadoActual = $_POST["estado_actual"] ?? "";
 
     $estados = [
         "Recibido",
@@ -261,10 +268,11 @@ if (isset($_GET["cambiar_estado"])) {
    ELIMINAR SERVICIO
    ========================================================= */
 
-if (isset($_GET["eliminar"])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["eliminar"])) {
+    exigirCsrfSysmovil();
     exigirPermiso($conn, 'servicio_tecnico', 'eliminar');
 
-    $idServicio = intval($_GET["eliminar"]);
+    $idServicio = intval($_POST["eliminar"]);
 
     $stmt = $conn->prepare(
         "DELETE FROM servicio_tecnico
@@ -2235,35 +2243,22 @@ function claseEstado($estado)
 
                                             <!-- ESTADO -->
 
-                                            <a
-                                                href="serviciotecnico.php?cambiar_estado=<?= $servicio["id_servicio"] ?>&estado_actual=<?= urlencode($servicio["estado"]) ?>"
-                                                class="btn-state-service"
-                                                title="Cambiar estado"
-                                            >
-
-                                                <i
-                                                    class="fa-solid fa-arrow-right"
-                                                ></i>
-
-                                            </a>
+                                            <form method="post" style="display:inline-flex;margin:0">
+                                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                                                <input type="hidden" name="estado_actual" value="<?= htmlspecialchars($servicio["estado"], ENT_QUOTES, 'UTF-8') ?>">
+                                                <button type="submit" name="cambiar_estado" value="<?= (int)$servicio["id_servicio"] ?>" class="btn-state-service" title="Cambiar estado">
+                                                    <i class="fa-solid fa-arrow-right"></i>
+                                                </button>
+                                            </form>
 
 
 
                                             <!-- ELIMINAR -->
 
-                                            <a
-                                                href="serviciotecnico.php?eliminar=<?= $servicio["id_servicio"] ?>"
-                                                class="btn-delete-service"
-                                                title="Eliminar"
-
-                                                onclick="return confirm('¿Está seguro de eliminar esta orden de servicio? Esta acción no se puede deshacer.');"
-                                            >
-
-                                                <i
-                                                    class="fa-solid fa-trash"
-                                                ></i>
-
-                                            </a>
+                                            <form method="post" style="display:inline-flex;margin:0" onsubmit="return confirm('¿Está seguro de eliminar esta orden de servicio? Esta acción no se puede deshacer.');">
+                                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                                                <button type="submit" name="eliminar" value="<?= (int)$servicio["id_servicio"] ?>" class="btn-delete-service" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                                            </form>
 
 
                                         </div>
@@ -2394,6 +2389,8 @@ function claseEstado($estado)
             class="service-form"
             id="formServicio"
         >
+
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
 
 
             <input

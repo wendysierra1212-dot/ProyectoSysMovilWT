@@ -3,6 +3,7 @@
 require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 exigirPermiso($conn, 'clientes', 'editar');
+$csrfToken = tokenCsrfSysmovil();
 
 if (!isset($_GET["id"])) {
     die("No se recibió el ID del cliente.");
@@ -29,6 +30,7 @@ $stmt->close();
 
 /* Actualizar el cliente */
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    exigirCsrfSysmovil();
 
     $cedula = $_POST["cedula"];
     $nombres = $_POST["nombres"];
@@ -69,7 +71,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     } else {
 
-        echo "Error al actualizar el cliente: " . $stmt->error;
+        error_log('SYSMOVILWT endpoint clientes/editar: ' . $stmt->error);
+        http_response_code(500);
+        echo 'No fue posible actualizar el cliente. Inténtalo de nuevo.';
 
     }
 
@@ -91,6 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <h1>Editar cliente</h1>
 
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
 
         <label>Cédula:</label><br>
         <input

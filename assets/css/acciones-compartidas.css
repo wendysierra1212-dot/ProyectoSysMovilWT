@@ -147,3 +147,4 @@ body.sidebar-collapsed .main-content.sales-page { margin-left: 0 !important; wid
 .status-badge.inventory-available { background: #dcfce7 !important; color: #15803d !important; }
 .status-badge.inventory-low,
 .status-badge.inventory-out { background: #fee2e2 !important; color: #dc2626 !important; }
+.status-badge.inventory-inactive { background: #e2e8f0 !important; color: #475569 !important; }

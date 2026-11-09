@@ -4,6 +4,7 @@ require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 require_once "../config/actividad.php";
 exigirPermiso($conn, 'usuarios', 'ver');
+$csrfToken = tokenCsrfSysmovil();
 
 /* =========================================================
    MODULO DE USUARIOS
@@ -25,7 +26,8 @@ function limpiar($dato)
    CREAR / EDITAR
    ========================================================= */
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
+    exigirCsrfSysmovil();
 
     $accion = $_POST["accion"] ?? "";
     exigirPermiso($conn, 'usuarios', match ($accion) { 'crear' => 'crear', 'editar', 'cambiar_estado' => 'editar', default => 'ver' });
@@ -222,7 +224,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         } catch (Exception $e) {
             $conexion->rollback();
-            $mensaje = "No fue posible guardar el usuario: " . $e->getMessage();
+            if ($e instanceof mysqli_sql_exception) {
+                error_log('SYSMOVILWT usuarios al guardar: ' . $e->getMessage());
+                $mensaje = 'No fue posible guardar el usuario. Revisa los datos e inténtalo de nuevo.';
+            } else {
+                $mensaje = "No fue posible guardar el usuario: " . $e->getMessage();
+            }
             $tipoMensaje = "error";
         }
     }
@@ -232,10 +239,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    ELIMINAR USUARIO
    ========================================================= */
 
-if (isset($_GET["eliminar"])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["eliminar"])) {
+    exigirCsrfSysmovil();
     exigirPermiso($conn, 'usuarios', 'eliminar');
 
-    $idEliminar = (int)$_GET["eliminar"];
+    $idEliminar = (int)$_POST["eliminar"];
 
     if ($idEliminar > 0) {
         try {
@@ -271,7 +279,12 @@ if (isset($_GET["eliminar"])) {
 
         } catch (Exception $e) {
             $conexion->rollback();
-            $mensaje = "No fue posible eliminar el usuario: " . $e->getMessage();
+            if ($e instanceof mysqli_sql_exception) {
+                error_log('SYSMOVILWT usuarios al eliminar: ' . $e->getMessage());
+                $mensaje = 'No fue posible eliminar el usuario. Inténtalo de nuevo o contacta al administrador.';
+            } else {
+                $mensaje = "No fue posible eliminar el usuario: " . $e->getMessage();
+            }
             $tipoMensaje = "error";
         }
     }
@@ -1072,6 +1085,7 @@ if ($resultadoStats) {
             </a>
 
             <form method="POST" action="usuarios.php" style="display:inline-flex;">
+                <input type="hidden" name="csrf_token" value="<?= limpiar($csrfToken) ?>">
                 <input type="hidden" name="accion" value="cambiar_estado">
                 <input type="hidden" name="id_usuario" value="<?= (int)$usuarioFila["id_usuario"] ?>">
                 <button type="submit" class="btn-toggle-user" title="<?= $usuarioFila["estado"] === "Activo" ? "Desactivar usuario" : "Activar usuario" ?>"
@@ -1082,12 +1096,12 @@ if ($resultadoStats) {
                 </button>
             </form>
 
-            <a class="btn-delete-user" href="usuarios.php?eliminar=<?= (int)$usuarioFila["id_usuario"] ?>"
-               title="Eliminar usuario"
-               onclick="return confirm('¿Está seguro de eliminar este usuario y su empleado asociado? Esta acción no se puede deshacer.');"
-               style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:9px;text-decoration:none;color:white;background:#dc2626;">
-                <i class="fa-solid fa-trash"></i>
-            </a>
+            <form method="post" action="usuarios.php" style="display:inline-flex;margin:0" onsubmit="return confirm('¿Está seguro de eliminar este usuario y su empleado asociado? Esta acción no se puede deshacer.');">
+                <input type="hidden" name="csrf_token" value="<?= limpiar($csrfToken) ?>">
+                <button type="submit" name="eliminar" value="<?= (int)$usuarioFila["id_usuario"] ?>" class="btn-delete-user" title="Eliminar usuario" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:0;border-radius:9px;color:white;background:#dc2626;cursor:pointer;">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </form>
         </div>
     </td>
 
@@ -1162,6 +1176,8 @@ if ($resultadoStats) {
     class="crud-form"
     method="POST"
     action="usuarios.php">
+
+    <input type="hidden" name="csrf_token" value="<?= limpiar($csrfToken) ?>">
 
     <input type="hidden" name="accion" id="accionUsuario" value="<?= $usuarioEditar ? "editar" : "crear" ?>">
     <input type="hidden" name="id_usuario" id="idUsuario" value="<?= (int)($usuarioEditar["id_usuario"] ?? 0) ?>">

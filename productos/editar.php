@@ -4,6 +4,7 @@ require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 require_once "../config/actividad.php";
 exigirPermiso($conn, 'inventario', 'editar');
+$csrfToken = tokenCsrfSysmovil();
 
 
 /* ==================================================
@@ -29,7 +30,9 @@ $stmt = $conn->prepare($sql);
 
 if (!$stmt) {
 
-    die("Error al preparar la consulta: " . $conn->error);
+    error_log('SYSMOVILWT productos al consultar edición: ' . $conn->error);
+    http_response_code(500);
+    exit('No fue posible cargar el producto. Inténtalo de nuevo.');
 
 }
 
@@ -56,6 +59,7 @@ $stmt->close();
    ================================================== */
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    exigirCsrfSysmovil();
 
 
     /* Datos principales */
@@ -189,10 +193,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (!$stmt) {
 
-        die(
-            "Error al preparar la consulta: "
-            . $conn->error
-        );
+        error_log('SYSMOVILWT productos al guardar edición: ' . $conn->error);
+        http_response_code(500);
+        exit('No fue posible actualizar el producto. Inténtalo de nuevo.');
 
     }
 
@@ -249,8 +252,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
        ERROR
        ================================================== */
 
-    echo "Error al actualizar el producto: "
-        . htmlspecialchars($stmt->error);
+    error_log('SYSMOVILWT endpoint productos/editar: ' . $stmt->error);
+    http_response_code(500);
+    echo 'No fue posible actualizar el producto. Inténtalo de nuevo.';
 
 
     $stmt->close();
@@ -308,6 +312,7 @@ $proveedores = $conn->query(
 
 
 <form method="POST">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
 
 
     <!-- =========================================

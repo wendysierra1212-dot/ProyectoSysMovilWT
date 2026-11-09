@@ -3,6 +3,7 @@ require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 require_once "../config/actividad.php";
 exigirPermiso($conn, 'proveedores', 'ver');
+$csrfToken = tokenCsrfSysmovil();
 
 $mensaje = "";
 $tipoMensaje = "";
@@ -14,7 +15,8 @@ function limpiar($valor) {
 /* =========================
    CREAR / EDITAR PROVEEDOR
 ========================= */
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
+    exigirCsrfSysmovil();
     $accion = $_POST["accion"] ?? "";
     exigirPermiso($conn, 'proveedores', $accion === 'crear' ? 'crear' : 'editar');
     $id = isset($_POST["id_proveedor"]) ? (int)$_POST["id_proveedor"] : 0;
@@ -69,12 +71,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($stmt->errno == 1062) {
                     $mensaje = "No se pudo registrar: el NIT o correo ya existe.";
                 } else {
-                    $mensaje = "Error al registrar el proveedor: " . $stmt->error;
+                    error_log('SYSMOVILWT proveedores al registrar: ' . $stmt->error);
+                    $mensaje = 'No fue posible registrar el proveedor. Inténtalo de nuevo.';
                 }
                 $tipoMensaje = "error";
                 $stmt->close();
             } else {
-                $mensaje = "Error al preparar el registro: " . $conn->error;
+                error_log('SYSMOVILWT proveedores al preparar registro: ' . $conn->error);
+                $mensaje = 'No fue posible preparar el registro. Inténtalo de nuevo.';
                 $tipoMensaje = "error";
             }
         }
@@ -115,12 +119,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($stmt->errno == 1062) {
                     $mensaje = "No se pudo actualizar: el NIT o correo ya existe.";
                 } else {
-                    $mensaje = "Error al actualizar el proveedor: " . $stmt->error;
+                    error_log('SYSMOVILWT proveedores al actualizar: ' . $stmt->error);
+                    $mensaje = 'No fue posible actualizar el proveedor. Inténtalo de nuevo.';
                 }
                 $tipoMensaje = "error";
                 $stmt->close();
             } else {
-                $mensaje = "Error al preparar la actualización: " . $conn->error;
+                error_log('SYSMOVILWT proveedores al preparar actualización: ' . $conn->error);
+                $mensaje = 'No fue posible preparar la actualización. Inténtalo de nuevo.';
                 $tipoMensaje = "error";
             }
         }
@@ -130,9 +136,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 /* =========================
    CAMBIAR ESTADO
 ========================= */
-if (isset($_GET["cambiar_estado"])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["cambiar_estado"])) {
+    exigirCsrfSysmovil();
     exigirPermiso($conn, 'proveedores', 'editar');
-    $id = (int)$_GET["cambiar_estado"];
+    $id = (int)$_POST["cambiar_estado"];
 
     $stmt = $conn->prepare("UPDATE proveedores
                             SET estado = CASE
@@ -157,9 +164,10 @@ if (isset($_GET["cambiar_estado"])) {
 /* =========================
    ELIMINAR
 ========================= */
-if (isset($_GET["eliminar"])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["eliminar"])) {
+    exigirCsrfSysmovil();
     exigirPermiso($conn, 'proveedores', 'eliminar');
-    $id = (int)$_GET["eliminar"];
+    $id = (int)$_POST["eliminar"];
 
     $stmt = $conn->prepare("DELETE FROM proveedores WHERE id_proveedor = ?");
 
@@ -175,7 +183,8 @@ if (isset($_GET["eliminar"])) {
         if ($stmt->errno == 1451) {
             $mensaje = "No se puede eliminar este proveedor porque está relacionado con productos u otros registros del sistema. Puedes cambiarlo a Inactivo.";
         } else {
-            $mensaje = "Error al eliminar el proveedor: " . $stmt->error;
+            error_log('SYSMOVILWT proveedores al eliminar: ' . $stmt->error);
+            $mensaje = 'No fue posible eliminar el proveedor. Si está relacionado con otros registros, puedes inactivarlo.';
         }
         $tipoMensaje = "error";
         $stmt->close();
@@ -597,17 +606,15 @@ foreach ($proveedores as $proveedor) {
    <i class="fa-solid fa-pen"></i>
 </a>
 
-<a href="proveedores.php?cambiar_estado=<?= $proveedor["id_proveedor"] ?>"
-   class="btn-state-provider" title="Cambiar estado"
-   onclick="return confirm('¿Desea <?= $proveedor["estado"] === "Activo" ? "inactivar" : "activar" ?> este proveedor?');">
-   <i class="fa-solid fa-power-off"></i>
-</a>
+<form method="post" style="display:inline-flex;margin:0" onsubmit="return confirm('¿Desea <?= $proveedor["estado"] === "Activo" ? "inactivar" : "activar" ?> este proveedor?');">
+    <input type="hidden" name="csrf_token" value="<?= limpiar($csrfToken) ?>">
+    <button type="submit" name="cambiar_estado" value="<?= (int)$proveedor["id_proveedor"] ?>" class="btn-state-provider" title="Cambiar estado"><i class="fa-solid fa-power-off"></i></button>
+</form>
 
-<a href="proveedores.php?eliminar=<?= $proveedor["id_proveedor"] ?>"
-   class="btn-delete-provider" title="Eliminar proveedor"
-   onclick="return confirm('¿Está seguro de eliminar este proveedor? Esta acción no se puede deshacer.');">
-   <i class="fa-solid fa-trash"></i>
-</a>
+<form method="post" style="display:inline-flex;margin:0" onsubmit="return confirm('¿Está seguro de eliminar este proveedor? Esta acción no se puede deshacer.');">
+    <input type="hidden" name="csrf_token" value="<?= limpiar($csrfToken) ?>">
+    <button type="submit" name="eliminar" value="<?= (int)$proveedor["id_proveedor"] ?>" class="btn-delete-provider" title="Eliminar proveedor"><i class="fa-solid fa-trash"></i></button>
+</form>
 
 </div>
 </td>
@@ -653,6 +660,8 @@ foreach ($proveedores as $proveedor) {
 </div>
 
 <form id="supplierForm" class="crud-form" method="POST" action="proveedores.php">
+
+<input type="hidden" name="csrf_token" value="<?= limpiar($csrfToken) ?>">
 
 <input type="hidden" id="accionProveedor" name="accion" value="crear">
 <input type="hidden" id="idProveedor" name="id_proveedor" value="">

@@ -137,6 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mensajeConfiguracion = $e->getMessage();
             $tipoMensajeConfiguracion = 'error';
         } catch (mysqli_sql_exception $e) {
+            error_log('SYSMOVILWT configuración: ' . $e->getMessage());
             if ($conn->errno) { try { $conn->rollback(); } catch (Throwable $ignorado) {} }
             $mensajeConfiguracion = $e->getCode() === 1062
                 ? 'Ya existe un rol con ese nombre.'
@@ -164,7 +165,8 @@ try {
     if ($e->getCode() === 1146) {
         $tablaConfiguracionDisponible = false;
     } else {
-        throw $e;
+        error_log('SYSMOVILWT al cargar configuración de empresa: ' . $e->getMessage());
+        $tablaConfiguracionDisponible = false;
     }
 }
 

@@ -3,6 +3,7 @@ require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 require_once "../config/actividad.php";
 exigirPermiso($conn, 'compras', 'ver');
+$csrfToken = tokenCsrfSysmovil();
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 $conn->set_charset("utf8mb4");
 
@@ -14,7 +15,8 @@ $mensaje = "";
 $tipoMensaje = "success";
 
 /* CREAR / EDITAR */
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
+    exigirCsrfSysmovil();
     $accion = $_POST["accion"] ?? "crear";
     exigirPermiso($conn, 'compras', $accion === 'editar' ? 'editar' : 'crear');
     $idCompra = (int)($_POST["id_compra"] ?? 0);
@@ -119,7 +121,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $stmt->close();
             }
 
-            $qProducto = $conn->prepare("SELECT id_producto FROM productos WHERE id_producto=? FOR UPDATE");
+            $qProducto = $conn->prepare("SELECT id_producto FROM productos WHERE id_producto=? AND estado='Activo' FOR UPDATE");
             $qDetalle = $conn->prepare("INSERT INTO detalle_compra (id_compra, id_producto, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?)");
             $qStock = $conn->prepare("UPDATE productos SET stock=stock+?, precio_compra=? WHERE id_producto=?");
 
@@ -131,7 +133,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 $qProducto->bind_param("i", $pid);
                 $qProducto->execute();
-                if (!$qProducto->get_result()->fetch_assoc()) throw new RuntimeException("No existe el producto ID $pid.");
+                if (!$qProducto->get_result()->fetch_assoc()) throw new RuntimeException("El producto ID $pid no existe o está inactivo.");
 
                 $qDetalle->bind_param("iiidd", $idGuardado, $pid, $cantidad, $precio, $subtotal);
                 $qDetalle->execute();
@@ -146,16 +148,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             redirectCompra($accion === "editar" ? "editada" : "creada");
         } catch (Throwable $e) {
             $conn->rollback();
-            $mensaje = "No se pudo guardar la compra: " . $e->getMessage();
+            if ($e instanceof mysqli_sql_exception) {
+                error_log('SYSMOVILWT compras: ' . $e->getMessage());
+                $mensaje = 'No fue posible guardar la compra. Revisa los datos e inténtalo de nuevo.';
+            } else {
+                $mensaje = $e->getMessage();
+            }
             $tipoMensaje = "error";
         }
     }
 }
 
 /* ELIMINAR Y REVERTIR STOCK */
-if (isset($_GET["eliminar"])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["eliminar"])) {
+    exigirCsrfSysmovil();
     exigirPermiso($conn, 'compras', 'eliminar');
-    $idEliminar = (int)$_GET["eliminar"];
+    $idEliminar = (int)$_POST["eliminar"];
     try {
         $conn->begin_transaction();
         $stmt = $conn->prepare("SELECT id_compra FROM compras WHERE id_compra=? FOR UPDATE");
@@ -202,7 +210,12 @@ if (isset($_GET["eliminar"])) {
         redirectCompra("eliminada");
     } catch (Throwable $e) {
         $conn->rollback();
-        $mensaje = "No se pudo eliminar la compra: " . $e->getMessage();
+        if ($e instanceof mysqli_sql_exception) {
+            error_log('SYSMOVILWT compras al eliminar: ' . $e->getMessage());
+            $mensaje = 'No fue posible eliminar la compra. Verifica sus movimientos de inventario e inténtalo de nuevo.';
+        } else {
+            $mensaje = $e->getMessage();
+        }
         $tipoMensaje = "error";
     }
 }
@@ -218,7 +231,7 @@ if (isset($_GET["mensaje"])) {
 }
 $proveedores = $conn->query("SELECT id_proveedor, nombre_proveedor FROM proveedores WHERE estado='Activo' ORDER BY nombre_proveedor")->fetch_all(MYSQLI_ASSOC);
 $empleados = $conn->query("SELECT id_empleado, nombres, apellidos, cargo FROM empleados WHERE estado='Activo' ORDER BY nombres, apellidos")->fetch_all(MYSQLI_ASSOC);
-$productos = $conn->query("SELECT id_producto, codigo_producto, nombre_producto, marca, modelo, precio_compra, stock FROM productos ORDER BY nombre_producto")->fetch_all(MYSQLI_ASSOC);
+$productos = $conn->query("SELECT id_producto, codigo_producto, nombre_producto, marca, modelo, precio_compra, stock FROM productos WHERE estado='Activo' ORDER BY nombre_producto")->fetch_all(MYSQLI_ASSOC);
 
 $buscar = trim($_GET["buscar"] ?? "");
 $idProveedorFiltro = (int)($_GET["proveedor"] ?? 0);
@@ -305,13 +318,13 @@ $hoy = date("Y-m-d");
 <div class="purchase-table-card purchase-table-wrapper"><table class="purchase-table"><thead><tr><th>Código</th><th>Fecha</th><th>Proveedor</th><th>Empleado</th><th>Productos</th><th>Total</th><th>Acciones</th></tr></thead><tbody>
 <?php if (!$compras): ?><tr class="purchase-empty"><td colspan="7"><div class="empty-state"><i class="fa-solid fa-bag-shopping"></i><h3>No hay compras registradas</h3><p>Haz clic en <strong>Nueva Compra</strong> para registrar la primera compra.</p></div></td></tr>
 <?php else: foreach($compras as $c): $idc=(int)$c["id_compra"]; ?>
-<tr><td><strong><?= h($c["numero_factura_compra"] ?: ("COMP-" . str_pad((string)$idc,5,"0",STR_PAD_LEFT))) ?></strong><br><small>#<?= $idc ?></small></td><td><?= h(date("d/m/Y",strtotime($c["fecha_compra"]))) ?></td><td><?= h($c["nombre_proveedor"]) ?></td><td><?= h(trim($c["empleado_nombres"]." ".$c["empleado_apellidos"])) ?></td><td><?= (int)$c["unidades"] ?> unidades<br><small><?= (int)$c["lineas"] ?> líneas</small></td><td><strong><?= cop($c["total"]) ?></strong></td><td><div class="purchase-actions-cell"><button type="button" class="btn-view-purchase" title="Ver" onclick="verCompra(<?= $idc ?>)"><i class="fa-solid fa-eye"></i></button><button type="button" class="btn-edit-purchase" title="Editar" onclick="editarCompra(<?= $idc ?>)"><i class="fa-solid fa-pen"></i></button><a class="btn-delete-purchase" title="Eliminar" href="compras.php?eliminar=<?= $idc ?>" onclick="return confirm('¿Eliminar esta compra y descontar sus unidades del stock, si es posible?')"><i class="fa-solid fa-trash"></i></a></div></td></tr>
+<tr><td><strong><?= h($c["numero_factura_compra"] ?: ("COMP-" . str_pad((string)$idc,5,"0",STR_PAD_LEFT))) ?></strong><br><small>#<?= $idc ?></small></td><td><?= h(date("d/m/Y",strtotime($c["fecha_compra"]))) ?></td><td><?= h($c["nombre_proveedor"]) ?></td><td><?= h(trim($c["empleado_nombres"]." ".$c["empleado_apellidos"])) ?></td><td><?= (int)$c["unidades"] ?> unidades<br><small><?= (int)$c["lineas"] ?> líneas</small></td><td><strong><?= cop($c["total"]) ?></strong></td><td><div class="purchase-actions-cell"><button type="button" class="btn-view-purchase" title="Ver" onclick="verCompra(<?= $idc ?>)"><i class="fa-solid fa-eye"></i></button><button type="button" class="btn-edit-purchase" title="Editar" onclick="editarCompra(<?= $idc ?>)"><i class="fa-solid fa-pen"></i></button><form method="post" style="display:inline-flex;margin:0" onsubmit="return confirm('¿Eliminar esta compra y descontar sus unidades del stock, si es posible?')"><input type="hidden" name="csrf_token" value="<?= h($csrfToken) ?>"><button class="btn-delete-purchase" type="submit" name="eliminar" value="<?= $idc ?>" title="Eliminar"><i class="fa-solid fa-trash"></i></button></form></div></td></tr>
 <?php endforeach; endif; ?>
 </tbody></table></div>
 </section></main>
 
 <div class="purchase-modal" id="purchaseModal" role="dialog" aria-modal="true"><div class="purchase-modal-content"><div class="purchase-modal-header"><h2 id="purchaseModalTitle"><i class="fa-solid fa-bag-shopping"></i> Nueva Compra</h2><button type="button" id="btnClosePurchaseModal" class="purchase-modal-close"><i class="fa-solid fa-xmark"></i></button></div>
-<form id="purchaseForm" class="purchase-form" method="POST"><input type="hidden" name="accion" id="accionCompra" value="crear"><input type="hidden" name="id_compra" id="idCompra">
+<form id="purchaseForm" class="purchase-form" method="POST"><input type="hidden" name="csrf_token" value="<?= h($csrfToken) ?>"><input type="hidden" name="accion" id="accionCompra" value="crear"><input type="hidden" name="id_compra" id="idCompra">
 <div class="purchase-section"><h3>Información de la Compra</h3><div class="purchase-grid">
 <div class="form-group"><label for="fechaCompra">Fecha *</label><input type="date" id="fechaCompra" name="fecha_compra" value="<?= h($hoy) ?>" required></div>
 <div class="form-group"><label for="proveedorCompra">Proveedor *</label><select id="proveedorCompra" name="id_proveedor" required><option value="">Seleccione...</option><?php foreach($proveedores as $p): ?><option value="<?= (int)$p["id_proveedor"] ?>"><?= h($p["nombre_proveedor"]) ?></option><?php endforeach; ?></select></div>

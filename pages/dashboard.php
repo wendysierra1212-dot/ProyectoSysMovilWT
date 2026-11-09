@@ -10,7 +10,7 @@ function h(mixed $valor): string { return htmlspecialchars((string)($valor ?? ''
 
 /* ACCIÓN: consultar los indicadores que alimentan las tarjetas */
 $resumen = [
-    'productos' => (int)$conn->query('SELECT COUNT(*) FROM productos')->fetch_row()[0],
+    'productos' => (int)$conn->query("SELECT COUNT(*) FROM productos WHERE estado='Activo'")->fetch_row()[0],
     'ventas' => (int)$conn->query("SELECT COUNT(*) FROM ventas WHERE estado = 'Completada'")->fetch_row()[0],
     'clientes' => (int)$conn->query('SELECT COUNT(*) FROM clientes')->fetch_row()[0],
     'ingresos' => (float)$conn->query("SELECT COALESCE(SUM(total), 0) FROM ventas WHERE estado = 'Completada'")->fetch_row()[0],
@@ -18,23 +18,25 @@ $resumen = [
 
 /* ACCIÓN: consultar los eventos recientes de todos los módulos */
 $actividad = [];
+$mensajeActividad = '';
 try {
     prepararTablaActividadSistema($conn);
     $actividad = $conn->query(
-        'SELECT modulo, accion, descripcion, fecha
+        'SELECT modulo, accion, actor_nombre, descripcion, fecha
          FROM actividad_sistema ORDER BY fecha DESC, id_actividad DESC LIMIT 10'
     )->fetch_all(MYSQLI_ASSOC);
 } catch (Throwable $e) {
-    // El dashboard permanece disponible aunque la bitácora todavía no exista.
+    error_log('SYSMOVILWT dashboard bitácora: ' . $e->getMessage());
+    $mensajeActividad = 'No fue posible cargar la bitácora. Verifica que las migraciones 002 y 005 estén instaladas.';
 }
 
 /* ACCIÓN: consultar productos en el mínimo o por debajo del mínimo configurado */
 $alertasStock = $conn->query(
-    'SELECT id_producto, codigo_producto, nombre_producto, stock, COALESCE(stock_minimo, 5) AS stock_minimo
+    "SELECT id_producto, codigo_producto, nombre_producto, stock, COALESCE(stock_minimo, 5) AS stock_minimo
      FROM productos
-     WHERE stock <= COALESCE(stock_minimo, 5)
+     WHERE estado = 'Activo' AND stock <= COALESCE(stock_minimo, 5)
      ORDER BY stock ASC, nombre_producto ASC
-     LIMIT 10'
+     LIMIT 10"
 )->fetch_all(MYSQLI_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -107,8 +109,9 @@ $alertasStock = $conn->query(
         <!-- ACCIÓN: presentar actividad reciente y alertas -->
         <section class="dashboard-grid">
             <div class="dashboard-panel"><div class="panel-header"><h3><i class="fa-solid fa-clock-rotate-left"></i> Actividad reciente</h3></div><div class="panel-body">
-                <?php if (!$actividad): ?><p class="activity-empty">No hay actividad registrada en los módulos todavía.</p>
-                <?php else: foreach ($actividad as $evento): ?><div class="activity-item"><i class="fa-solid fa-circle-info"></i><div><strong><?= h($evento['descripcion']) ?></strong><br><small><?= h($evento['modulo']) ?> · <?= h($evento['accion']) ?> · <?= h(date('d/m/Y H:i', strtotime((string)$evento['fecha']))) ?></small></div></div><?php endforeach; endif; ?>
+                <?php if ($mensajeActividad !== ''): ?><p class="activity-empty"><?= h($mensajeActividad) ?></p>
+                <?php elseif (!$actividad): ?><p class="activity-empty">No hay actividad registrada en los módulos todavía.</p>
+                <?php else: foreach ($actividad as $evento): ?><div class="activity-item"><i class="fa-solid fa-circle-info"></i><div><strong><?= h($evento['descripcion']) ?></strong><br><small><?= h($evento['modulo']) ?> · <?= h($evento['accion']) ?> · Por: <?= h($evento['actor_nombre'] ?? 'Sistema') ?> · <?= h(date('d/m/Y H:i', strtotime((string)$evento['fecha']))) ?></small></div></div><?php endforeach; endif; ?>
             </div></div>
             <div class="dashboard-panel"><div class="panel-header"><h3><i class="fa-solid fa-triangle-exclamation"></i> Alertas de inventario</h3></div><div class="panel-body">
                 <?php if (!$alertasStock): ?><p class="activity-empty">No hay productos con stock bajo.</p>

@@ -4,6 +4,7 @@ require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 require_once "../config/actividad.php";
 exigirPermiso($conn, 'clientes', 'ver');
+$csrfToken = tokenCsrfSysmovil();
 
 /* =========================================================
    PROCESAMIENTO DEL CRUD
@@ -17,7 +18,8 @@ $tipoMensaje = "";
    CREAR / EDITAR CLIENTE
    ========================================================= */
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["accion"])) {
+    exigirCsrfSysmovil();
 
     $accion = $_POST["accion"] ?? "";
     exigirPermiso($conn, 'clientes', $accion === 'crear' ? 'crear' : 'editar');
@@ -75,7 +77,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             if (!$stmt) {
 
-                $mensaje = "Error al preparar el registro: " . $conn->error;
+                error_log('SYSMOVILWT clientes al preparar registro: ' . $conn->error);
+                $mensaje = 'No fue posible preparar el registro. Inténtalo de nuevo.';
                 $tipoMensaje = "error";
 
             } else {
@@ -105,7 +108,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if ($stmt->errno == 1062) {
                         $mensaje = "No fue posible registrar el cliente porque la cédula o el correo ya están registrados.";
                     } else {
-                        $mensaje = "No fue posible registrar el cliente: " . $stmt->error;
+                        error_log('SYSMOVILWT clientes al registrar: ' . $stmt->error);
+                        $mensaje = 'No fue posible registrar el cliente. Revisa los datos e inténtalo de nuevo.';
                     }
 
                     $tipoMensaje = "error";
@@ -147,7 +151,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 if (!$stmt) {
 
-                    $mensaje = "Error al preparar la actualización: " . $conn->error;
+                    error_log('SYSMOVILWT clientes al preparar actualización: ' . $conn->error);
+                    $mensaje = 'No fue posible preparar la actualización. Inténtalo de nuevo.';
                     $tipoMensaje = "error";
 
                 } else {
@@ -178,7 +183,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         if ($stmt->errno == 1062) {
                             $mensaje = "No fue posible actualizar el cliente porque la cédula o el correo ya están registrados en otro cliente.";
                         } else {
-                            $mensaje = "No fue posible actualizar el cliente: " . $stmt->error;
+                            error_log('SYSMOVILWT clientes al actualizar: ' . $stmt->error);
+                            $mensaje = 'No fue posible actualizar el cliente. Revisa los datos e inténtalo de nuevo.';
                         }
 
                         $tipoMensaje = "error";
@@ -195,10 +201,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
    ELIMINAR CLIENTE
    ========================================================= */
 
-if (isset($_GET["eliminar"])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["eliminar"])) {
+    exigirCsrfSysmovil();
     exigirPermiso($conn, 'clientes', 'eliminar');
 
-    $idEliminar = (int) $_GET["eliminar"];
+    $idEliminar = (int) $_POST["eliminar"];
 
     if ($idEliminar > 0) {
 
@@ -221,7 +228,8 @@ if (isset($_GET["eliminar"])) {
 
             } else {
 
-                $mensaje = "No fue posible eliminar el cliente: " . $stmt->error;
+                error_log('SYSMOVILWT clientes al eliminar: ' . $stmt->error);
+                $mensaje = 'No fue posible eliminar el cliente. Inténtalo de nuevo.';
                 $tipoMensaje = "error";
 
                 $stmt->close();
@@ -229,7 +237,8 @@ if (isset($_GET["eliminar"])) {
 
         } else {
 
-            $mensaje = "No fue posible preparar la eliminación: " . $conn->error;
+            error_log('SYSMOVILWT clientes al preparar eliminación: ' . $conn->error);
+            $mensaje = 'No fue posible preparar la eliminación. Inténtalo de nuevo.';
             $tipoMensaje = "error";
         }
     }
@@ -1241,16 +1250,12 @@ function limpiar($dato)
 
                                     <!-- ELIMINAR -->
 
-                                    <a
-                                        href="clientes.php?eliminar=<?= $cliente["id_cliente"] ?>"
-                                        class="btn-delete-client"
-                                        title="Eliminar cliente"
-
-                                        onclick="return confirm('¿Está seguro de eliminar este cliente? Esta acción no se puede deshacer.');">
-
-                                        <i class="fa-solid fa-trash"></i>
-
-                                    </a>
+                                    <form method="post" style="display:inline-flex;margin:0" onsubmit="return confirm('¿Está seguro de eliminar este cliente? Esta acción no se puede deshacer.');">
+                                        <input type="hidden" name="csrf_token" value="<?= limpiar($csrfToken) ?>">
+                                        <button type="submit" name="eliminar" value="<?= (int)$cliente["id_cliente"] ?>" class="btn-delete-client" title="Eliminar cliente">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
 
 
                                 </div>
@@ -1350,6 +1355,8 @@ function limpiar($dato)
             class="crud-form"
             method="POST"
             action="clientes.php">
+
+            <input type="hidden" name="csrf_token" value="<?= limpiar($csrfToken) ?>">
 
             <input
                 type="hidden"

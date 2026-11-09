@@ -4,6 +4,7 @@ require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 require_once "../config/actividad.php";
 exigirPermiso($conn, 'inventario', 'crear');
+$csrfToken = tokenCsrfSysmovil();
 
 
 /* ==================================================
@@ -11,6 +12,7 @@ exigirPermiso($conn, 'inventario', 'crear');
    ================================================== */
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    exigirCsrfSysmovil();
 
     /* Datos principales */
 
@@ -134,10 +136,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (!$stmt) {
 
-        die(
-            "Error al preparar la consulta: "
-            . $conn->error
-        );
+        error_log('SYSMOVILWT productos al preparar registro: ' . $conn->error);
+        http_response_code(500);
+        exit('No fue posible preparar el registro del producto. Inténtalo de nuevo.');
 
     }
 
@@ -187,8 +188,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
        ERROR
        ================================================== */
 
-    echo "Error al registrar el producto: "
-        . htmlspecialchars($stmt->error);
+    error_log('SYSMOVILWT endpoint productos/crear: ' . $stmt->error);
+    http_response_code(500);
+    echo 'No fue posible registrar el producto. Inténtalo de nuevo.';
 
 
     $stmt->close();

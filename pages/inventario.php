@@ -2,7 +2,50 @@
 
 require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
+require_once "../config/actividad.php";
 exigirPermiso($conn, 'inventario', 'ver');
+$csrfToken = tokenCsrfSysmovil();
+$puedeEditarInventario = usuarioTienePermiso($conn, 'inventario', 'editar');
+$mensajesInventario = [
+    'producto_eliminado' => ['tipo' => 'success', 'texto' => 'El producto se eliminó correctamente.'],
+    'producto_relacionado' => ['tipo' => 'error', 'texto' => 'No se puede eliminar este producto porque está asociado a ventas u otros registros. Se conserva para proteger el historial.'],
+    'error_eliminar' => ['tipo' => 'error', 'texto' => 'No fue posible eliminar el producto. Recarga la página e inténtalo de nuevo.'],
+    'estado_producto_actualizado' => ['tipo' => 'success', 'texto' => 'El estado del producto se actualizó correctamente.'],
+    'error_estado_producto' => ['tipo' => 'error', 'texto' => 'No fue posible cambiar el estado del producto. Recarga la página e inténtalo de nuevo.'],
+];
+$avisoInventario = $mensajesInventario[$_GET['mensaje'] ?? ''] ?? null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_estado'])) {
+    exigirCsrfSysmovil();
+    exigirPermiso($conn, 'inventario', 'editar');
+    $idProductoEstado = (int)$_POST['cambiar_estado'];
+
+    if ($idProductoEstado <= 0) {
+        header('Location: inventario.php?mensaje=error_estado_producto');
+        exit;
+    }
+
+    try {
+        $stmtEstado = $conn->prepare("UPDATE productos SET estado = IF(estado = 'Activo', 'Inactivo', 'Activo') WHERE id_producto = ?");
+        $stmtEstado->bind_param('i', $idProductoEstado);
+        $stmtEstado->execute();
+        $actualizado = $stmtEstado->affected_rows === 1;
+        $stmtEstado->close();
+
+        if (!$actualizado) {
+            header('Location: inventario.php?mensaje=error_estado_producto');
+            exit;
+        }
+
+        registrarActividadSistema($conn, 'Inventario', 'Cambio de estado', 'Estado del producto #' . $idProductoEstado . ' actualizado.');
+        header('Location: inventario.php?mensaje=estado_producto_actualizado');
+        exit;
+    } catch (Throwable $e) {
+        error_log('No fue posible cambiar el estado del producto #' . $idProductoEstado . ': ' . $e->getMessage());
+        header('Location: inventario.php?mensaje=error_estado_producto');
+        exit;
+    }
+}
 
 $sql = "SELECT
             p.id_producto,
@@ -18,6 +61,7 @@ $sql = "SELECT
             p.precio_venta,
             p.stock,
             p.stock_minimo,
+            p.estado,
             p.garantia_meses,
             p.condicion,
             p.id_categoria,
@@ -45,11 +89,11 @@ if ($resultado) {
 
     while ($producto = $resultado->fetch_assoc()) {
 
-        if ($producto["stock"] == 0) {
+        if (($producto["estado"] ?? "Activo") === "Activo" && $producto["stock"] == 0) {
             $productosAgotados++;
         }
 
-        if ($producto["stock"] > 0 && $producto["stock"] <= (int)($producto["stock_minimo"] ?? 5)) {
+        if (($producto["estado"] ?? "Activo") === "Activo" && $producto["stock"] > 0 && $producto["stock"] <= (int)($producto["stock_minimo"] ?? 5)) {
             $stockBajo++;
         }
     }
@@ -286,6 +330,13 @@ if ($resultado) {
 
             </div>
 
+            <?php if ($avisoInventario): ?>
+                <div class="inventory-alert inventory-alert-<?= htmlspecialchars($avisoInventario['tipo'], ENT_QUOTES, 'UTF-8') ?>" role="status">
+                    <i class="fa-solid <?= $avisoInventario['tipo'] === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation' ?>"></i>
+                    <span><?= htmlspecialchars($avisoInventario['texto'], ENT_QUOTES, 'UTF-8') ?></span>
+                </div>
+            <?php endif; ?>
+
             <div class="inventory-toolbar">
 
                 <div class="inventory-search">
@@ -328,6 +379,8 @@ if ($resultado) {
                     <option>Stock Bajo</option>
 
                     <option>Agotado</option>
+
+                    <option>Inactivo</option>
 
                 </select>
 
@@ -394,7 +447,9 @@ if ($resultado) {
 
             <?php
 
-            if ($producto["stock"] == 0) {
+            if (($producto["estado"] ?? "Activo") !== "Activo") {
+                $estado = "Inactivo";
+            } elseif ($producto["stock"] == 0) {
 
                 $estado = "Agotado";
 
@@ -438,7 +493,7 @@ if ($resultado) {
 
                 <td>
 
-                    <span class="status-badge <?= $estado === "Disponible" ? "inventory-available" : ($estado === "Agotado" ? "inventory-out" : "inventory-low") ?>">
+                    <span class="status-badge <?= $estado === "Disponible" ? "inventory-available" : ($estado === "Inactivo" ? "inventory-inactive" : ($estado === "Agotado" ? "inventory-out" : "inventory-low")) ?>">
 
                         <?= $estado ?>
 
@@ -490,14 +545,20 @@ if ($resultado) {
     </a>
 
 
-    <a class="btn-delete-inventory"
-        href="../productos/eliminar.php?id=<?= $producto["id_producto"] ?>"
-        title="Eliminar producto"
-        onclick="return confirm('¿Está seguro de eliminar este producto?');">
+    <?php if ($puedeEditarInventario): ?>
+    <form method="post" action="inventario.php" style="display:inline-flex;margin:0" onsubmit="return confirm('¿Deseas <?= ($producto["estado"] ?? "Activo") === "Activo" ? "inactivar" : "activar" ?> este producto?');">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+        <button type="submit" name="cambiar_estado" value="<?= (int)$producto["id_producto"] ?>" class="btn-state-provider" title="<?= ($producto["estado"] ?? "Activo") === "Activo" ? "Inactivar producto" : "Activar producto" ?>" aria-label="<?= ($producto["estado"] ?? "Activo") === "Activo" ? "Inactivar producto" : "Activar producto" ?>">
+            <i class="fa-solid fa-power-off"></i>
+        </button>
+    </form>
+    <?php endif; ?>
 
-        <i class="fa-solid fa-trash"></i>
 
-    </a>
+    <form method="post" action="../productos/eliminar.php" style="display:inline-flex;margin:0" onsubmit="return confirm('¿Está seguro de eliminar este producto?');">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+        <button type="submit" name="id" value="<?= (int)$producto["id_producto"] ?>" class="btn-delete-inventory" title="Eliminar producto"><i class="fa-solid fa-trash"></i></button>
+    </form>
 
     </div>
 </td>
@@ -578,6 +639,7 @@ if ($resultado) {
             class="inventory-form"
             method="POST"
             action="../productos/crear.php">
+<input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
 <input
     type="hidden"
     id="productoCondicion"

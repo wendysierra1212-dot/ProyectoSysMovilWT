@@ -4,11 +4,18 @@ require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 exigirPermiso($conn, 'clientes', 'eliminar');
 
-if (!isset($_GET["id"])) {
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    http_response_code(405);
+    header('Allow: POST');
+    exit('Esta acción solo acepta solicitudes POST.');
+}
+exigirCsrfSysmovil();
+
+if (!isset($_POST["id"])) {
     die("No se recibió el ID del cliente.");
 }
 
-$id_cliente = intval($_GET["id"]);
+$id_cliente = intval($_POST["id"]);
 
 $sql = "DELETE FROM clientes WHERE id_cliente = ?";
 
@@ -23,7 +30,9 @@ if ($stmt->execute()) {
 
 } else {
 
-    echo "Error al eliminar el cliente: " . $stmt->error;
+    error_log('SYSMOVILWT endpoint clientes/eliminar: ' . $stmt->error);
+    http_response_code(500);
+    echo 'No fue posible eliminar el cliente. Inténtalo de nuevo.';
 
 }
 

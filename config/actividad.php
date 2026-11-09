@@ -21,16 +21,28 @@ function prepararTablaActividadSistema(mysqli $db): void
         id_actividad BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
         modulo VARCHAR(40) NOT NULL,
         accion VARCHAR(40) NOT NULL,
+        actor_usuario_id INT DEFAULT NULL,
+        actor_nombre VARCHAR(100) NOT NULL DEFAULT 'Sistema',
         descripcion VARCHAR(255) NOT NULL,
         fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id_actividad),
         KEY idx_actividad_fecha (fecha),
-        KEY idx_actividad_modulo (modulo)
+        KEY idx_actividad_modulo (modulo),
+        KEY idx_actividad_usuario (actor_usuario_id),
+        CONSTRAINT fk_actividad_sistema_usuario FOREIGN KEY (actor_usuario_id)
+            REFERENCES usuarios (id_usuario) ON DELETE SET NULL ON UPDATE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
     $preparada = true;
 }
 
-function registrarActividadSistema(mysqli $db, string $modulo, string $accion, string $descripcion): void
+function registrarActividadSistema(
+    mysqli $db,
+    string $modulo,
+    string $accion,
+    string $descripcion,
+    ?int $actorUsuarioId = null,
+    ?string $actorNombre = null
+): void
 {
     try {
         prepararTablaActividadSistema($db);
@@ -39,11 +51,21 @@ function registrarActividadSistema(mysqli $db, string $modulo, string $accion, s
         $descripcion = substr(trim($descripcion), 0, 255);
         if ($modulo === '' || $accion === '' || $descripcion === '') return;
 
-        $stmt = $db->prepare('INSERT INTO actividad_sistema (modulo, accion, descripcion) VALUES (?, ?, ?)');
-        $stmt->bind_param('sss', $modulo, $accion, $descripcion);
+        $usuarioSesion = $_SESSION['sysmovil_usuario'] ?? null;
+        if ($actorUsuarioId === null && is_array($usuarioSesion) && isset($usuarioSesion['id_usuario'])) {
+            $actorUsuarioId = (int)$usuarioSesion['id_usuario'];
+        }
+        if ($actorNombre === null && is_array($usuarioSesion)) {
+            $actorNombre = (string)($usuarioSesion['nombre_usuario'] ?? $usuarioSesion['nombre'] ?? 'Sistema');
+        }
+        $actorNombre = substr(trim((string)($actorNombre ?: 'Sistema')), 0, 100);
+
+        $stmt = $db->prepare('INSERT INTO actividad_sistema (modulo, accion, actor_usuario_id, actor_nombre, descripcion) VALUES (?, ?, ?, ?, ?)');
+        $stmt->bind_param('ssiss', $modulo, $accion, $actorUsuarioId, $actorNombre, $descripcion);
         $stmt->execute();
         $stmt->close();
     } catch (Throwable $e) {
+        error_log('SYSMOVILWT bitácora: ' . $e->getMessage());
         // La bitácora no debe impedir una operación principal que ya fue guardada.
     }
 }

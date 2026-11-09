@@ -3,6 +3,7 @@
 require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 exigirPermiso($conn, 'inventario', 'ver');
+$csrfToken = tokenCsrfSysmovil();
 
 $sql = "SELECT 
             p.id_producto,
@@ -102,10 +103,10 @@ $resultado = $conn->query($sql);
 
                         |
 
-                        <a href="eliminar.php?id=<?= $producto['id_producto'] ?>"
-                           onclick="return confirm('¿Está seguro de eliminar este producto?');">
-                            Eliminar
-                        </a>
+                        <form method="post" action="eliminar.php" style="display:inline" onsubmit="return confirm('¿Está seguro de eliminar este producto?');">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
+                            <button type="submit" name="id" value="<?= (int)$producto['id_producto'] ?>">Eliminar</button>
+                        </form>
                     </td>
 
                 </tr>

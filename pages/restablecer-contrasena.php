@@ -29,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === '') {
         $error = 'La página venció. Recarga el enlace e inténtalo de nuevo.';
     } elseif (!$tokenValido) {
         $error = 'El enlace no es válido, ya se usó o venció. Solicita uno nuevo.';
-    } elseif (strlen($nueva) < 8) {
-        $error = 'La contraseña debe tener al menos 8 caracteres.';
+    } elseif (strlen($nueva) < 6) {
+        $error = 'La contraseña debe tener al menos 6 caracteres.';
     } elseif (!hash_equals($nueva, $confirmar)) {
         $error = 'Las contraseñas no coinciden.';
     } else {
@@ -60,7 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === '') {
             $resultado = 'Contraseña actualizada. Ya puedes iniciar sesión con tu nueva contraseña.';
         } catch (Throwable $e) {
             try { $conn->rollback(); } catch (Throwable $ignorado) {}
-            $error = $e->getMessage();
+            if ($e instanceof mysqli_sql_exception) {
+                error_log('SYSMOVILWT al restablecer contraseña: ' . $e->getMessage());
+                $error = 'No fue posible actualizar la contraseña. Recarga el enlace e inténtalo de nuevo.';
+            } else {
+                $error = $e->getMessage();
+            }
         }
     }
 }
@@ -73,6 +78,6 @@ $csrf = tokenCsrfSysmovil();
 <body class="login-page"><div class="login-container"><section class="login-right"><div class="login-card recovery-card"><div class="login-logo"><div class="logo-circle">WT</div></div><h2>Nueva contraseña</h2>
 <?php if ($resultado !== ''): ?><div class="recovery-message success" role="status"><?= htmlspecialchars($resultado, ENT_QUOTES, 'UTF-8') ?></div><a class="btn btn-primary login-btn" href="../login.html">Ir al inicio de sesión</a>
 <?php elseif ($error !== ''): ?><div class="recovery-message" role="alert"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div><a class="btn btn-primary login-btn" href="solicitar-restablecimiento.php">Solicitar un enlace nuevo</a>
-<?php elseif ($tokenValido): ?><p class="login-subtitle">Elige una contraseña de al menos 8 caracteres.</p><form method="post"><input type="hidden" name="token" value="<?= htmlspecialchars($token, ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>"><div class="form-group"><label for="contrasena">Nueva contraseña</label><input class="form-control" type="password" id="contrasena" name="contrasena" required minlength="8" autocomplete="new-password"></div><div class="form-group"><label for="confirmar">Confirmar contraseña</label><input class="form-control" type="password" id="confirmar" name="confirmar" required minlength="8" autocomplete="new-password"></div><button class="btn btn-primary login-btn" type="submit"><i class="fa-solid fa-key"></i> Guardar contraseña</button></form>
+<?php elseif ($tokenValido): ?><p class="login-subtitle">Elige una contraseña de al menos 6 caracteres.</p><form method="post"><input type="hidden" name="token" value="<?= htmlspecialchars($token, ENT_QUOTES, 'UTF-8') ?>"><input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>"><div class="form-group"><label for="contrasena">Nueva contraseña</label><input class="form-control" type="password" id="contrasena" name="contrasena" required minlength="6" autocomplete="new-password"></div><div class="form-group"><label for="confirmar">Confirmar contraseña</label><input class="form-control" type="password" id="confirmar" name="confirmar" required minlength="6" autocomplete="new-password"></div><button class="btn btn-primary login-btn" type="submit"><i class="fa-solid fa-key"></i> Guardar contraseña</button></form>
 <?php else: ?><div class="recovery-message" role="alert">El enlace no es válido, ya se usó o venció. Solicita uno nuevo.</div><a class="btn btn-primary login-btn" href="solicitar-restablecimiento.php">Solicitar un enlace nuevo</a><?php endif; ?>
 <div class="login-footer">© 2026 WT SERVIPHONE</div></div></section></div></body></html>

@@ -222,8 +222,19 @@ $titulos = ['general' => 'Reporte general', 'ventas' => 'Ventas', 'compras' => '
     </main>
     <script src="../assets/js/utils.js"></script>
     <script>
+        function protegerFormulaCSV(valor) {
+            const texto = String(valor ?? "");
+            return /^[\u0000-\u0020\uFEFF]*[=+\-@]/.test(texto) || /^[\t\r\n]/.test(texto)
+                ? "'" + texto
+                : texto;
+        }
+
+        function celdaCSV(valor) {
+            return '"' + protegerFormulaCSV(valor).replaceAll('"', '""') + '"';
+        }
+
         function exportarCSV(){
-            const filas=[...document.querySelectorAll('#tablaReporte tr')].map(f=>[...f.cells].map(c=>'"'+c.innerText.replaceAll('"','""')+'"').join(','));
+            const filas=[...document.querySelectorAll('#tablaReporte tr')].map(f=>[...f.cells].map(c=>celdaCSV(c.innerText)).join(','));
             const archivo=new Blob(['\uFEFF'+filas.join('\r\n')],{type:'text/csv;charset=utf-8'});
             const enlace=document.createElement('a');enlace.href=URL.createObjectURL(archivo);enlace.download='reporte-<?= h($tipo) ?>-<?= h($inicio) ?>-<?= h($fin) ?>.csv';enlace.click();URL.revokeObjectURL(enlace.href);
         }

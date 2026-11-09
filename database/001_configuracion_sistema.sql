@@ -2,6 +2,7 @@
 -- MIGRACIÓN 001: DATOS BÁSICOS DE CONFIGURACIÓN DE EMPRESA
 -- Ejecutar una sola vez sobre la base sysmovilwt_v2.
 -- =========================================================
+USE sysmovilwt_v2;
 
 CREATE TABLE IF NOT EXISTS configuracion_sistema (
     id_configuracion TINYINT UNSIGNED NOT NULL DEFAULT 1,

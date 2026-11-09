@@ -96,26 +96,40 @@ function exigirInicioSesion(mysqli $db): array
         exit;
     }
 
-    if (time() - (int)($_SESSION['sysmovil_verificado'] ?? 0) >= 60) {
-        $stmt = $db->prepare("SELECT u.estado, u.contrasena, e.estado AS estado_empleado FROM usuarios u INNER JOIN empleados e ON e.id_empleado = u.id_empleado WHERE u.id_usuario = ?");
-        $stmt->bind_param('i', $usuario['id_usuario']);
-        $stmt->execute();
-        $estado = $stmt->get_result()->fetch_assoc();
-        $stmt->close();
-        if (!$estado || $estado['estado'] !== 'Activo' || $estado['estado_empleado'] !== 'Activo'
-            || !hash_equals((string)($_SESSION['sysmovil_hash_contrasena'] ?? ''), (string)$estado['contrasena'])) {
-            $_SESSION = [];
-            if (ini_get('session.use_cookies')) {
-                $parametros = session_get_cookie_params();
-                setcookie(session_name(), '', time() - 42000, $parametros['path'], $parametros['domain'], $parametros['secure'], $parametros['httponly']);
-            }
-            session_destroy();
-            header('Location: ../login.html?motivo=inactivo');
-            exit;
+    // Consultamos el estado y el rol en cada solicitud protegida para que
+    // los cambios hechos por un administrador se apliquen sin esperar ni
+    // obligar al usuario a iniciar sesión otra vez.
+    $stmt = $db->prepare("SELECT u.nombre_usuario, u.estado, u.contrasena, u.id_rol,
+                                 r.nombre_rol, e.nombres, e.apellidos,
+                                 e.estado AS estado_empleado
+                          FROM usuarios u
+                          INNER JOIN empleados e ON e.id_empleado = u.id_empleado
+                          INNER JOIN roles r ON r.id_rol = u.id_rol
+                          WHERE u.id_usuario = ?");
+    $stmt->bind_param('i', $usuario['id_usuario']);
+    $stmt->execute();
+    $estado = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$estado || $estado['estado'] !== 'Activo' || $estado['estado_empleado'] !== 'Activo'
+        || !hash_equals((string)($_SESSION['sysmovil_hash_contrasena'] ?? ''), (string)$estado['contrasena'])) {
+        $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $parametros = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000, $parametros['path'], $parametros['domain'], $parametros['secure'], $parametros['httponly']);
         }
-        $_SESSION['sysmovil_verificado'] = time();
+        session_destroy();
+        header('Location: ../login.html?motivo=inactivo');
+        exit;
     }
-    return $usuario;
+
+    $_SESSION['sysmovil_usuario']['nombre_usuario'] = (string)$estado['nombre_usuario'];
+    $_SESSION['sysmovil_usuario']['id_rol'] = (int)$estado['id_rol'];
+    $_SESSION['sysmovil_usuario']['rol'] = (string)$estado['nombre_rol'];
+    $_SESSION['sysmovil_usuario']['nombre'] = trim($estado['nombres'] . ' ' . $estado['apellidos']);
+    $_SESSION['sysmovil_verificado'] = time();
+
+    return $_SESSION['sysmovil_usuario'];
 }
 
 function usuarioTienePermiso(mysqli $db, string $modulo, string $accion = 'ver'): bool
@@ -160,4 +174,18 @@ function validarCsrfSysmovil(?string $token): bool
 {
     iniciarSesionSysmovil();
     return is_string($token) && isset($_SESSION['sysmovil_csrf']) && hash_equals((string)$_SESSION['sysmovil_csrf'], $token);
+}
+
+function exigirCsrfSysmovil(): void
+{
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
+        http_response_code(405);
+        header('Allow: POST');
+        exit('Esta acción solo acepta solicitudes POST.');
+    }
+
+    if (!validarCsrfSysmovil($_POST['csrf_token'] ?? null)) {
+        http_response_code(419);
+        exit('La sesión del formulario venció o el token no es válido. Recarga la página e inténtalo de nuevo.');
+    }
 }

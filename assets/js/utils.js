@@ -106,8 +106,6 @@ function cargarPerfilUsuario(){
     if (rol) rol.textContent = usuario.rol || usuario.nombre_rol || "Usuario";
 }
 
-document.addEventListener("DOMContentLoaded", cargarPerfilUsuario);
-
 /*==================================================
 =            VISIBILIDAD DE MÓDULOS POR ROL
 ==================================================*/
@@ -137,7 +135,35 @@ function ocultarModulosSinPermiso(){
         }
     });
 }
-document.addEventListener("DOMContentLoaded", ocultarModulosSinPermiso);
+
+/* Actualiza el perfil y el menú con el rol vigente en la base de datos. */
+async function sincronizarUsuarioActual(){
+    try {
+        const respuesta = await fetch("../auth/session_info.php", {
+            method: "GET",
+            credentials: "same-origin",
+            headers: { "Accept": "application/json" },
+            cache: "no-store"
+        });
+        if (!respuesta.ok) throw new Error("No se pudo consultar la sesión actual.");
+
+        const datos = await respuesta.json();
+        if (!datos.ok || !datos.usuario) throw new Error("La sesión no devolvió información de usuario.");
+        localStorage.setItem("usuarioActivo", JSON.stringify(datos.usuario));
+    } catch (error) {
+        // La página conserva el perfil previamente almacenado si no hay respuesta.
+        console.warn("No se pudo sincronizar el perfil con la sesión:", error);
+    }
+
+    cargarPerfilUsuario();
+    ocultarModulosSinPermiso();
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", sincronizarUsuarioActual, { once: true });
+} else {
+    sincronizarUsuarioActual();
+}
 
 /*==================================================
 =            MOSTRAR / OCULTAR SIDEBAR

@@ -1,2 +1,5 @@
 # Credenciales SMTP locales para recuperación de contraseña
 /config/correo.local.php
+
+# Credenciales locales de conexión a la base de datos
+/config/database.local.php

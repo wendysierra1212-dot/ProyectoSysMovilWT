@@ -8,6 +8,7 @@ require_once __DIR__ . '/../config/conexion.php';
 require_once __DIR__ . '/../config/autenticacion.php';
 require_once __DIR__ . '/../config/actividad.php';
 exigirPermiso($conn, 'ventas', 'ver');
+$csrfToken = tokenCsrfSysmovil();
 $conn->set_charset('utf8mb4');
 
 function h($value): string { return htmlspecialchars((string)($value ?? ''), ENT_QUOTES, 'UTF-8'); }
@@ -23,6 +24,7 @@ $ventaConfirmada = null;
 
 /* Registrar una venta: los precios, stock y totales se verifican en el servidor. */
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'registrar_venta') {
+    exigirCsrfSysmovil();
     exigirPermiso($conn, 'ventas', 'crear');
     $idEmpleado = (int)($_POST['id_empleado'] ?? 0);
     $idCliente = (int)($_POST['id_cliente'] ?? 0);
@@ -63,11 +65,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'regis
         } else { $idCliente = 0; }
 
         $lineas = []; $subtotal = 0.0;
-        $stmtProducto = $conn->prepare('SELECT id_producto, codigo_producto, nombre_producto, marca, precio_venta, stock FROM productos WHERE id_producto=? FOR UPDATE');
+        $stmtProducto = $conn->prepare("SELECT id_producto, codigo_producto, nombre_producto, marca, precio_venta, stock FROM productos WHERE id_producto=? AND estado='Activo' FOR UPDATE");
         foreach ($carrito as $pid => $cantidad) {
             $stmtProducto->bind_param('i', $pid); $stmtProducto->execute();
             $producto = $stmtProducto->get_result()->fetch_assoc();
-            if (!$producto) throw new RuntimeException("El producto #$pid ya no existe.");
+            if (!$producto) throw new RuntimeException("El producto #$pid ya no está disponible para la venta.");
             if ((int)$producto['stock'] < $cantidad) {
                 throw new RuntimeException('Stock insuficiente para ' . $producto['nombre_producto'] . '. Disponible: ' . (int)$producto['stock'] . '.');
             }
@@ -101,13 +103,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'regis
         redirectVentas('Venta ' . $numeroFactura . ' registrada correctamente. Total: ' . cop($total));
     } catch (Throwable $e) {
         try { $conn->rollback(); } catch (Throwable $ignored) {}
-        redirectVentas('No se pudo registrar la venta: ' . $e->getMessage(), 'error');
+        if ($e instanceof mysqli_sql_exception) {
+            error_log('SYSMOVILWT ventas: ' . $e->getMessage());
+            redirectVentas('No fue posible registrar la venta. Revisa los datos e inténtalo de nuevo.', 'error');
+        }
+        redirectVentas($e->getMessage(), 'error');
     }
 }
 
 /* Datos para la interfaz */
 $productos = [];
-$res = $conn->query("SELECT p.id_producto, p.codigo_producto, p.nombre_producto, p.marca, p.modelo, p.tipo_producto, p.precio_venta, p.stock, p.stock_minimo, p.condicion, c.nombre_categoria FROM productos p LEFT JOIN categorias c ON c.id_categoria=p.id_categoria ORDER BY p.nombre_producto");
+$res = $conn->query("SELECT p.id_producto, p.codigo_producto, p.nombre_producto, p.marca, p.modelo, p.tipo_producto, p.precio_venta, p.stock, p.stock_minimo, p.condicion, c.nombre_categoria FROM productos p LEFT JOIN categorias c ON c.id_categoria=p.id_categoria WHERE p.estado='Activo' ORDER BY p.nombre_producto");
 while ($row = $res->fetch_assoc()) $productos[] = $row;
 $clientes = $conn->query('SELECT id_cliente, nombres, apellidos, cedula, telefono FROM clientes ORDER BY nombres, apellidos')->fetch_all(MYSQLI_ASSOC);
 $empleados = $conn->query("SELECT id_empleado, nombres, apellidos, cargo FROM empleados WHERE estado='Activo' ORDER BY nombres, apellidos")->fetch_all(MYSQLI_ASSOC);
@@ -279,7 +285,7 @@ main.main-content.sales-page .sales-table tbody tr:nth-child(even) {
 <main class="main-content sales-page"><div class="sales-wrap">
   <header class="sales-top"><div class="sales-title"><h1><i class="fa-solid fa-cart-shopping" style="color:#c62828"></i> Punto de venta</h1><p>Registra ventas, administra el carrito y controla el inventario.</p></div><div class="sales-stats"><div class="stat-card"><span>Ventas completadas hoy</span><strong><?= $ventasHoy ?></strong></div><div class="stat-card"><span>Ingresos de hoy</span><strong><?= h(cop($totalDia)) ?></strong></div></div></header>
   <?php if ($mensaje !== ''): ?><div class="sales-alert <?= h($tipoMensaje) ?>"><i class="fa-solid <?= $tipoMensaje === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check' ?>"></i> <?= h($mensaje) ?></div><?php endif; ?>
-  <form method="post" id="saleForm" autocomplete="off"><input type="hidden" name="accion" value="registrar_venta">
+  <form method="post" id="saleForm" autocomplete="off"><input type="hidden" name="csrf_token" value="<?= h($csrfToken) ?>"><input type="hidden" name="accion" value="registrar_venta">
   <div class="sales-grid">
     <section class="panel sales-products-panel"><div class="panel-head"><h2><i class="fa-solid fa-mobile-screen-button"></i> Productos disponibles</h2><span class="muted" style="font-size:11px"><?= count($productos) ?> productos</span></div><div class="panel-body">
       <div class="searchbox"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="productSearch" placeholder="Buscar por nombre, marca, modelo o código..."><button type="button" class="btn-reset" id="clearProductSearch" title="Limpiar filtros" aria-label="Limpiar filtros"><i class="fa-solid fa-rotate-right"></i></button></div>
@@ -292,7 +298,7 @@ main.main-content.sales-page .sales-table tbody tr:nth-child(even) {
           <div class="product-foot"><span class="stock <?= $stock<=0?'out':($low?'low':'') ?>"><?= $stock<=0?'Agotado':($low?'Stock bajo':'Stock: '.$stock) ?></span><button type="button" class="btn btn-red add-product" data-id="<?= (int)$p['id_producto'] ?>" data-name="<?= h($p['nombre_producto']) ?>" data-price="<?= h($p['precio_venta']) ?>" data-stock="<?= $stock ?>" <?= $stock<=0?'disabled':'' ?>><i class="fa-solid fa-plus"></i> Agregar</button></div>
         </article>
       <?php endforeach; ?>
-      <?php if (!$productos): ?><div class="empty"><i class="fa-solid fa-box-open"></i>No hay productos registrados en el inventario.</div><?php endif; ?>
+      <?php if (!$productos): ?><div class="empty"><i class="fa-solid fa-box-open"></i>No hay productos activos disponibles en el inventario.</div><?php endif; ?>
       </div><div class="empty" id="noSearchResults" style="display:none">No se encontraron productos con esa búsqueda.</div>
     </div></section>
     <section class="panel sales-cart-panel"><div class="panel-head"><h2><i class="fa-solid fa-receipt"></i> Nueva venta</h2><span class="muted" style="font-size:11px"><?= h(date('d/m/Y H:i')) ?></span></div><div class="panel-body">

@@ -3,8 +3,10 @@
 require_once "../config/conexion.php";
 require_once "../config/autenticacion.php";
 exigirPermiso($conn, 'clientes', 'crear');
+$csrfToken = tokenCsrfSysmovil();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    exigirCsrfSysmovil();
 
     $cedula = $_POST["cedula"];
     $nombres = $_POST["nombres"];
@@ -35,7 +37,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         header("Location: index.php");
         exit;
     } else {
-        echo "Error al registrar el cliente: " . $stmt->error;
+        error_log('SYSMOVILWT endpoint clientes/crear: ' . $stmt->error);
+        http_response_code(500);
+        echo 'No fue posible registrar el cliente. Inténtalo de nuevo.';
     }
 
     $stmt->close();
@@ -56,6 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <h1>Registrar nuevo cliente</h1>
 
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
 
         <label>Cédula:</label><br>
         <input type="text" name="cedula"><br><br>

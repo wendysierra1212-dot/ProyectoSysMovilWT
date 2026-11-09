@@ -927,3 +927,27 @@
     }
 
 }
+
+.inventory-alert{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin:0 0 18px;
+    padding:13px 16px;
+    border:1px solid transparent;
+    border-radius:12px;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.inventory-alert-success{
+    color:#166534;
+    background:#f0fdf4;
+    border-color:#bbf7d0;
+}
+
+.inventory-alert-error{
+    color:#991b1b;
+    background:#fef2f2;
+    border-color:#fecaca;
+}

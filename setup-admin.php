@@ -24,8 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$configurado) {
 
         if ($cedula === '' || $nombres === '' || $apellidos === '' || $nombreUsuario === '' || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
             $error = 'Completa los datos y escribe un correo válido para el administrador.';
-        } elseif (strlen($contrasena) < 12) {
-            $error = 'La contraseña inicial debe tener al menos 12 caracteres.';
+        } elseif (strlen($contrasena) < 6) {
+            $error = 'La contraseña inicial debe tener al menos 6 caracteres.';
         } elseif (!hash_equals($contrasena, $confirmar)) {
             $error = 'Las contraseñas no coinciden.';
         } else {
@@ -57,11 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$configurado) {
                 $stmt = $conn->prepare("INSERT INTO usuarios (nombre_usuario, contrasena, estado, id_empleado, id_rol) VALUES (?, ?, 'Activo', ?, ?)");
                 $stmt->bind_param('ssii', $nombreUsuario, $hash, $idEmpleado, $idRol);
                 $stmt->execute();
+                $idUsuario = (int)$conn->insert_id;
                 $stmt->close();
 
                 permisosInicialesRol($conn, $idRol, $nombreRol);
                 $conn->commit();
-                registrarActividadSistema($conn, 'Usuarios', 'Configuración inicial', 'Se creó la cuenta de administrador inicial.');
+                registrarActividadSistema($conn, 'Usuarios', 'Configuración inicial', 'Se creó la cuenta de administrador inicial.', $idUsuario, $nombreUsuario);
                 header('Location: login.html?inicializado=1');
                 exit;
             } catch (Throwable $e) {
@@ -70,7 +71,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$configurado) {
                     ? 'La cédula, el correo o el nombre de usuario ya están registrados.'
                     : ($e instanceof mysqli_sql_exception && $e->getCode() === 1146
                         ? 'Falta instalar la migración de autenticación. Ejecuta database/003_autenticacion_permisos.sql en MySQL Workbench y vuelve a cargar esta página.'
-                        : $e->getMessage());
+                        : ($e instanceof RuntimeException && !($e instanceof mysqli_sql_exception)
+                            ? $e->getMessage()
+                            : 'No fue posible crear la cuenta inicial. Revisa los datos e inténtalo de nuevo.'));
+                if ($e instanceof mysqli_sql_exception) {
+                    error_log('SYSMOVILWT configuración del administrador: ' . $e->getMessage());
+                }
             }
         }
     }
@@ -104,8 +110,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$configurado) {
                 <div class="form-group"><label for="apellidos">Apellidos</label><input class="form-control" id="apellidos" name="apellidos" required maxlength="100"></div>
                 <div class="form-group"><label for="telefono">Teléfono</label><input class="form-control" id="telefono" name="telefono" maxlength="20"></div>
                 <div class="form-group"><label for="nombre_usuario">Usuario de acceso</label><input class="form-control" id="nombre_usuario" name="nombre_usuario" required maxlength="50" autocomplete="username"></div>
-                <div class="form-group"><label for="contrasena">Contraseña (mínimo 12 caracteres)</label><input class="form-control" type="password" id="contrasena" name="contrasena" required minlength="12" autocomplete="new-password"></div>
-                <div class="form-group"><label for="confirmar">Confirmar contraseña</label><input class="form-control" type="password" id="confirmar" name="confirmar" required minlength="12" autocomplete="new-password"></div>
+                <div class="form-group"><label for="contrasena">Contraseña (mínimo 6 caracteres)</label><input class="form-control" type="password" id="contrasena" name="contrasena" required minlength="6" autocomplete="new-password"></div>
+                <div class="form-group"><label for="confirmar">Confirmar contraseña</label><input class="form-control" type="password" id="confirmar" name="confirmar" required minlength="6" autocomplete="new-password"></div>
             </div>
             <button class="btn btn-primary login-btn" type="submit"><i class="fa-solid fa-user-shield"></i> Crear administrador</button>
         </form>
