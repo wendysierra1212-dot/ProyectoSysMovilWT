@@ -225,6 +225,12 @@ if ($resultado) {
 $totalProveedores = count($proveedores);
 $proveedoresActivos = 0;
 $proveedoresInactivos = 0;
+$comprasRegistradas = 0;
+
+$resultadoCompras = $conn->query("SELECT COUNT(*) AS total FROM compras");
+if ($resultadoCompras) {
+    $comprasRegistradas = (int)($resultadoCompras->fetch_assoc()["total"] ?? 0);
+}
 
 foreach ($proveedores as $proveedor) {
     if ($proveedor["estado"] === "Activo") {
@@ -497,7 +503,7 @@ foreach ($proveedores as $proveedor) {
         <div class="crud-card-icon bg-blue"><i class="fa-solid fa-sack-dollar"></i></div>
         <div class="crud-card-info">
             <span>Compras Registradas</span>
-            <strong>0</strong>
+            <strong><?= $comprasRegistradas ?></strong>
         </div>
     </div>
 

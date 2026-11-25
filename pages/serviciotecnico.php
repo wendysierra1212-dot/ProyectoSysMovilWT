@@ -569,14 +569,21 @@ if ($buscar !== "") {
             OR st.descripcion LIKE ?
             OR c.nombres LIKE ?
             OR c.apellidos LIKE ?
+            OR CONCAT_WS(' ', c.nombres, c.apellidos) LIKE ?
             OR c.cedula LIKE ?
             OR e.nombres LIKE ?
             OR e.apellidos LIKE ?
+            OR CONCAT_WS(' ', e.nombres, e.apellidos) LIKE ?
         )
     ";
 
     $buscarLike = "%" . $buscar . "%";
+    $buscarOrden = preg_replace('/^\\s*(?:orden\\s*)?#\\s*/i', '', $buscar);
+    $buscarOrden = $buscarOrden !== $buscar ? $buscarOrden : $buscar;
+    $buscarOrdenLike = "%" . $buscarOrden . "%";
 
+    $params[] = $buscarOrdenLike;
+    $params[] = $buscarLike;
     $params[] = $buscarLike;
     $params[] = $buscarLike;
     $params[] = $buscarLike;
@@ -585,7 +592,7 @@ if ($buscar !== "") {
     $params[] = $buscarLike;
     $params[] = $buscarLike;
 
-    $types .= "sssssss";
+    $types .= "sssssssss";
 }
 
 
@@ -1923,7 +1930,7 @@ function claseEstado($estado)
 
 
                 <a
-                    href="serviciotecnico.php"
+                    href="<?= limpiar($_SERVER["PHP_SELF"] ?? "serviciotecnico.php") ?>"
                     class="btn-reset"
                     title="Limpiar filtros"
                     aria-label="Limpiar filtros"

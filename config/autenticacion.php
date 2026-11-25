@@ -99,7 +99,7 @@ function exigirInicioSesion(mysqli $db): array
     // Consultamos el estado y el rol en cada solicitud protegida para que
     // los cambios hechos por un administrador se apliquen sin esperar ni
     // obligar al usuario a iniciar sesión otra vez.
-    $stmt = $db->prepare("SELECT u.nombre_usuario, u.estado, u.contrasena, u.id_rol,
+    $stmt = $db->prepare("SELECT u.nombre_usuario, u.estado, u.contrasena, u.id_rol, u.id_empleado,
                                  r.nombre_rol, e.nombres, e.apellidos,
                                  e.estado AS estado_empleado
                           FROM usuarios u
@@ -125,6 +125,7 @@ function exigirInicioSesion(mysqli $db): array
 
     $_SESSION['sysmovil_usuario']['nombre_usuario'] = (string)$estado['nombre_usuario'];
     $_SESSION['sysmovil_usuario']['id_rol'] = (int)$estado['id_rol'];
+    $_SESSION['sysmovil_usuario']['id_empleado'] = (int)$estado['id_empleado'];
     $_SESSION['sysmovil_usuario']['rol'] = (string)$estado['nombre_rol'];
     $_SESSION['sysmovil_usuario']['nombre'] = trim($estado['nombres'] . ' ' . $estado['apellidos']);
     $_SESSION['sysmovil_verificado'] = time();

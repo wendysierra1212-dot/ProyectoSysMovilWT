@@ -80,6 +80,7 @@ $resultado = $conn->query($sql);
 $totalProductos = 0;
 $stockBajo = 0;
 $productosAgotados = 0;
+$categoriasInventario = [];
 
 if ($resultado) {
 
@@ -89,6 +90,10 @@ if ($resultado) {
 
     while ($producto = $resultado->fetch_assoc()) {
 
+        $nombreCategoria = trim((string)($producto["nombre_categoria"] ?? ""));
+        if ($nombreCategoria !== "") {
+            $categoriasInventario[$nombreCategoria] = $nombreCategoria;
+        }
         if (($producto["estado"] ?? "Activo") === "Activo" && $producto["stock"] == 0) {
             $productosAgotados++;
         }
@@ -98,6 +103,7 @@ if ($resultado) {
         }
     }
 
+    natcasesort($categoriasInventario);
     $resultado->data_seek(0);
 }
 
@@ -352,21 +358,12 @@ if ($resultado) {
 
                 <select id="filterCategory">
 
-                    <option>Todas las categorías</option>
-
-                    <option>Celulares</option>
-
-                    <option>Computadores</option>
-
-                    <option>Portátiles</option>
-
-                    <option>Tablets</option>
-
-                    <option>Smartwatch</option>
-
-                    <option>Consolas</option>
-
-                    <option>Accesorios</option>
+                    <option value="">Todas las categorías</option>
+                    <?php foreach ($categoriasInventario as $categoriaInventario): ?>
+                        <option value="<?= htmlspecialchars($categoriaInventario, ENT_QUOTES, 'UTF-8') ?>">
+                            <?= htmlspecialchars($categoriaInventario, ENT_QUOTES, 'UTF-8') ?>
+                        </option>
+                    <?php endforeach; ?>
 
                 </select>
 

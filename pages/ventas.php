@@ -8,6 +8,13 @@ require_once __DIR__ . '/../config/conexion.php';
 require_once __DIR__ . '/../config/autenticacion.php';
 require_once __DIR__ . '/../config/actividad.php';
 exigirPermiso($conn, 'ventas', 'ver');
+$usuarioSesion = usuarioSysmovil();
+$idEmpleadoSesion = (int)($usuarioSesion['id_empleado'] ?? 0);
+$nombreEmpleadoSesion = trim((string)($usuarioSesion['nombre'] ?? ''));
+if ($idEmpleadoSesion <= 0) {
+    http_response_code(403);
+    exit('No fue posible identificar el empleado asociado a tu usuario. Contacta al administrador.');
+}
 $csrfToken = tokenCsrfSysmovil();
 $conn->set_charset('utf8mb4');
 
@@ -26,7 +33,8 @@ $ventaConfirmada = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'registrar_venta') {
     exigirCsrfSysmovil();
     exigirPermiso($conn, 'ventas', 'crear');
-    $idEmpleado = (int)($_POST['id_empleado'] ?? 0);
+    // El responsable siempre se toma de la sesión autenticada; se ignora cualquier valor enviado por el navegador.
+    $idEmpleado = $idEmpleadoSesion;
     $idCliente = (int)($_POST['id_cliente'] ?? 0);
     $metodoPago = (string)($_POST['metodo_pago'] ?? 'Efectivo');
     $descuento = round((float)($_POST['descuento'] ?? 0), 2);
@@ -35,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'regis
     $metodosPermitidos = ['Efectivo', 'Tarjeta', 'Transferencia'];
 
     try {
-        if ($idEmpleado <= 0) throw new RuntimeException('Selecciona el empleado que realiza la venta.');
         if (!in_array($metodoPago, $metodosPermitidos, true)) throw new RuntimeException('El método de pago seleccionado no es válido.');
         if ($descuento < 0) throw new RuntimeException('El descuento no puede ser negativo.');
         if (!is_array($ids) || !is_array($cantidades) || count($ids) === 0 || count($ids) !== count($cantidades)) {
@@ -116,7 +123,6 @@ $productos = [];
 $res = $conn->query("SELECT p.id_producto, p.codigo_producto, p.nombre_producto, p.marca, p.modelo, p.tipo_producto, p.precio_venta, p.stock, p.stock_minimo, p.condicion, c.nombre_categoria FROM productos p LEFT JOIN categorias c ON c.id_categoria=p.id_categoria WHERE p.estado='Activo' ORDER BY p.nombre_producto");
 while ($row = $res->fetch_assoc()) $productos[] = $row;
 $clientes = $conn->query('SELECT id_cliente, nombres, apellidos, cedula, telefono FROM clientes ORDER BY nombres, apellidos')->fetch_all(MYSQLI_ASSOC);
-$empleados = $conn->query("SELECT id_empleado, nombres, apellidos, cargo FROM empleados WHERE estado='Activo' ORDER BY nombres, apellidos")->fetch_all(MYSQLI_ASSOC);
 $historial = $conn->query("SELECT v.id_venta, v.numero_factura, v.fecha_venta, v.metodo_pago, v.subtotal, v.iva, v.descuento, v.total, v.estado, CONCAT(e.nombres,' ',e.apellidos) AS empleado, CASE WHEN c.id_cliente IS NULL THEN 'Cliente general' ELSE CONCAT(c.nombres,' ',c.apellidos) END AS cliente, COUNT(d.id_detalle_venta) AS lineas FROM ventas v INNER JOIN empleados e ON e.id_empleado=v.id_empleado LEFT JOIN clientes c ON c.id_cliente=v.id_cliente LEFT JOIN detalle_venta d ON d.id_venta=v.id_venta GROUP BY v.id_venta ORDER BY v.id_venta DESC LIMIT 50")->fetch_all(MYSQLI_ASSOC);
 $totalDia = 0.0; $ventasHoy = 0;
 $resDia = $conn->query("SELECT COUNT(*) AS cantidad, COALESCE(SUM(total),0) AS total FROM ventas WHERE estado='Completada' AND DATE(fecha_venta)=CURDATE()")->fetch_assoc();
@@ -133,6 +139,7 @@ $ventasHoy = (int)$resDia['cantidad']; $totalDia = (float)$resDia['total'];
 <link rel="stylesheet" href="../assets/css/styles.css"><link rel="stylesheet" href="../assets/css/components.css"><link rel="stylesheet" href="../assets/css/dashboard.css">
 <style>
 :root{--sale-red:#c62828;--sale-dark:#172033;--sale-bg:#f4f6fa;--sale-border:#e6e9f0;--sale-muted:#687386}
+.employee-current{min-height:38px;padding:10px;border:1px solid #dfe4ed;border-radius:8px;background:#f7f9fc;color:#202939;font-size:12px;font-weight:600;display:flex;align-items:center;gap:8px}.employee-current i{color:var(--sale-red)}.employee-note{display:block;color:var(--sale-muted);font-size:10px;margin-top:5px}
 /* Alinear el contenido de ventas al lado de la barra lateral fija */
 main.main-content.sales-page{margin-left:280px;width:calc(100% - 280px);min-width:0;padding:26px;overflow-x:hidden;margin-top:80px}
 main.main-content.sales-page .sales-wrap{width:100%;max-width:1500px;margin:0 auto;min-width:0}
@@ -302,7 +309,7 @@ main.main-content.sales-page .sales-table tbody tr:nth-child(even) {
       </div><div class="empty" id="noSearchResults" style="display:none">No se encontraron productos con esa búsqueda.</div>
     </div></section>
     <section class="panel sales-cart-panel"><div class="panel-head"><h2><i class="fa-solid fa-receipt"></i> Nueva venta</h2><span class="muted" style="font-size:11px"><?= h(date('d/m/Y H:i')) ?></span></div><div class="panel-body">
-      <div class="sale-fields"><div class="field"><label for="id_empleado">Empleado responsable *</label><select name="id_empleado" id="id_empleado" required><option value="">Selecciona empleado</option><?php foreach ($empleados as $e): ?><option value="<?= (int)$e['id_empleado'] ?>"><?= h($e['nombres'].' '.$e['apellidos'].' · '.$e['cargo']) ?></option><?php endforeach; ?></select></div><div class="field"><label for="id_cliente">Cliente (opcional)</label><select name="id_cliente" id="id_cliente"><option value="0">Cliente general</option><?php foreach ($clientes as $c): ?><option value="<?= (int)$c['id_cliente'] ?>"><?= h($c['nombres'].' '.$c['apellidos'].($c['cedula']?' · '.$c['cedula']:'')) ?></option><?php endforeach; ?></select></div></div>
+      <div class="sale-fields"><div class="field"><label>Empleado responsable</label><div class="employee-current"><i class="fa-solid fa-user-check"></i><?= h($nombreEmpleadoSesion) ?></div><small class="employee-note">Asignado automáticamente a tu usuario.</small></div><div class="field"><label for="id_cliente">Cliente (opcional)</label><select name="id_cliente" id="id_cliente"><option value="0">Cliente general</option><?php foreach ($clientes as $c): ?><option value="<?= (int)$c['id_cliente'] ?>"><?= h($c['nombres'].' '.$c['apellidos'].($c['cedula']?' · '.$c['cedula']:'')) ?></option><?php endforeach; ?></select></div></div>
       <div class="field" style="margin-bottom:14px"><label>Método de pago *</label><select name="metodo_pago" id="metodo_pago" required><option value="Efectivo">Efectivo</option><option value="Tarjeta">Tarjeta</option><option value="Transferencia">Transferencia</option></select></div>
       <div class="cart-items" id="cartItems"><div class="empty" id="emptyCart"><i class="fa-solid fa-cart-shopping"></i>El carrito está vacío.<br>Agrega productos desde el panel izquierdo.</div></div>
       <div class="summary"><div class="summary-line"><span>Subtotal</span><strong id="subtotalText">$0</strong></div><div class="summary-line"><label for="descuento" style="color:#536074">Descuento (COP)</label><input id="descuento" name="descuento" type="number" min="0" step="0.01" value="0" style="width:125px;text-align:right;padding:6px;border:1px solid #dfe4ed;border-radius:7px"></div><div class="summary-line"><span>IVA (no calculado)</span><strong id="ivaText">$0</strong></div><div class="summary-line total"><span>Total</span><strong id="totalText">$0</strong></div></div>
@@ -400,7 +407,6 @@ main.main-content.sales-page .sales-table tbody tr:nth-child(even) {
   });
   document.getElementById('saleForm').addEventListener('submit', e => {
     if (!cart.size) { e.preventDefault(); alert('Agrega al menos un producto antes de finalizar.'); return; }
-    const emp = document.getElementById('id_empleado'); if (!emp.value) { e.preventDefault(); alert('Selecciona el empleado responsable.'); emp.focus(); return; }
     const subtotal = [...cart.values()].reduce((s,p)=>s+p.price*p.qty,0); const d=Number(discount.value)||0;
     if (d<0 || d>subtotal) { e.preventDefault(); alert('El descuento debe estar entre $0 y el subtotal.'); discount.focus(); return; }
     cart.forEach(p => {

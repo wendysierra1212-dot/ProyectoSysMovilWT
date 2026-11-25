@@ -239,8 +239,8 @@ $sql = "SELECT c.id_compra,c.numero_factura_compra,c.fecha_compra,c.total,c.obse
         FROM compras c INNER JOIN proveedores p ON p.id_proveedor=c.id_proveedor INNER JOIN empleados e ON e.id_empleado=c.id_empleado LEFT JOIN detalle_compra dc ON dc.id_compra=c.id_compra WHERE 1=1";
 $params = []; $types = "";
 if ($buscar !== "") {
-    $sql .= " AND (CAST(c.id_compra AS CHAR) LIKE ? OR c.numero_factura_compra LIKE ? OR p.nombre_proveedor LIKE ? OR e.nombres LIKE ? OR e.apellidos LIKE ?)";
-    $like = "%$buscar%"; array_push($params, $like, $like, $like, $like, $like); $types .= "sssss";
+    $sql .= " AND (CAST(c.id_compra AS CHAR) LIKE ? OR c.numero_factura_compra LIKE ? OR COALESCE(NULLIF(c.numero_factura_compra, ''), CONCAT('COMP-', LPAD(c.id_compra, 5, '0'))) LIKE ? OR p.nombre_proveedor LIKE ? OR e.nombres LIKE ? OR e.apellidos LIKE ?)";
+    $like = "%$buscar%"; array_push($params, $like, $like, $like, $like, $like, $like); $types .= "ssssss";
 }
 if ($idProveedorFiltro > 0) { $sql .= " AND c.id_proveedor=?"; $params[] = $idProveedorFiltro; $types .= "i"; }
 $sql .= " GROUP BY c.id_compra,c.numero_factura_compra,c.fecha_compra,c.total,c.observaciones,c.id_proveedor,c.id_empleado,p.nombre_proveedor,e.nombres,e.apellidos ORDER BY c.id_compra DESC";
